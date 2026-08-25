@@ -27,9 +27,16 @@ test("new engine is ready with active + 3 queued from the seed sequence", () => 
   const seq = E.sequence(42, 4);
   assert.equal(e.state.active.type, seq[0]);
   assert.deepEqual(e.state.queue, seq.slice(1));
-  assert.deepEqual(e.state.active, { type: seq[0], rot: 0, x: 3, y: 0 });
+  assert.deepEqual(e.state.active, { type: seq[0], rot: 0, x: 3, y: 1 });
   assert.equal(e.state.board.length, E.ROWS);
   assert.equal(e.state.board[0].length, E.COLS);
+});
+
+test("a spawned piece has at least one visible cell", () => {
+  for (let seed = 1; seed <= 14; seed++) {
+    const e = E.createEngine({ seed });
+    assert.ok(E.cellsOf(e.state.active).some((c) => c[1] >= E.HIDDEN_ROWS), "seed " + seed);
+  }
 });
 
 test("start moves status to playing and actions are logged with the tick index", () => {
@@ -194,7 +201,7 @@ test("hard drop lands at ghostY, scores 2 per cell, locks, spawns the next piece
   assert.equal(e.state.board[21][5], "T");
   assert.equal(e.state.board[20][4], "T");
   assert.equal(e.state.active.type, nextType);
-  assert.deepEqual([e.state.active.x, e.state.active.y], [3, 0]);
+  assert.deepEqual([e.state.active.x, e.state.active.y], [3, 1]);
   assert.equal(e.state.status, "playing");
 });
 
@@ -272,7 +279,7 @@ test("hold swaps once per piece and re-enables after lock", () => {
   e.dispatch("hold");
   assert.equal(e.state.active.type, first);
   assert.equal(e.state.hold, third);
-  assert.deepEqual([e.state.active.x, e.state.active.y, e.state.active.rot], [3, 0, 0]);
+  assert.deepEqual([e.state.active.x, e.state.active.y, e.state.active.rot], [3, 1, 0]);
 });
 
 test("lock delay: a grounded piece locks after 500 ms", () => {
@@ -321,6 +328,17 @@ test("block-out: spawning into the stack ends the game", () => {
   assert.ok(ev.some((x) => x.type === "gameover"));
   assert.equal(e.state.status, "over");
   assert.deepEqual(e.dispatch("left"), []);
+});
+
+test("hold into a collision ends the game", () => {
+  const e = playing();
+  const rows = [];
+  for (let i = 0; i < 22; i++) rows.push("...XXXX...");
+  e.setBoard(rows); // every row (including hidden rows 0–1) filled at cols 3..6, so nothing can spawn
+  e.setActive({ type: "O", rot: 0, x: 0, y: 20 }); // safe spot, cols 1,2
+  const ev = e.dispatch("hold"); // empty hold slot → spawn() → collides at the spawn position
+  assert.ok(ev.some((x) => x.type === "gameover"));
+  assert.equal(e.state.status, "over");
 });
 
 test("lock-out: a piece locking entirely in hidden rows ends the game", () => {

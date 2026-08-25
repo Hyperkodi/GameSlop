@@ -140,12 +140,20 @@
       events.push({ type: "gameover" });
     }
 
+    // Places a piece at the spawn position; if it fits one row lower, drops it there at once
+    // so a visible cell exists from the first frame (spec 3.1). Not a player move: no
+    // onPlayerMoved, no input-log entry. Block-out is still judged at the spawn position.
+    function place(type, events) {
+      state.active = { type: type, rot: SPAWN.rot, x: SPAWN.x, y: SPAWN.y };
+      resetPieceTimers();
+      if (!fits(state.active)) { gameOver(events); return; } // block-out
+      if (fits(shifted(state.active, 0, 1))) state.active = shifted(state.active, 0, 1);
+    }
+
     function spawn(events) {
       const type = state.queue.shift();
       state.queue.push(nextFromBag());
-      state.active = { type: type, rot: SPAWN.rot, x: SPAWN.x, y: SPAWN.y };
-      resetPieceTimers();
-      if (!fits(state.active)) gameOver(events); // block-out
+      place(type, events);
     }
 
     function reset(seed) {
@@ -240,9 +248,7 @@
       } else {
         const swapIn = state.hold;
         state.hold = current;
-        state.active = { type: swapIn, rot: SPAWN.rot, x: SPAWN.x, y: SPAWN.y };
-        resetPieceTimers();
-        if (!fits(state.active)) gameOver(events);
+        place(swapIn, events);
       }
       state.holdUsed = true;
       return events;
