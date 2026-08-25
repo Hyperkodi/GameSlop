@@ -171,7 +171,7 @@
     }
 
     function onPlayerMoved() {
-      if (lockResets < MAX_LOCK_RESETS) { lockTimer = 0; lockResets++; }
+      if (!fits(shifted(state.active, 0, 1)) && lockResets < MAX_LOCK_RESETS) { lockTimer = 0; lockResets++; }
     }
 
     function tryMove(dx, dy) {

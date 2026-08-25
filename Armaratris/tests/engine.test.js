@@ -307,6 +307,28 @@ test("lock delay resets on player moves, at most 15 times", () => {
   assert.ok(ev.some((x) => x.type === "lock"));
 });
 
+test("airborne moves do not consume lock resets", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 10 }); // airborne, empty board
+  for (let i = 0; i < 15; i++) e.dispatch(i % 2 ? "right" : "left");
+  // Approach the floor in large steps while comfortably airborne, then land with a small
+  // final dt. tick()'s lock timer accumulates the whole dt of the call that grounds the
+  // piece regardless of how much of that dt was actually spent airborne, so a full 1000 ms
+  // step on the grounding tick would exceed LOCK_DELAY_MS (500) and lock the piece in that
+  // same call -- before this test ever gets to dispatch a grounded move. That is an existing
+  // tick() coarseness unrelated to this fix, so the test lands gently instead of hitting it.
+  while (e.ghostY() - e.state.active.y > 1) e.tick(1000);
+  e.tick(999); e.tick(1);
+  assert.equal(e.state.active.y, 20);
+  assert.equal(e.state.board[21].filter((c) => c !== null).length, 0);
+  e.tick(400);
+  e.dispatch("left"); // first grounded move: consumes a reset only under the fix
+  e.tick(400);
+  assert.equal(e.state.board[21].filter((c) => c !== null).length, 0); // not locked
+  const ev = e.tick(100);
+  assert.ok(ev.some((x) => x.type === "lock"));
+});
+
 test("lock timer pauses while the piece is airborne", () => {
   const e = playing();
   e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
