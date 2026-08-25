@@ -8,6 +8,14 @@
     return global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace("#", "");
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+  }
+
   function drawTile(ctx, px, py, s, tone, alpha) {
     ctx.globalAlpha = alpha === undefined ? 1 : alpha;
     const b = Math.max(2, Math.round(s * 0.12));
@@ -87,15 +95,24 @@
 
     r.paintGround = function () {
       const size = 512;
+      const wrap = [-size, 0, size]; // draw every shape 9x so it tiles seamlessly across edges
       const c = document.createElement("canvas"); c.width = size; c.height = size;
       const ctx = c.getContext("2d");
       const rng = A.mulberry32(7);
       ctx.fillStyle = pal.bg; ctx.fillRect(0, 0, size, size);
       // soft cloudy patches
       for (let i = 0; i < 18; i++) {
-        const g = ctx.createRadialGradient(rng() * size, rng() * size, 0, rng() * size, rng() * size, 120 + rng() * 160);
-        g.addColorStop(0, "rgba(233,226,211,0.035)"); g.addColorStop(1, "rgba(233,226,211,0)");
-        ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
+        const cx = rng() * size, cy = rng() * size, rad = 120 + rng() * 160;
+        for (let wx = 0; wx < wrap.length; wx++) {
+          for (let wy = 0; wy < wrap.length; wy++) {
+            ctx.save();
+            ctx.translate(wrap[wx], wrap[wy]);
+            const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+            g.addColorStop(0, hexToRgba(pal.marble, 0.035)); g.addColorStop(1, hexToRgba(pal.marble, 0));
+            ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
+            ctx.restore();
+          }
+        }
       }
       // veins
       ctx.strokeStyle = pal.marble; ctx.lineCap = "round";
@@ -103,14 +120,23 @@
         ctx.globalAlpha = 0.025 + rng() * 0.04;
         ctx.lineWidth = 0.6 + rng() * 2.2;
         const x0 = rng() * size, y0 = rng() * size;
-        ctx.beginPath(); ctx.moveTo(x0, y0);
+        const segs = [];
         let x = x0, y = y0;
         for (let k = 0; k < 4; k++) {
           const nx = x + (rng() - 0.5) * 260, ny = y + (rng() - 0.5) * 260;
-          ctx.quadraticCurveTo(x + (rng() - 0.5) * 120, y + (rng() - 0.5) * 120, nx, ny);
+          segs.push([x + (rng() - 0.5) * 120, y + (rng() - 0.5) * 120, nx, ny]);
           x = nx; y = ny;
         }
-        ctx.stroke();
+        for (let wx = 0; wx < wrap.length; wx++) {
+          for (let wy = 0; wy < wrap.length; wy++) {
+            ctx.save();
+            ctx.translate(wrap[wx], wrap[wy]);
+            ctx.beginPath(); ctx.moveTo(x0, y0);
+            for (let k = 0; k < segs.length; k++) ctx.quadraticCurveTo(segs[k][0], segs[k][1], segs[k][2], segs[k][3]);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
       }
       ctx.globalAlpha = 1;
       document.body.style.backgroundImage = "url(" + c.toDataURL("image/png") + ")";
