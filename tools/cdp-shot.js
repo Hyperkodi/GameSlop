@@ -14,10 +14,11 @@
 //                        (rejects if the expression throws).
 //   sleep(ms)            resolves after ms milliseconds.
 //
-// Flow: launch headless Chrome -> open a new target at <url> -> override the viewport ->
-// wait for the page to finish loading -> wait for document.body.dataset.ready === "1"
-// (best-effort, up to 10s) -> run the driver, if any -> wait --wait ms (default 1500) ->
-// capture a PNG screenshot -> write it to <out.png> -> kill Chrome.
+// Flow: launch headless Chrome -> open a new blank target -> override the viewport ->
+// navigate to <url> -> wait for the page to finish loading -> wait for
+// document.body.dataset.ready === "1" (best-effort, up to 10s) -> run the driver, if any ->
+// wait --wait ms (default 1500) -> capture a PNG screenshot -> write it to <out.png> ->
+// kill Chrome.
 //
 // Exits 0 only when the PNG was written (and prints its path). Exits non-zero with a
 // clear message on any failure.
@@ -149,9 +150,12 @@ async function main() {
     await waitForDebugPort(port, 60);
     if (chromeExited) throw new Error("Chrome exited before the debug port was usable");
 
-    // The "/json/new" quirk: current Chrome requires PUT (GET is rejected), and the
-    // target URL is passed as the raw query suffix (not standard key=value encoding).
-    const target = await httpJson(port, "/json/new?" + url, "PUT");
+    // The "/json/new" quirk: current Chrome requires PUT (GET is rejected). Open a blank
+    // target here rather than passing <url> on this query string: Chrome's "/json/new"
+    // handler parses everything after "?" as its own query string and splits on "&", so a
+    // multi-param <url> (e.g. "...?seed=42&debug=1") gets silently truncated at the first
+    // "&". Attach, then navigate to the real <url> explicitly with Page.navigate below.
+    const target = await httpJson(port, "/json/new?about:blank", "PUT");
     if (!target || !target.webSocketDebuggerUrl) {
       throw new Error("PUT /json/new did not return a webSocketDebuggerUrl: " + JSON.stringify(target));
     }
@@ -226,9 +230,10 @@ async function main() {
       mobile: width < 760,
     });
 
-    // The target already started navigating to <url> the moment it was created (before we
-    // connected), so Page.loadEventFired may fire before our listener is attached. Guard
-    // against that race by also polling document.readyState.
+    // Navigate now, after Runtime/Page are enabled and the Page.loadEventFired listener
+    // (below) is already attached — no "did it fire before we were listening" race.
+    await cdp("Page.navigate", { url });
+
     const loadDeadline = Date.now() + LOAD_TIMEOUT_MS;
     while (!loadFired) {
       const readyState = await evaluate("document.readyState").catch(() => null);
