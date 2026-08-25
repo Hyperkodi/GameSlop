@@ -1,4 +1,4 @@
-// GENERATED from skin.json (source of truth). Regenerate with the command in docs/superpowers/plans/2026-08-25-armaratris.md Task 1.
+// GENERATED from skin.json (source of truth). Regenerate with the command in README.md.
 window.Armaratris = window.Armaratris || {};
 window.Armaratris.skins = window.Armaratris.skins || {};
 window.Armaratris.skins.armara = {

@@ -144,9 +144,10 @@
     };
 
     function drawWatermark(ctx, w, h) {
-      if (!skin.logoImage) return;
+      var wa = skin.watermarkAlpha == null ? 0.06 : skin.watermarkAlpha;
+      if (wa <= 0 || !skin.logoImage) return;
       const size = Math.min(w, h) * 0.62;
-      ctx.globalAlpha = skin.watermarkAlpha || 0.06;
+      ctx.globalAlpha = wa;
       ctx.drawImage(skin.logoImage, (w - size) / 2, (h - size) / 2, size, size);
       ctx.globalAlpha = 1;
     }

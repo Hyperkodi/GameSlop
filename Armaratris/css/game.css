@@ -115,7 +115,8 @@ body {
   .stats { grid-template-columns: repeat(3, auto); gap: 8px; flex: 1; align-content: start; }
   .stat-best { display: none; }
   .stat output { font-size: 16px; }
-  .brand, #mute { display: none; }
+  .brand { display: none; }
+  #mute { width: 32px; height: 32px; font-size: 14px; align-self: flex-start; }
   .touch { display: grid; grid-template-columns: repeat(4, 1fr); }
 }
 @media (pointer: coarse) and (min-width: 760px) {

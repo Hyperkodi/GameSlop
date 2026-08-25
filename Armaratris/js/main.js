@@ -10,7 +10,7 @@
   function parseSeed(v) {
     if (v === null || v === "") return undefined;
     const n = Number(v);
-    return Number.isFinite(n) ? (n >>> 0) : (A.fnv1a(String(v)) | 0) >>> 0;
+    return Number.isFinite(n) ? (n >>> 0) : (parseInt(A.fnv1a(String(v)), 16) >>> 0);
   }
 
   function bestKey(skin) { return "armaratris:" + skin + ":best"; }

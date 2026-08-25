@@ -17,10 +17,12 @@
 
   async function fetchSkin(name) {
     const base = "skin/" + name + "/";
-    try {
-      const r = await fetch(base + "skin.json", { cache: "no-store" });
-      if (r.ok) return await r.json();
-    } catch (e) { /* file:// or offline — fall through */ }
+    if (location.protocol !== "file:") {
+      try {
+        const r = await fetch(base + "skin.json", { cache: "no-store" });
+        if (r.ok) return await r.json();
+      } catch (e) { /* offline — fall through */ }
+    }
     try { await loadScript(base + "skin.js"); } catch (e) { /* missing */ }
     return A.skins[name] || null;
   }
@@ -58,6 +60,7 @@
     ["titleLogo", "brandLogo"].forEach(function (id) {
       const img = document.getElementById(id); if (img) img.src = skin.base + skin.logo;
     });
+    const favicon = document.getElementById("favicon"); if (favicon) favicon.href = skin.base + skin.logo;
     const theme = document.querySelector('meta[name="theme-color"]'); if (theme) theme.content = skin.palette.bg;
   }
 
