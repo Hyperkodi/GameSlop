@@ -21,6 +21,7 @@
     const params = new URLSearchParams(location.search);
     const skin = await A.loadSkin(params.get("skin"));
     const engine = A.createEngine({ seed: parseSeed(params.get("seed")) });
+    if (params.get("debug") === "1") global.__armaratris = { engine: engine };
     const audio = A.createAudio();
     const wrap = $("wellwrap");
     const renderer = A.createRenderer({ skin: skin, wellCanvas: $("well"), holdCanvas: $("hold"), nextCanvas: $("next"), wrapEl: wrap });
@@ -44,7 +45,7 @@
       ui.lines.textContent = engine.state.lines;
     }
 
-    function handleEvents(events, snapshot) {
+    function handleEvents(events) {
       for (let i = 0; i < events.length; i++) {
         const ev = events[i];
         switch (ev.type) {
@@ -54,7 +55,7 @@
           case "lock": audio.play("lock"); break;
           case "clear":
             audio.play(ev.lines === 4 ? "tetris" : "clear");
-            if (snapshot) renderer.flash(ev.rows, snapshot);
+            renderer.flash(ev.rows, ev.board);
             break;
           case "gameover": onGameOver(); break;
           default: break;
@@ -62,8 +63,6 @@
       }
       if (events.length) { refreshStats(); renderer.drawHold(engine.state.hold); renderer.drawNext(engine.state.queue); }
     }
-
-    function snapshotBoard() { return engine.state.board.map(function (row) { return row.slice(); }); }
 
     function onGameOver() {
       const s = engine.state;
@@ -92,8 +91,7 @@
       onAction: function (action) {
         if (engine.state.status === "ready") { if (action !== "softDropOn" && action !== "softDropOff") start(); return; }
         if (engine.state.status !== "playing") return;
-        const snap = action === "hardDrop" ? snapshotBoard() : null;
-        handleEvents(engine.dispatch(action), snap);
+        handleEvents(engine.dispatch(action));
       },
       onSystem: function (name) {
         if (name === "start") start();
@@ -103,7 +101,7 @@
     });
 
     ui.oBtn.addEventListener("click", function () { start(); });
-    ui.overlay.addEventListener("pointerdown", function (e) { if (e.target === ui.oBtn) return; start(); });
+    ui.overlay.addEventListener("pointerdown", function (e) { e.stopPropagation(); if (e.target !== ui.oBtn) start(); });
     ui.mute.addEventListener("click", toggleMute);
     global.addEventListener("resize", function () { renderer.resize(); renderer.drawHold(engine.state.hold); renderer.drawNext(engine.state.queue); });
     document.addEventListener("visibilitychange", function () { if (document.hidden && engine.state.status === "playing") pause(); });
@@ -122,8 +120,7 @@
       input.update(dt);
       let steps = 0;
       while (acc >= STEP && steps < MAX_STEPS_PER_FRAME) {
-        const snap = engine.state.status === "playing" ? snapshotBoard() : null;
-        handleEvents(engine.tick(STEP), snap);
+        handleEvents(engine.tick(STEP));
         acc -= STEP; steps++;
       }
       if (steps === MAX_STEPS_PER_FRAME) acc = 0;

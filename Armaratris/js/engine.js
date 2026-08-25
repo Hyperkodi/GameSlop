@@ -192,7 +192,7 @@
       return y;
     }
 
-    function clearLines(events) {
+    function clearLines(events, boardSnapshot) {
       const cleared = [];
       for (let y = ROWS - 1; y >= 0; y--) {
         if (state.board[y].every(function (c) { return c !== null; })) cleared.push(y);
@@ -204,7 +204,7 @@
       const n = cleared.length;
       state.lines += n;
       state.score += LINE_SCORES[n] * state.level;
-      events.push({ type: "clear", lines: n, rows: cleared.slice().sort(function (a, b) { return a - b; }) });
+      events.push({ type: "clear", lines: n, rows: cleared.slice().sort(function (a, b) { return a - b; }), board: boardSnapshot });
       const newLevel = startLevel + Math.floor(state.lines / 10);
       if (newLevel !== state.level) {
         state.level = newLevel;
@@ -222,7 +222,9 @@
         if (y >= HIDDEN_ROWS) allHidden = false;
       }
       if (allHidden) { gameOver(events); return events; } // lock-out
-      clearLines(events);
+      const anyFull = state.board.some(function (row) { return row.every(function (c) { return c !== null; }); });
+      const boardCopy = anyFull ? state.board.map(function (r) { return r.slice(); }) : null;
+      clearLines(events, boardCopy);
       state.holdUsed = false;
       spawn(events);
       return events;

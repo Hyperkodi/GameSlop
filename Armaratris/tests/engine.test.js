@@ -204,10 +204,15 @@ test("single line clear scores 100 x level and emits clear", () => {
   e.setActive({ type: "I", rot: 0, x: 0, y: 0 }); // horizontal I on row y+1 → cols 0..3
   const ev = e.dispatch("hardDrop");
   const clear = ev.find((x) => x.type === "clear");
-  assert.deepEqual(clear, { type: "clear", lines: 1, rows: [21] });
+  assert.equal(clear.type, "clear");
+  assert.equal(clear.lines, 1);
+  assert.deepEqual(clear.rows, [21]);
   assert.equal(e.state.lines, 1);
   assert.equal(e.state.score, 20 * 2 + 100);
   assert.ok(e.state.board[21].every((c) => c === null));
+  assert.equal(clear.board.length, E.ROWS);
+  clear.board.forEach((row) => assert.equal(row.length, E.COLS));
+  clear.rows.forEach((y) => assert.ok(clear.board[y].every((c) => c !== null)));
 });
 
 test("tetris scores 800 x level", () => {
@@ -220,6 +225,9 @@ test("tetris scores 800 x level", () => {
   assert.deepEqual(clear.rows, [18, 19, 20, 21]);
   assert.equal(e.state.score, 18 * 2 + 800);
   assert.equal(e.state.lines, 4);
+  assert.equal(clear.board.length, E.ROWS);
+  clear.board.forEach((row) => assert.equal(row.length, E.COLS));
+  clear.rows.forEach((y) => assert.ok(clear.board[y].every((c) => c !== null)));
 });
 
 test("level rises every 10 lines and multiplies scoring", () => {

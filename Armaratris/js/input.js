@@ -57,6 +57,7 @@
     // ---- touch / pointer gestures on the well ----
     let g = null; // gesture state
     on(o.wellEl, "pointerdown", function (e) {
+      if (e.target && e.target.closest && e.target.closest("button, .overlay")) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       o.wellEl.setPointerCapture(e.pointerId);
       g = { id: e.pointerId, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, t0: performance.now(), tLast: performance.now(), movedCols: 0, soft: false, moved: false };
