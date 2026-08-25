@@ -32,5 +32,6 @@ test("skin.js mirrors skin.json exactly", () => {
   const json = readJson();
   const sandbox = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(SKIN_DIR, "skin.js"), "utf8"), sandbox);
-  assert.deepEqual(sandbox.window.Armaratris.skins.armara, json);
+  const fromScript = JSON.parse(JSON.stringify(sandbox.window.Armaratris.skins.armara));
+  assert.deepEqual(fromScript, json);
 });
