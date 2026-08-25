@@ -16,7 +16,7 @@
 - No build step, no npm dependencies, no `package.json` needed. Everything must run by double-clicking `index.html` in Chrome (`file://`).
 - Classic scripts only (`<script src>`), loaded in this order: `engine.js`, `audio.js`, `skin.js`, `renderer.js`, `input.js`, `main.js`. Every module wraps itself in `(function (global) { ... })(typeof window !== "undefined" ? window : globalThis);` and attaches to `global.Armaratris`.
 - `engine.js` ends with `if (typeof module !== "undefined" && module.exports) module.exports = {...}` so tests can `require("../js/engine.js")`.
-- Tests: `node --test tests/` from the `Armaratris` folder. Node's built-in runner only — no Jest, no installs.
+- Tests: bare `node --test` run from the `Armaratris` folder (auto-discovers `tests/*.test.js`; on Node ≥ 22 `node --test` fails because a directory argument is treated as a test file). Node's built-in runner only — no Jest, no installs.
 - Skin is the only place brand values live. No hex colors, font names, or brand strings in JS/CSS other than fallbacks (`Georgia, "Times New Roman", serif`).
 - Well: 10 columns × 22 rows (rows 0–1 hidden). Spawn at `x=3, y=0, rot=0`. SRS rotation + standard wall kicks. 7-bag on `mulberry32(seed)`. Lock delay 500 ms, max 15 move-resets. Scoring 100/300/500/800 × level; soft drop +1/cell; hard drop +2/cell; level = startLevel + floor(lines/10). Gravity ms per row by level: `[1000, 793, 618, 473, 355, 262, 190, 135, 94, 64, 43, 28, 18, 11, 7]` (level 15+ uses 7).
 - Fixed timestep: `main.js` calls `engine.tick(1000/60)` from an accumulator; a game is fully described by `seed + inputLog`.
@@ -105,13 +105,15 @@ test("skin.js mirrors skin.json exactly", () => {
   const json = readJson();
   const sandbox = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(SKIN_DIR, "skin.js"), "utf8"), sandbox);
-  assert.deepEqual(sandbox.window.Armaratris.skins.armara, json);
+  // JSON round-trip: objects from another vm realm have a different Object.prototype, which strict deepEqual rejects.
+  const fromScript = JSON.parse(JSON.stringify(sandbox.window.Armaratris.skins.armara));
+  assert.deepEqual(fromScript, json);
 });
 ```
 
 - [ ] **Step 3: Run tests to verify they fail**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: 2 failing tests (ENOENT for skin.json).
 
 - [ ] **Step 4: Write skin.json**
@@ -186,7 +188,7 @@ head -3 skin/armara/skin.js
 
 - [ ] **Step 6: Run tests to verify they pass**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: 2 passing.
 
 - [ ] **Step 7: (If git) commit**
@@ -360,7 +362,7 @@ test("fnv1a is stable", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: engine tests fail with `Cannot find module '../js/engine.js'`; the 2 skin tests still pass.
 
 - [ ] **Step 3: Write engine.js (core)**
@@ -524,7 +526,7 @@ Create `js/engine.js`:
       state.board = emptyBoard();
       state.hold = null; state.holdUsed = false;
       state.queue = [];
-      for (let i = 0; i < QUEUE_SIZE + 1; i++) state.queue.push(nextFromBag());
+      for (let i = 0; i < QUEUE_SIZE; i++) state.queue.push(nextFromBag());
       state.score = 0; state.lines = 0; state.level = startLevel;
       state.status = "ready"; state.inputLog = []; state.tick = 0;
       softDrop = false;
@@ -627,7 +629,7 @@ Note on the "left/right blocked by walls" test: the O shape lives in columns `x+
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: all engine + skin tests pass (16 tests). If the `fnv1a("a")` expectation fails, verify against the reference: FNV-1a 32-bit of "a" is `0xe40c292c`.
 
 - [ ] **Step 5: (If git) commit**
@@ -874,7 +876,7 @@ test("determinism: same seed + same input log reproduces the game", () => {
 
 - [ ] **Step 2: Run tests to verify the new ones fail**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: the Task-2 tests still pass; the new tests fail (stubs return `[]`, pieces never move).
 
 - [ ] **Step 3: Replace the four stubs in engine.js**
@@ -971,7 +973,7 @@ In `js/engine.js`, replace the block starting `// ---- Task 3 fills these in ---
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `node --test tests/`
+Run: `node --test`
 Expected: all pass (31 tests). If "lock delay resets on player moves" fails because the piece drifts off the T's supporting cells, note that `y=20` with an empty board is the floor — left/right moves keep it grounded; check that `onPlayerMoved` caps at 15 and that `tick` only advances `lockTimer` while grounded.
 
 - [ ] **Step 5: (If git) commit**
@@ -1102,7 +1104,7 @@ body {
 .title .mark { height: 40px; width: auto; }
 .title h1 {
   margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3.2vw, 34px);
-  letter-spacing: .22em; color: var(--c-gold); text-shadow: 0 0 18px rgba(201,162,74,.18);
+  letter-spacing: .22em; color: var(--c-gold); text-shadow: 0 0 18px color-mix(in srgb, var(--c-gold) 18%, transparent);
 }
 .title .tagline { margin: 0; font-size: 11px; letter-spacing: .28em; color: var(--c-muted); text-transform: uppercase; }
 
@@ -1149,7 +1151,7 @@ body {
 #well { display: block; }
 .overlay {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-  background: rgba(11,10,10,.78); text-align: center; padding: 20px; line-height: 1.3;
+  background: color-mix(in srgb, var(--c-bg) 78%, transparent); text-align: center; padding: 20px; line-height: 1.3;
 }
 .overlay[hidden] { display: none; }
 .overlay-title { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: clamp(20px, 3vw, 30px); letter-spacing: .2em; color: var(--c-gold); }
@@ -2014,7 +2016,7 @@ Snapshot note: `snapshotBoard()` copies the board every tick while playing (22 s
 Run:
 ```bash
 for f in js/*.js skin/armara/skin.js; do node --check "$f" || echo "SYNTAX FAIL $f"; done
-node --test tests/
+node --test
 ```
 Expected: no syntax failures; all tests pass.
 
@@ -2059,7 +2061,7 @@ Armara-branded Tetris. Static — open `index.html`.
 
 - `?skin=<name>` selects `skin/<name>/` (default `armara`); `?seed=<n>` fixes the piece sequence.
 - Controls: ← → move · ↑ / X rotate · Z rotate CCW · ↓ soft drop · Space hard drop · C / Shift hold · P pause · M mute. Touch: drag to move, tap to rotate, flick down to drop, swipe up to hold.
-- Tests: `node --test tests/`
+- Tests: `node --test`
 - New sponsor: copy `skin/armara/` to `skin/<name>/`, edit `skin.json`, regenerate `skin.js` (command in `docs/superpowers/plans/2026-08-25-armaratris.md`, Task 1 step 5), replace `logo.png`.
 - Play-to-earn hook: on game over the page posts `{v:1, type:"gameover", game, skin, score, lines, level, seed, inputsHash}` to its parent frame. The engine is deterministic (seed + input log), so a server can replay a game to verify a score.
 ```
@@ -2077,3 +2079,16 @@ Armara-branded Tetris. Static — open `index.html`.
 **Placeholder scan:** none; every step has full code or an exact command. Task 8 step 5 offers a manual screenshot because headless Chrome cannot play the game — acceptable.
 
 **Type consistency:** `createRenderer` options `{skin, wellCanvas, holdCanvas, nextCanvas, wrapEl}` match main.js; `createInput` options `{wellEl, touchEl, cellSize, onAction, onSystem}` match; engine events (`move, rotate, hold, lock, clear{lines, rows}, level, gameover`) match `handleEvents`; `engine.hash()`, `engine.reset(seed)`, `renderer.flash(rows, board)`, `renderer.cell`, `audio.unlock/toggle/muted/play` consistent across tasks.
+
+---
+
+## Post-review amendments (2026-08-25)
+
+Applied after the whole-branch review; the spec was amended first and is the authority where this plan's task code differs:
+- Engine: after spawn or hold-swap, a piece that fits one row lower is moved there immediately (Guideline "drop one"); block-out still judged at spawn. Test expectations for the spawn position moved from `y:0` to `y:1`.
+- Engine: lock-delay move-resets are consumed only while the piece is grounded.
+- Engine → renderer: the `clear` event carries a pre-clear `board` copy; `main.js` no longer snapshots the board per tick.
+- main.js: overlay `pointerdown` stops propagation so `wellwrap`'s pointer capture cannot swallow the RESUME / PLAY AGAIN clicks or turn a start-tap into a rotate; input.js ignores pointerdowns on buttons/overlay.
+- Renderer: marble ground uses concentric radial gradients, wraps the 512 px tile at nine offsets (seamless), and derives colors from `skin.palette.marble`.
+- Minors: hex seed parse, `watermarkAlpha: 0` allowed, no `fetch` on `file://`, favicon from skin logo, mute visible on mobile, skin test iterates every `skin/*`, screenshots live in `docs/armaratris-screenshots/`.
+- Task 2: initial queue fill is `QUEUE_SIZE` (3), not `QUEUE_SIZE + 1`. Task 4: no canvas size rules in CSS; brand-derived shadows via `color-mix()`. Task 8: per-frame `refreshStats()` while playing. Test command: bare `node --test`.
