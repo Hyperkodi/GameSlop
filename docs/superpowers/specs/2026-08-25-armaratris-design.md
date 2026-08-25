@@ -1,7 +1,7 @@
 # Armaratris — Design Spec
 
 **Date:** 2026-08-25
-**Status:** Approved in chat (Ryan), pending spec review
+**Status:** Approved (Ryan, 2026-08-25). Amended after final review: spawn drop-one, grounded-only lock resets, clear event carries pre-clear board.
 **Location:** `d:\ClaudeCode\GameSlop\Armaratris\`
 
 ## 1. Purpose
@@ -42,13 +42,13 @@ Skin selection: `?skin=<name>` query parameter, default `armara`. Unknown skin �
 Pure state machine. No DOM, no timers; the host calls `engine.tick(dtMs)` and dispatches actions.
 
 ### 3.1 Rules
-- Well: 10 columns × 20 visible rows, plus 2 hidden rows above (22 total). Spawn at rows 0–1 (hidden), columns 3–6.
+- Well: 10 columns × 20 visible rows, plus 2 hidden rows above (22 total). Spawn at rows 0–1 (hidden), columns 3–6; immediately after placing a new piece (spawn or hold-swap), if it fits one row lower it is moved there at once (Guideline behavior) so a visible cell exists from the first frame. That extra row is not a player move (no lock-reset consumed, no input-log entry). Block-out is still judged at the spawn position.
 - Pieces: I, O, T, S, Z, J, L with **SRS** rotation states 0/R/2/L and standard SRS wall-kick tables (separate table for I; O never kicks).
 - Randomizer: **7-bag** using a seeded PRNG (`mulberry32`). Seed from `?seed=` (integer) or `Date.now() >>> 0` at game start. Seed is stored on the engine and exposed.
 - Gravity: guideline table by level (seconds per row): L1 1.000, L2 0.793, L3 0.618, L4 0.473, L5 0.355, L6 0.262, L7 0.190, L8 0.135, L9 0.094, L10 0.064, L11 0.043, L12 0.028, L13 0.018, L14 0.011, L15+ 0.007.
 - Soft drop: 20× gravity while held, +1 point per cell moved.
 - Hard drop: instant, +2 per cell, locks immediately.
-- Lock delay: 500 ms; any successful move/rotate resets it, max 15 resets per piece; landing after the 15th reset locks on the next expiry.
+- Lock delay: 500 ms, counted only while the piece cannot fall; a successful move/rotate made while the piece is grounded resets it, max 15 resets per piece (airborne moves do not consume the budget); after the 15th reset the timer runs to expiry uninterrupted.
 - Hold: swap with hold slot; allowed once per piece (re-enabled after lock). First hold with empty slot spawns the next piece.
 - Preview: next 3 pieces exposed.
 - Ghost: engine exposes `ghostY()` = lowest valid row for the active piece.
@@ -65,7 +65,7 @@ engine.state                // { board, active:{type,rot,x,y}, hold, holdUsed, q
 engine.ghostY()
 engine.reset(seed?)
 ```
-Events returned by `tick`/`dispatch`: `{type:"move"}`, `{type:"rotate"}`, `{type:"lock"}`, `{type:"clear", lines:n}`, `{type:"level", level}`, `{type:"hold"}`, `{type:"gameover"}`.
+Events returned by `tick`/`dispatch`: `{type:"move"}`, `{type:"rotate"}`, `{type:"lock"}`, `{type:"clear", lines:n, rows:[...], board:<pre-clear copy>}`, `{type:"level", level}`, `{type:"hold"}`, `{type:"gameover"}`.
 
 ### 3.3 Determinism / input log
 - The engine advances only via `tick(dtMs)`. `main.js` drives it with a fixed timestep: an accumulator inside `requestAnimationFrame` calls `tick(1000/60)` zero or more times per frame. Because every tick is the same length, a game is fully described by `seed` + `inputLog`.
@@ -116,7 +116,7 @@ Events returned by `tick`/`dispatch`: `{type:"move"}`, `{type:"rotate"}`, `{type
 - Tile drawing: filled square `base`, 1-cell-wide inner bevel (`hi` top/left, `lo` bottom/right, ~12 % of cell), optional `edge` outline (used for J to keep the near-black tile readable), 1 px inset gap so tiles read as set stones. Ghost = `palette.ghost` outline at 45 % alpha, no fill.
 - Well background: `palette.well`, faint grid lines `palette.grid`, hourglass logo centered at `watermarkAlpha`.
 - Page ground: `palette.bg` with procedural marble veining drawn once to an offscreen canvas (low-frequency noise + a few Bezier veins at 4–6 % alpha), used as `body` background image. No texture file.
-- Line clear animation: cleared rows flash `palette.marble` → collapse over 120 ms; engine already removed the rows, renderer animates from a snapshot. Respects `prefers-reduced-motion` (no flash, instant collapse).
+- Line clear animation: cleared rows flash `palette.marble` → collapse over 120 ms. The engine's `clear` event carries `board` — a copy of the board taken after the locking piece was placed and before the rows were removed — and the renderer animates from that. Respects `prefers-reduced-motion` (no flash, instant collapse).
 
 ## 6. Input (`input.js`)
 
