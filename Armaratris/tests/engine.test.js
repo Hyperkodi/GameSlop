@@ -140,3 +140,224 @@ test("fnv1a is stable", () => {
   assert.equal(E.fnv1a("a"), "e40c292c");
   assert.equal(E.fnv1a("abc").length, 8);
 });
+
+const DT = 1000 / 60;
+
+function playing(seed) {
+  const e = E.createEngine({ seed: seed === undefined ? 1 : seed });
+  e.dispatch("start");
+  return e;
+}
+
+test("gravity: level 1 moves the piece one row every 1000 ms", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  e.tick(999);
+  assert.equal(e.state.active.y, 0);
+  e.tick(1);
+  assert.equal(e.state.active.y, 1);
+  assert.equal(e.state.tick, 2);
+});
+
+test("tick does nothing unless playing", () => {
+  const e = E.createEngine({ seed: 1 });
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  assert.deepEqual(e.tick(5000), []);
+  assert.equal(e.state.active.y, 0);
+  assert.equal(e.state.tick, 0);
+  e.dispatch("start"); e.dispatch("pause");
+  assert.deepEqual(e.tick(5000), []);
+  assert.equal(e.state.active.y, 0);
+});
+
+test("soft drop is 20x gravity and scores 1 per cell", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  e.dispatch("softDropOn");
+  e.tick(50);
+  assert.equal(e.state.active.y, 1);
+  assert.equal(e.state.score, 1);
+  e.dispatch("softDropOff");
+  e.tick(50);
+  assert.equal(e.state.active.y, 1);
+});
+
+test("hard drop lands at ghostY, scores 2 per cell, locks, spawns the next piece", () => {
+  const e = playing(42);
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  const nextType = e.state.queue[0];
+  const ev = e.dispatch("hardDrop");
+  assert.ok(ev.some((x) => x.type === "lock"));
+  assert.equal(e.state.score, 40); // 20 rows * 2
+  assert.equal(e.state.board[21][3], "T");
+  assert.equal(e.state.board[21][4], "T");
+  assert.equal(e.state.board[21][5], "T");
+  assert.equal(e.state.board[20][4], "T");
+  assert.equal(e.state.active.type, nextType);
+  assert.deepEqual([e.state.active.x, e.state.active.y], [3, 0]);
+  assert.equal(e.state.status, "playing");
+});
+
+test("single line clear scores 100 x level and emits clear", () => {
+  const e = playing();
+  e.setBoard(["....XXXXXX"]);
+  e.setActive({ type: "I", rot: 0, x: 0, y: 0 }); // horizontal I on row y+1 → cols 0..3
+  const ev = e.dispatch("hardDrop");
+  const clear = ev.find((x) => x.type === "clear");
+  assert.deepEqual(clear, { type: "clear", lines: 1, rows: [21] });
+  assert.equal(e.state.lines, 1);
+  assert.equal(e.state.score, 20 * 2 + 100);
+  assert.ok(e.state.board[21].every((c) => c === null));
+});
+
+test("tetris scores 800 x level", () => {
+  const e = playing();
+  e.setBoard([".XXXXXXXXX", ".XXXXXXXXX", ".XXXXXXXXX", ".XXXXXXXXX"]);
+  e.setActive({ type: "I", rot: 1, x: -2, y: 0 }); // vertical I in col 0, rows 0..3
+  const ev = e.dispatch("hardDrop");
+  const clear = ev.find((x) => x.type === "clear");
+  assert.equal(clear.lines, 4);
+  assert.deepEqual(clear.rows, [18, 19, 20, 21]);
+  assert.equal(e.state.score, 18 * 2 + 800);
+  assert.equal(e.state.lines, 4);
+});
+
+test("level rises every 10 lines and multiplies scoring", () => {
+  const e = playing();
+  let levelEvent = null;
+  for (let i = 0; i < 10; i++) {
+    e.setBoard(["....XXXXXX"]);
+    e.setActive({ type: "I", rot: 0, x: 0, y: 0 });
+    const ev = e.dispatch("hardDrop");
+    levelEvent = ev.find((x) => x.type === "level") || levelEvent;
+  }
+  assert.equal(e.state.lines, 10);
+  assert.equal(e.state.level, 2);
+  assert.deepEqual(levelEvent, { type: "level", level: 2 });
+  e.setBoard(["....XXXXXX"]);
+  e.setActive({ type: "I", rot: 0, x: 0, y: 0 });
+  const before = e.state.score;
+  e.dispatch("hardDrop");
+  assert.equal(e.state.score - before, 20 * 2 + 200);
+});
+
+test("gravity speeds up with level", () => {
+  const e = E.createEngine({ seed: 1, startLevel: 5 });
+  e.dispatch("start");
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  e.tick(355);
+  assert.equal(e.state.active.y, 1);
+});
+
+test("hold swaps once per piece and re-enables after lock", () => {
+  const e = playing(42);
+  const first = e.state.active.type, second = e.state.queue[0];
+  const ev = e.dispatch("hold");
+  assert.deepEqual(ev, [{ type: "hold" }]);
+  assert.equal(e.state.hold, first);
+  assert.equal(e.state.active.type, second);
+  assert.equal(e.state.holdUsed, true);
+  assert.deepEqual(e.dispatch("hold"), []);
+  e.dispatch("hardDrop");
+  assert.equal(e.state.holdUsed, false);
+  const third = e.state.active.type;
+  e.dispatch("hold");
+  assert.equal(e.state.active.type, first);
+  assert.equal(e.state.hold, third);
+  assert.deepEqual([e.state.active.x, e.state.active.y, e.state.active.rot], [3, 0, 0]);
+});
+
+test("lock delay: a grounded piece locks after 500 ms", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 20 });
+  assert.deepEqual(e.tick(499), []);
+  assert.equal(e.state.board[21][4], null);
+  const ev = e.tick(1);
+  assert.ok(ev.some((x) => x.type === "lock"));
+  assert.equal(e.state.board[21][4], "T");
+});
+
+test("lock delay resets on player moves, at most 15 times", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 20 });
+  for (let i = 0; i < 15; i++) {
+    e.tick(400);
+    e.dispatch(i % 2 ? "right" : "left");
+  }
+  assert.equal(e.state.board[21][4], null); // still airborne-locked? no: still unlocked
+  e.tick(400);
+  e.dispatch("left"); // 16th move: no reset
+  assert.equal(e.state.board[21].filter((c) => c !== null).length, 0);
+  const ev = e.tick(100);
+  assert.ok(ev.some((x) => x.type === "lock"));
+});
+
+test("lock timer pauses while the piece is airborne", () => {
+  const e = playing();
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 });
+  e.tick(300); // airborne, no lock progress
+  e.setActive({ type: "T", rot: 0, x: 3, y: 20 });
+  e.tick(300); // grounded: 300 of 500
+  assert.equal(e.state.board[21][4], null);
+  e.tick(200);
+  assert.equal(e.state.board[21][4], "T");
+});
+
+test("block-out: spawning into the stack ends the game", () => {
+  const e = playing();
+  const rows = [];
+  for (let i = 0; i < 22; i++) rows.push("...XXXX...");
+  e.setBoard(rows); // every row (including hidden rows 0–1) filled at cols 3..6, so nothing can spawn
+  e.setActive({ type: "O", rot: 0, x: 0, y: 20 }); // safe spot, cols 1,2
+  const ev = e.dispatch("hardDrop");
+  assert.ok(ev.some((x) => x.type === "gameover"));
+  assert.equal(e.state.status, "over");
+  assert.deepEqual(e.dispatch("left"), []);
+});
+
+test("lock-out: a piece locking entirely in hidden rows ends the game", () => {
+  const e = playing();
+  const rows = [];
+  for (let i = 0; i < 20; i++) rows.push("...XXXX...");
+  e.setBoard(rows);
+  e.setActive({ type: "T", rot: 0, x: 3, y: 0 }); // rows 0,1 only
+  const ev = e.dispatch("hardDrop");
+  assert.ok(ev.some((x) => x.type === "gameover"));
+});
+
+test("determinism: same seed + same input log reproduces the game", () => {
+  function scripted(seed) {
+    const e = E.createEngine({ seed });
+    e.dispatch("start");
+    for (let t = 0; t < 900; t++) {
+      if (t % 37 === 0) e.dispatch("left");
+      if (t % 53 === 0) e.dispatch("rotateCW");
+      if (t % 41 === 0) e.dispatch("right");
+      if (t % 97 === 0) e.dispatch("hardDrop");
+      if (t % 211 === 0) e.dispatch("hold");
+      e.tick(DT);
+    }
+    return e;
+  }
+  const a = scripted(42), b = scripted(42);
+  assert.deepEqual(a.state.board, b.state.board);
+  assert.equal(a.state.score, b.state.score);
+  assert.equal(a.hash(), b.hash());
+  assert.ok(a.state.score > 0);
+
+  // replay from the log alone
+  const r = E.createEngine({ seed: 42 });
+  const byTick = new Map();
+  for (const [t, action] of a.state.inputLog) {
+    if (!byTick.has(t)) byTick.set(t, []);
+    byTick.get(t).push(action);
+  }
+  for (let t = 0; t < 900; t++) {
+    for (const action of byTick.get(t) || []) r.dispatch(action);
+    r.tick(DT);
+  }
+  assert.deepEqual(r.state.board, a.state.board);
+  assert.equal(r.state.score, a.state.score);
+  assert.equal(r.state.status, a.state.status);
+  assert.equal(r.hash(), a.hash());
+});

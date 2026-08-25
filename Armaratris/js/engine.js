@@ -192,11 +192,92 @@
       return y;
     }
 
-    // ---- Task 3 fills these in ----
-    function lock() { return []; }
-    function doHold() { return []; }
-    function hardDrop() { return []; }
-    function tick() { return []; }
+    function clearLines(events) {
+      const cleared = [];
+      for (let y = ROWS - 1; y >= 0; y--) {
+        if (state.board[y].every(function (c) { return c !== null; })) cleared.push(y);
+      }
+      if (cleared.length === 0) return;
+      const remaining = state.board.filter(function (row, y) { return cleared.indexOf(y) === -1; });
+      while (remaining.length < ROWS) remaining.unshift(new Array(COLS).fill(null));
+      state.board = remaining;
+      const n = cleared.length;
+      state.lines += n;
+      state.score += LINE_SCORES[n] * state.level;
+      events.push({ type: "clear", lines: n, rows: cleared.slice().sort(function (a, b) { return a - b; }) });
+      const newLevel = startLevel + Math.floor(state.lines / 10);
+      if (newLevel !== state.level) {
+        state.level = newLevel;
+        events.push({ type: "level", level: newLevel });
+      }
+    }
+
+    function lock() {
+      const events = [{ type: "lock" }];
+      const cells = cellsOf(state.active);
+      let allHidden = true;
+      for (let i = 0; i < cells.length; i++) {
+        const x = cells[i][0], y = cells[i][1];
+        state.board[y][x] = state.active.type;
+        if (y >= HIDDEN_ROWS) allHidden = false;
+      }
+      if (allHidden) { gameOver(events); return events; } // lock-out
+      clearLines(events);
+      state.holdUsed = false;
+      spawn(events);
+      return events;
+    }
+
+    function doHold() {
+      if (state.holdUsed || !state.active) return [];
+      const events = [{ type: "hold" }];
+      const current = state.active.type;
+      if (state.hold === null) {
+        state.hold = current;
+        spawn(events);
+      } else {
+        const swapIn = state.hold;
+        state.hold = current;
+        state.active = { type: swapIn, rot: SPAWN.rot, x: SPAWN.x, y: SPAWN.y };
+        resetPieceTimers();
+        if (!fits(state.active)) gameOver(events);
+      }
+      state.holdUsed = true;
+      return events;
+    }
+
+    function hardDrop() {
+      const gy = ghostY();
+      const dist = gy - state.active.y;
+      state.active = shifted(state.active, 0, dist);
+      state.score += 2 * dist;
+      return lock();
+    }
+
+    function tick(dt) {
+      if (state.status !== "playing" || !state.active) return [];
+      const events = [];
+      state.tick++;
+      const interval = softDrop ? gravityMs(state.level) / SOFT_DROP_FACTOR : gravityMs(state.level);
+      gravityAcc += dt;
+      while (gravityAcc >= interval) {
+        gravityAcc -= interval;
+        if (fits(shifted(state.active, 0, 1))) {
+          state.active = shifted(state.active, 0, 1);
+          if (softDrop) state.score += 1;
+        } else {
+          gravityAcc = 0;
+          break;
+        }
+      }
+      if (!fits(shifted(state.active, 0, 1))) {
+        lockTimer += dt;
+        if (lockTimer >= LOCK_DELAY_MS) Array.prototype.push.apply(events, lock());
+      } else {
+        lockTimer = 0;
+      }
+      return events;
+    }
 
     function dispatch(action) {
       state.inputLog.push([state.tick, action]);
