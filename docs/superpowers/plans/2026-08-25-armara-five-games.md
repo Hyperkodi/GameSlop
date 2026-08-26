@@ -153,7 +153,7 @@ test("createAudio: mute persists under gameslop:muted and play() never throws wi
 
 - [ ] **Step 3: Implement the four files** to the interfaces above. `draw.js` `paintGround` is the seamless version from `games/armaratris/js/renderer.js` (concentric gradients, nine wrap offsets, colors via `hexToRgba(palette.marble, a)`), taking `palette` as its argument. `skin.js` is Armaratris' loader with the `baseDir` parameter, `GameSlopKit.skins`, and `wordmark` support. `audio.js` takes recipes: `play(name)` calls `tone(...args)` for every row.
 
-- [ ] **Step 4: Run tests** — `node --test` from `games/_kit` → 6 tests pass; `node --check` on all four files.
+- [ ] **Step 4: Run tests** — `node --test` from `games/_kit` → 5 tests pass (4 rng + 1 audio); `node --check` on all four files.
 
 - [ ] **Step 5: Commit** — `git add games/_kit && git commit -m "feat(kit): rng, draw, skin, audio modules extracted from Armaratris"`.
 
@@ -467,13 +467,15 @@ test("a marble brick breaks in one hit for 10 points", () => {
 test("a bronze brick needs two hits and pays 30", () => {
   const e = playing();
   const target = e.state.bricks.find((b) => b.tier === "bronze" && Math.abs(b.x - 3) < 1e-9);
-  e.setBricks([target]);
+  const keeper = e.state.bricks.find((b) => b.tier === "marble" && Math.abs(b.x - 93) < 1e-9);
+  e.setBricks([target, keeper]); // a second brick so destroying the bronze one is not a level clear
   e.setBall({ x: target.x + 4.7, y: target.y + 4.2 + 3, vx: 0, vy: -55, attached: false });
   for (let i = 0; i < 10; i++) e.tick(DT);
-  assert.equal(e.state.bricks.length, 1); assert.equal(e.state.bricks[0].hits, 1); assert.equal(e.state.score, 0);
+  assert.equal(e.state.bricks.length, 2); assert.equal(e.state.bricks[0].hits, 1); assert.equal(e.state.score, 0);
   e.setBall({ x: target.x + 4.7, y: target.y + 4.2 + 3, vx: 0, vy: -55, attached: false });
   for (let i = 0; i < 10; i++) e.tick(DT);
   assert.equal(e.state.score, 30);
+  assert.equal(e.state.bricks.length, 1);
 });
 test("ball below the paddle costs a life and re-attaches; 0 lives ends the game", () => {
   const e = playing();
@@ -539,7 +541,7 @@ test("left slide merges once per pair and scores the merged values", () => {
   assert.deepEqual(e.state.board[2].slice(0, 2), [8, 8]);   // 4+4 merges, the 8 does not merge again
   assert.equal(e.state.score, 8 + 12 + 8);
   assert.ok(ev.some((x) => x.type === "slide"));
-  assert.equal(ev.filter((x) => x.type === "merge").length, 4);
+  assert.equal(ev.filter((x) => x.type === "merge").length, 5);
   assert.equal(ev.filter((x) => x.type === "spawn").length, 1);
 });
 test("right/up/down slide in their directions", () => {
@@ -573,13 +575,16 @@ test("bestTile tracks the largest tile; reaching 2048 emits won once and play co
   assert.equal(e.dispatch("left").filter((x) => x.type === "won").length, 0);
 });
 test("game over when the board is full with no merges", () => {
-  const e = playing(); e.setBoard([[2, 4, 2, 4], [4, 2, 4, 2], [2, 4, 2, 4], [4, 2, 4, 0]]);
-  // last move fills the board: slide left on the bottom row puts the 4 at col 3? No: bottom row [4,2,4,0] left → unchanged. Use "right": [0,4,2,4] → changes → spawns into col 0 → full, no merges possible? [x,4,2,4] with x∈{2,4}: x=4 → merge possible → keep trying with seeds until spawn yields 2.
+  // Checkerboard with one hole at the end of the bottom row. "right" shifts that row to [0,4,2,4],
+  // which no longer matches row 2 column-wise; the spawn lands at (x=0, y=3) whose neighbours are both 4,
+  // so a spawned 2 leaves no move in any direction, while a spawned 4 can still merge.
   let over = false;
   for (let seed = 1; seed < 50 && !over; seed++) {
-    const f = playing(seed); f.setBoard([[2, 4, 2, 4], [4, 2, 4, 2], [2, 4, 2, 4], [4, 2, 4, 0]]);
+    const f = playing(seed); f.setBoard([[4, 2, 4, 2], [2, 4, 2, 4], [4, 2, 4, 2], [4, 2, 4, 0]]);
     const ev = f.dispatch("right");
+    assert.deepEqual(f.state.board[3].slice(1), [4, 2, 4]);
     if (f.state.board[3][0] === 2) { over = true; assert.ok(ev.some((x) => x.type === "gameover")); assert.equal(f.state.status, "over"); }
+    else { assert.equal(f.state.status, "playing"); }
   }
   assert.ok(over, "expected at least one seed to spawn a 2");
 });
@@ -621,12 +626,17 @@ test("flap sets vy to -52 and emits flap; ceiling clamps", () => {
   e.setBird({ y: 3.5, vy: -52 }); e.tick(50); assert.equal(e.state.bird.y, 3);
 });
 test("columns spawn at 1.0 s then every 1.9 s, scroll at 38 u/s, gap centre within [28,72]", () => {
-  const e = playing(); e.setBird({ y: 50, vy: 0 });
-  e.tick(999); assert.equal(e.state.columns.length, 0);
-  e.tick(1); assert.equal(e.state.columns.length, 1); assert.ok(Math.abs(e.state.columns[0].x - 72.5) < 1e-6);
-  e.setBird({ y: e.state.columns[0].gapY, vy: 0 }); // keep the bird alive inside the gap line
-  e.tick(1000); assert.ok(Math.abs(e.state.columns[0].x - (72.5 - 38)) < 1e-6);
-  e.tick(900); assert.equal(e.state.columns.length, 2);
+  const e = playing();
+  const hover = (n) => { for (let i = 0; i < n; i++) { const c = e.state.columns[0]; e.setBird({ y: c ? c.gapY : 50, vy: 0 }); e.tick(DT); } };
+  hover(59);                                                   // ~983 ms: nothing yet
+  assert.equal(e.state.columns.length, 0);
+  hover(2);                                                    // crosses 1000 ms: first column at the right edge
+  assert.equal(e.state.columns.length, 1); assert.ok(Math.abs(e.state.columns[0].x - 72.5) < 1.5);
+  const x0 = e.state.columns[0].x;
+  hover(60);                                                   // +1000 ms at 38 u/s
+  assert.ok(Math.abs((x0 - e.state.columns[0].x) - 38) < 1e-6);
+  hover(55);                                                   // past 2900 ms: second column
+  assert.equal(e.state.columns.length, 2);
   e.state.columns.forEach((c) => assert.ok(c.gapY >= 28 && c.gapY <= 72));
 });
 test("passing a column scores once; speed ramps 4% per 10 points, capped at 1.4x", () => {
