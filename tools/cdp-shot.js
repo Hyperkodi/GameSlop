@@ -297,7 +297,24 @@ async function main() {
         /* ignore */
       }
     }
-    if (!chromeExited) chrome.kill();
+    if (!chromeExited) {
+      chrome.kill();
+      // Give the OS a moment to release its lock on userDataDir before rm -rf; on Windows an
+      // immediate rmSync right after kill() routinely loses this race and silently no-ops.
+      await new Promise((resolve) => {
+        if (chromeExited) return resolve();
+        const t = setTimeout(resolve, 1000);
+        chrome.once("exit", () => {
+          clearTimeout(t);
+          resolve();
+        });
+      });
+    }
+    try {
+      fs.rmSync(userDataDir, { recursive: true, force: true });
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   console.log(path.resolve(outPath));
