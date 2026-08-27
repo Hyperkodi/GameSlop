@@ -271,7 +271,9 @@ Steps:
 
 1. Replace string parsing internally with structured commands; use `defenseId` for authored tower families and distinct integer runtime entity IDs; keep a temporary adapter for existing shell actions.
 2. Add monotonically ordered `{tick, seq}` for multiple management actions while simulation is suspended.
+   - The kernel groups commands into one explicit current-tick bucket before reduction. The management API rejects cross-tick batches; it never collapses replay time or advances combat phases itself.
 3. Define replay format v1 with ruleset/event versions, mission, difficulty, Assist, seed, loadout, campaign/access modifiers, resolved `tutorialUpgradeGateMode`, commands, checkpoints, and final claim. Resolved modifier IDs, tutorial gate mode/state, and the canonical mission-scoped bounty remainder participate in state hashes. Keep run IDs, timestamps, pause/speed, media, cached snapshots, and presentation state in an outer noncanonical record. Add the recorded `skipTutorialGate` command and stable `tutorial-gated` Upgrade denial; replay validation never consults mutable profile tutorial state.
+   - Treat `durationTicks` as completed ticks: inputs are restricted to `0..durationTicks - 1`, while checkpoints may include `durationTicks`. Preserve unique `loadoutIds` and `accessGrantIds` order; serialize unique `campaignModifierIds` in strict ASCII order.
 4. Implement canonical state hashing and `simulateReplay`.
 5. Add bounded parser limits for bytes, ticks, entity counts, commands per tick, and action types.
 6. Create golden fixtures for build/upgrade/sell, wave clear, defeat, victory, multi-route targeting, integer-time cooldowns, IDs/RNG, and command-phase order.

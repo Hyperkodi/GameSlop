@@ -27,6 +27,19 @@ const MODULE_SPECS = Object.freeze([
     Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
     Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
   ]) }),
+  Object.freeze({ id: "commands", relativePath: "commands.js", globalName: "AegisCommands", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+  ]) }),
+  Object.freeze({ id: "management", relativePath: "management.js", globalName: "AegisManagement", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+    Object.freeze({ id: "economy", parameterName: "Economy", requirePath: "./economy.js" }),
+    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
+    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
+  ]) }),
+  Object.freeze({ id: "replay", relativePath: "replay.js", globalName: "AegisReplay", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
+  ]) }),
 ]);
 
 const ABI_COMMON_JS_SEAM = [
@@ -80,11 +93,22 @@ function declaredDependencies(spec) {
 
 function commonJsSeam(spec, dependencies) {
   if (spec.dependencies === null) return ABI_COMMON_JS_SEAM;
+  const requireExpressions = dependencies.map(function (dependency) {
+    return 'require("' + dependency.declaration.requirePath + '")';
+  });
+  let factoryCall;
+  if (requireExpressions.length <= 2) {
+    factoryCall = ["    module.exports = factory(" + requireExpressions.join(", ") + ");"];
+  } else {
+    factoryCall = ["    module.exports = factory("];
+    requireExpressions.forEach(function (expression, index) {
+      factoryCall.push("      " + expression + (index + 1 === requireExpressions.length ? "" : ","));
+    });
+    factoryCall.push("    );");
+  }
   return [
     "  if (typeof module !== \"undefined\" && module.exports) {",
-    "    module.exports = factory(" + dependencies.map(function (dependency) {
-      return 'require("' + dependency.declaration.requirePath + '")';
-    }).join(", ") + ");",
+    ...factoryCall,
     "    return;",
     "  }",
     "",
@@ -281,19 +305,24 @@ function assembleSimulationBundle(sources) {
 
   lines.push(
     "  const game = BUNDLE_ROOT.Game;",
-    "  if (!game || !game.AegisSim || !game.AegisGeometry || !game.AegisTimers || !game.AegisEconomy || !game.AegisMovement || !game.AegisEffects || !game.AegisTargeting) {",
+    "  if (",
+    "    !game ||"
+  );
+  MODULE_SPECS.forEach(function (spec, index) {
+    lines.push("    !game." + spec.globalName + (index + 1 === MODULE_SPECS.length ? "" : " ||"));
+  });
+  lines.push(
+    "  ) {",
     '    throw new Error("Aegis simulation bundle did not install every declared module");',
     "  }",
     "  if (HAS_COMMON_JS) {",
     "    const commonJsApi = {};",
-    "    Object.keys(game.AegisSim).forEach(function (key) { commonJsApi[key] = game.AegisSim[key]; });",
-    "    commonJsApi.AegisSim = game.AegisSim;",
-    "    commonJsApi.AegisGeometry = game.AegisGeometry;",
-    "    commonJsApi.AegisTimers = game.AegisTimers;",
-    "    commonJsApi.AegisEconomy = game.AegisEconomy;",
-    "    commonJsApi.AegisMovement = game.AegisMovement;",
-    "    commonJsApi.AegisEffects = game.AegisEffects;",
-    "    commonJsApi.AegisTargeting = game.AegisTargeting;",
+    "    Object.keys(game.AegisSim).forEach(function (key) { commonJsApi[key] = game.AegisSim[key]; });"
+  );
+  MODULE_SPECS.forEach(function (spec) {
+    lines.push("    commonJsApi." + spec.globalName + " = game." + spec.globalName + ";");
+  });
+  lines.push(
     "    module.exports = Object.freeze(commonJsApi);",
     "  }",
     "})(typeof globalThis !== \"undefined\" ? globalThis : this);",
