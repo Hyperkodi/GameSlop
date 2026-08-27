@@ -972,6 +972,7 @@ function validateLegacyMap(source) {
 module.exports = Object.freeze({
   POLICY: POLICY,
   readMapFile: readMapFile,
+  requireHumanText: requireString,
   validateMissionMap: validateMissionMap,
   validateLegacyMap: validateLegacyMap,
   validateRouteTopology: validateRouteTopology,

@@ -172,6 +172,79 @@ function createMissionReport(validated) {
   });
 }
 
+function createNormalizedMapReport(ir) {
+  if (!ir || ir.schemaVersion !== 2 || ir.sourceKind !== "campaign" || !ir.analysis ||
+      !Array.isArray(ir.analysis.routeProvenance) || !ir.analysis.coverage) {
+    fail("MAP_REPORT_MODE", "/", "Normalized route-local reports require a fully analyzed map-v2 IR");
+  }
+  const pads = ir.pads.map(function (pad) {
+    const coveragePad = ir.analysis.coverage.pads.find(function (item) { return item.id === pad.id; });
+    return {
+      id: pad.id,
+      cell: { column: pad.column, row: pad.row },
+      centerMilliUnits: { x: pad.x, y: pad.y },
+      kind: pad.kind,
+      intent: pad.intent,
+      declaredQuality: pad.declaredQuality,
+      claimedRouteIds: pad.claimedRouteIds.slice(),
+      selectionOrder: pad.selectionOrder,
+      probes: coveragePad.probes.map(function (probe) {
+        return {
+          probeId: probe.probeId,
+          rangeMilliUnits: probe.range,
+          qualityExposureSubunits: probe.qualityExposureSubunits,
+          classification: probe.classification,
+          claimedRoutes: probe.routes.filter(function (route) { return route.claimed; }).map(function (route) {
+            return Object.assign({}, route);
+          }),
+          unclaimedRoutes: probe.routes.filter(function (route) { return !route.claimed; }).map(function (route) {
+            return Object.assign({}, route);
+          }),
+          unclaimedTotalExposureSubunits: probe.unclaimedTotalExposureSubunits,
+        };
+      }),
+    };
+  });
+  return deepFreeze({
+    schemaVersion: 2,
+    missionId: ir.id,
+    sourceKind: "campaign",
+    approvalEligible: true,
+    units: {
+      compiledDistance: "milli-world-unit",
+      analysisSubunitsPerMilliUnit: Geometry.ANALYSIS_SUBUNITS_PER_MILLI,
+      stage: "basis-points-of-route-progress",
+    },
+    routes: ir.analysis.routeProvenance.map(function (route) {
+      return {
+        id: route.routeId,
+        kind: route.kind,
+        lengthMilliUnits: route.length,
+        laneSegments: route.laneSegments.map(function (lane) {
+          return {
+            laneSegmentId: lane.laneSegmentId,
+            layerId: lane.layerId,
+            sharedRouteIds: lane.sharedRouteIds.slice(),
+            routeOffset: lane.routeOffset,
+            laneLength: lane.laneLength,
+            remainingDistanceAtStart: lane.remainingDistanceAtStart,
+            remainingDistanceAtEnd: lane.remainingDistanceAtEnd,
+            subsegments: lane.subsegments.map(function (segment) { return Object.assign({}, segment); }),
+          };
+        }),
+      };
+    }),
+    pads: pads,
+    spreadCheck: Object.assign({}, ir.analysis.spreadCheck),
+    selectionOrderCheck: {
+      policy: ir.analysis.selectionOrderCheck.policy,
+      records: ir.analysis.selectionOrderCheck.records.map(function (record) { return Object.assign({}, record); }),
+      pass: ir.analysis.selectionOrderCheck.pass,
+    },
+    roleProofs: ir.roleProofs.map(function (proof) { return JSON.parse(JSON.stringify(proof)); }),
+  });
+}
+
 function renderReportJson(report) {
   return Buffer.concat([canonicalBytes(report), Buffer.from("\n", "utf8")]);
 }
@@ -211,7 +284,9 @@ function padColor(quality) {
 }
 
 function renderHeatmapSvg(report) {
-  if (!report || report.approvalEligible !== true) fail("MAP_REPORT_MODE", "/", "Legacy reports cannot produce campaign heatmaps");
+  if (!report || report.approvalEligible !== true || report.schemaVersion !== 1) {
+    fail("MAP_REPORT_MODE", "/", "Only the validated map-v1 campaign report can produce this heatmap format");
+  }
   const qualityProbeId = report.policy.qualityProbeId;
   const qualityProbe = report.coverage.pads[0].probes.find(function (probe) { return probe.probeId === qualityProbeId; });
   if (!Number.isSafeInteger(qualityProbe.range) || qualityProbe.range <= 0 || qualityProbe.range % 1000 !== 0) {
@@ -272,6 +347,7 @@ function createMissionArtifacts(validated) {
 
 module.exports = Object.freeze({
   createMissionReport: createMissionReport,
+  createNormalizedMapReport: createNormalizedMapReport,
   renderReportJson: renderReportJson,
   renderHeatmapSvg: renderHeatmapSvg,
   createMissionArtifacts: createMissionArtifacts,
