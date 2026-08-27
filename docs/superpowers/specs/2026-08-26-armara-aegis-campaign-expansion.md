@@ -14,6 +14,7 @@ It supersedes the following parts of `2026-08-26-armara-aegis-design.md` whereve
 - The single-map, three-defense, four-enemy content ceiling.
 - The statement that campaign progression, unlocks, rewards, multiple maps, and endless play are out of scope.
 - The global `PATH`, `PADS`, `WAVES`, and twelve-wave assumptions.
+- The live prototype's 160 starting Aether, original starter costs, duplicate bounty-plus-clear economy, and hidden 12%-per-wave enemy-HP escalation. Those values remain only as a legacy proving-ground compatibility fixture; no campaign compiler, mission annex, balance test, or UI fallback may inherit them.
 
 It preserves `2026-08-26-armara-aegis-landscape-redesign.md` as the binding presentation and interaction foundation:
 
@@ -22,14 +23,14 @@ It preserves `2026-08-26-armara-aegis-landscape-redesign.md` as the binding pres
 - Contextual build and tower-management panels that suspend combat while open.
 - Visible Aether and exact costs.
 - Three in-run tower levels.
-- Selling for `floor(total invested Aether × 0.70)`.
+- Selling for exact integer `floor(total invested Aether × 70 / 100)`.
 - Smooth deterministic presentation, accessible controls, and the exact canonical Armara hourglass.
 
 Where the earlier redesign says all three choices are visible, this expansion changes that to all equipped loadout choices: four initially, five after Mission 5, and six after Mission 10.
 
 This specification covers the offline campaign, content and art pipelines, progression, difficulty, accessibility, local replays, victory/share cards, and the optional online social-proof boundary. It does not authorize a token economy, wallet integration, paid stat boosts, gambling, loot boxes, or a public leaderboard.
 
-The named missions, rewards, defense identities/unlocks, three-level structure, fairness rules, UX, and technical contracts are binding now. The upgrade numbers in Section 9 are starting targets, not yet complete production records. Exact routes, pad coordinates, starting economy, ordered wave groups, enemy/boss values, Laurel thresholds, and every effect parameter must be committed as a reviewed versioned content annex for an act before that act's mass art production or gameplay implementation proceeds.
+The named missions, rewards, defense identities/unlocks, three-level structure, fairness rules, UX, and technical contracts are binding now. Mission 1's route, pads, Strategos economy, upgrade reveal, and placement-quality gates are also binding in Sections 6.6–6.7. Section 9's costs are the binding round-zero campaign baseline; changing a cost, Mission 1 envelope, role, weakness, target mask, or level mechanic requires a specification amendment and Ryan's approval. Exact routes and pad coordinates for Missions 2–20, their starting economies, ordered wave groups, enemy/boss values, Laurel thresholds, and every still-unspecified effect parameter must be committed as a reviewed versioned content annex for an act before that act's mass art production or gameplay implementation proceeds.
 
 ## 2. Player promise
 
@@ -52,7 +53,7 @@ Five pillars govern every implementation choice:
 - A returning player reaches `CONTINUE MISSION` in no more than two deliberate actions from the Aegis hub.
 - Progress is committed before a victory card, share prompt, or community prompt appears.
 - Every failure explains the cause and offers `RETRY`, `EDIT LOADOUT`, and one relevant optional hint.
-- The starter trio can complete all twenty missions on Story and Standard. Unlocks improve choice, not eligibility.
+- The starter trio can complete all twenty missions on Story and Strategos. Unlocks improve choice, not eligibility.
 - No core campaign/progression interaction depends on an unexplained icon, color alone, hover, drag, sound, an online account, or a social account. Optional community verification may, by definition, require the named provider.
 - Each mission has one headline new mechanic, shown in the briefing and previewed harmlessly before it becomes lethal. Previously taught supporting mechanics may then be combined with it.
 - No hidden stat scaling, rubber-banding, forced grind, energy meter, streak loss, or expiring combat power.
@@ -98,6 +99,7 @@ At `320×568` and `390×844`, acts stack vertically with deterministic act-then-
 - Battle alternates between untimed planning and authored combat waves; waves never overlap in campaign v1.
 - Select an empty fixed pad to open the store for only the equipped defenses.
 - Select an occupied pad to inspect, upgrade, set target policy, or sell.
+- Mission 1 hides and disables Upgrade only through the first wave. Clearing Wave 1 reveals it permanently for that run and future runs. No later wave, mission, account, or mastery tier locks an in-run L2 or L3 purchase; price, wave pressure, pad quality, and matchup create the timing decision.
 - Opening a store, inspector, objective panel, or Overcharge targeting panel suspends simulation. Closing resumes unless the player manually paused.
 - `1×` and `2×` runner speeds are available at all times. Speed is explicit in the HUD and changes only how quickly fixed ticks are presented in wall-clock time; commands are recorded at their simulation tick, and speed never changes combat math or simulation-time score.
 - Each upcoming wave shows routes, enemy silhouettes/count bands, trait icons, and a boss warning. Exact hidden surprises are not used as difficulty.
@@ -121,7 +123,7 @@ Every mission has its own stable ID, seed namespace, battlefield, routes, pads, 
 
 | ID | Mission | Battlefield and route | New pressure | Waves | First-clear reward |
 |---|---|---|---|---:|---|
-| `m01` | Gate of Dawn | Sunrise limestone gate, broad S road | Staged Aether, pad, compare/build, and first-wave tutorial; upgrade appears when useful and sell remains optional | 6 | Hoplite Node |
+| `m01` | Gate of Dawn | Sunrise limestone gate, broad S road on the binding hidden grid in Section 6.7 | Staged Aether, pad, compare/build, and first-wave tutorial; Upgrade reveals after Wave 1 and sell remains optional | 6 | Hoplite Node |
 | `m02` | Agora Circuit | Colonnaded agora, Greek-key route and two chokepoints | Armored Guardian screens and target priority | 6 | Oracle Relay |
 | `m03` | Olive Cipher | Olive grove and marble serpentine | Echo cloak; all attacks briefly expose, Oracle reveals continuously | 6 | Artemis Rail |
 | `m04` | Piraeus Switchyard | Harbor causeways, two entrances that merge | Route-labelled simultaneous timing | 6 | Reserve Capacitor I: +10 campaign starting Aether |
@@ -166,6 +168,63 @@ Every mission has its own stable ID, seed namespace, battlefield, routes, pads, 
 - Every mission normally has ten authored pads. Missions that deliberately use fewer declare that scarcity in the briefing and must pass balance simulations with the starter trio.
 - An overpass does not change range or target masks unless the route data explicitly says so.
 
+### 6.6 Hidden authoring grid and fixed-pad grammar
+
+All campaign battlefields retain the `160 × 100` logical world but are authored on a hidden `40 × 25` grid of four-world-unit cells. The grid is a design and validation system, not a free-placement UI and not a visible modern tile treatment.
+
+- Cell `(column, row)` converts to world center `{x: 4 × column + 2, y: 4 × row + 2}`. Authored route control nodes snap to those centers and compile into continuous fixed-point polyline segments; consecutive nodes may form cardinal, diagonal, or other straight lattice segments, while entry/exit nodes may sit outside the visible board. Enemies never move cell by cell. The compiler rejects zero-length segments, undeclared self-overlap/crossing, and bends too tight for the declared road width, but it must support the campaign's rings, arcs, spirals, and Ω route without Manhattan stair-step motion.
+- Roads use a 12-world-unit buffered mask around the compiled centerline. Rendering rounds joins and dresses the route as Greek ashlar, marble, packed earth, mosaic, bridge stone, or bronze channel while preserving the exact compiled centerline and collision width.
+- Construction remains fixed-pad only. An ordinary pad center is at least 16 world units from a lane center, at least 20 units from another pad, at least 8 units inside the board, and at least 20 units from a gate, breach, large prop, or declared exclusion mask. Any authored exception requires a named reason and validator waiver in the mission annex.
+- Every pad carries an intent tag such as `early`, `bend`, `double-pass`, `mid`, `late`, `air`, `support`, `line`, `guard`, or `mine`. A later specialist pad is visibly described in the briefing/selection UI; Mission 1 contains no far-away or specialist-only pad.
+- Selecting a tower or previewing a build shows its exact range circle and glows the road arc(s) it can affect. Numeric coverage heatmaps remain debug-only.
+
+For pad `p`, route `r`, and range/role probe `k`, `E(p,r,k)` is the compiled route arc length that the defense can affect. The analyzer also reports merged coverage windows, re-entry count, route stage, estimated shot windows, and separate probes for ground routes, air routes, support links, line attacks, guard projection, and mine markers. At the ordinary range-22 probe, `B22 = 30.2` and `Q22 = E(p,r,22) / B22`.
+
+| Q band | Authoring classification |
+|---:|---|
+| `< 0.60` | Invalid ordinary pad |
+| `0.60–<0.85` | Specialist; allowed only with visible authored purpose |
+| `0.85–<1.25` | Standard |
+| `1.25–<1.70` | Strong |
+| `1.70–2.00` | Power |
+| `> 2.00` | Rejected unless the mission annex records a reviewed exception |
+
+Every ordinary pad has `E20 >= 18`. Across Act I, at least 60% of pads are Standard and no more than 20% are Strong or Power. These bands are geometry diagnostics, not a promise that all towers receive equal combat value; role probes and deterministic wave fixtures remain authoritative.
+
+`tools/analyze-aegis-map.js` must compile each map and emit machine-readable JSON plus an SVG/heatmap report. CI rejects a production campaign map with off-grid control nodes, zero-length/illegal route segments, undeclared overlap/crossing, illegal clearance/separation, unreachable gates, missing intent tags, failed Q-band policy, or a role-specific pad whose declared probe cannot perform its purpose. The non-production `legacy-proving-ground` fixture runs in report-only mode and must reproduce its known dead/dominant-pad findings; its waiver can never make it eligible for a campaign manifest.
+
+### 6.7 Gate of Dawn binding geometry and economy
+
+Mission 1 uses this 260-unit route:
+
+```text
+grid:  (-2,5) → (11,5) → (11,18) → (28,18) → (28,9) → (41,9)
+world: (-6,22) → (46,22) → (46,74) → (114,74) → (114,38) → (166,38)
+```
+
+Its pads are ordered by route stage, not arbitrary screen position:
+
+| Pad | World center | Intent | Range-22 classification |
+|---|---:|---|---|
+| `p01` | `(14,38)` | Early standard coverage | Standard |
+| `p02` | `(62,34)` | Early standard coverage after the first turn | Standard |
+| `p03` | `(30,58)` | First-bend standard coverage | Standard |
+| `p04` | `(66,58)` | Deliberate double-pass power pocket | Strong |
+| `p05` | `(62,90)` | Mid-route standard coverage | Standard |
+| `p06` | `(82,90)` | Mid-route standard coverage | Standard |
+| `p07` | `(102,90)` | Late-mid standard coverage | Standard |
+| `p08` | `(98,54)` | Deliberate double-pass power pocket | Strong |
+| `p09` | `(126,22)` | Late-route standard coverage | Standard |
+| `p10` | `(146,54)` | Last-stand standard coverage | Standard |
+
+All ten pads have `E20 >= 24`. At range 22, Standard pads measure `29.539–30.199` (player-facing/debug summary `29.5–30.2`) and `p04`/`p08` measure `48.530` (`48.5`). The exact Mission 1 range-22 max/min exposure ratio is `1.643` and may be reported as `1.65`; any compiled value above `1.65` fails. `p04` and `p08` are called power pockets as a player-facing intent, but remain Strong under the numeric Q bands; neither may become a universally best pad across all three starters and all six waves.
+
+An unassisted, unmodified new-profile Mission 1 Strategos run starts at exactly 150 Aether. Its six inclusive perfect-kill Aether envelopes are `30 / 40 / 45 / 50 / 55 / 60`, for 280 earned and 430 gross. Each envelope includes its declared wave-start deployment grant, all original-lineage bounties, and any clear grant; those sources may not be budgeted a second time. Wave 6 credits its entire 60 as a declared deployment grant when the accepted Wave-6 start command resolves and before its first spawn; its kill-bounty and post-clear Aether are both zero. The full 430 is therefore available while a tactical decision remains. Story starts at 178 rather than 150; its earned wave totals differ from Strategos only through the resolved 110% bounty component, while fixed deployment/clear grants never scale. Titan starts at 136 and retains the 100% bounty component.
+
+On a first non-skipped Mission 1 tutorial run, the replay header resolves `tutorialUpgradeGateMode = "m01-wave1"`; tutorial skip/replay choices resolve to the declared mode rather than being read from mutable profile storage during simulation. While active, an `upgrade` command before Wave 1 clears is rejected with stable reason `tutorial-gated`. A recorded `skipTutorialGate` command or the Wave-1 clear opens Upgrade permanently for that run. Replays with mode `none` expose Upgrade immediately, and no mode creates a later L2/L3 wave lock.
+
+For the unassisted, unmodified new-profile Strategos ledger above, the intended final simultaneous owned state is four or five towers with roughly two paid upgrades, with 360–410 net Aether consumed. Here `net consumed = resolved start + realized earnings - final bank`; it is not lifetime purchase debits. At any state in that ledger, seven L1 Sentinels is the absolute cheapest-pad simultaneous maximum and filling all ten pads is mathematically impossible because eight cost 480, above the 430 gross ceiling; selling loses 30% and cannot raise that ceiling. Selling can nevertheless make lifetime purchase debits exceed 430 Aether and lifetime build events exceed seven; the report records gross purchase debits, sale refunds, net consumed, final invested Aether, final owned state, and final bank separately. Across representative successful fixtures for that same Strategos ledger, median ending bank is less than 65 Aether. Story, Assist, Reserve, and later campaign modifiers resolve against their own declared ledgers and do not inherit these absolute 430-ledger build/bank thresholds. The full bank distribution, including p90, is reported diagnostically rather than used as a binding threshold. Unspent Aether contributes at most 5% of final total score, so saving can break a close score tie but cannot outperform sound defense.
+
 ## 7. Laurels, objectives, difficulty, and scoring
 
 ### 7.1 Laurels
@@ -192,12 +251,22 @@ Every mission has an explicit integer base economy. Difficulty and progression r
 
 ```text
 startAether =
-  floor(missionBaseAether × difficultyAetherBp / 10000)
+  floor(baseStartAether × difficultyAetherBp / 10000)
   + campaignModifierAether
   + assistAether
 ```
 
-Enemy HP uses `ceil(base × bp / 10000)` with a minimum of 1. Bounty and score use `floor(base × bp / 10000)` with their declared nonzero minimums. Speed composes difficulty and Assist before its only rounding step:
+Enemy HP uses `ceil(base × bp / 10000)` with a minimum of 1. Score uses `floor(base × bp / 10000)` with its declared nonzero minimum. Compact bounty values use one mission-scoped deterministic basis-point remainder so Story's 110% modifier cannot become inert through per-kill flooring:
+
+```text
+bountyNumerator = bountyRemainder + baseLineageBounty × difficultyBountyBp
+bountyAward = floor(bountyNumerator / 10000)
+bountyRemainder = bountyNumerator % 10000
+```
+
+`bountyRemainder` initializes to zero at mission start, carries across waves, updates only on an earned original-lineage bounty event in stable terminal-event order, and is discarded after the run. It is authoritative simulation state included in checkpoints/final hashes and replay validation. The HUD shows each whole-Aether award when resolved; the wave preview may show the compiled perfect-kill total. Fixed deployment and clear grants never enter the remainder and never scale with bounty basis points.
+
+Speed composes difficulty and Assist before its only rounding step:
 
 ```text
 resolvedSpeed =
@@ -206,13 +275,15 @@ resolvedSpeed =
 
 `assistSpeedBp` is 10000 normally and 9200 when Assist is enabled. The compiler's safe-intermediate check applies to the combined numerator. No intermediate result is rounded twice. The exact resolved values and modifier IDs enter the record/replay key.
 
+For Mission 1, the unmodified base starts resolve to Story `178`, Strategos `150`, and Titan `136`. Assist then produces `198 / 170 / 156`. Reserve Capacitors are added after the difficulty multiplication (`+10` or cumulative `+20`), then Assist adds `+20`; all applied modifier IDs enter the replay header and ruleset-derived record key.
+
 Story awards all campaign unlocks and Laurels. It is not described as a lesser victory. Titan may append authored elite groups, but it cannot procedurally reorder a wave or apply invisible affixes.
 
 After two failures, the game offers an explicit Assist toggle for that mission. Assist can add 20 starting Aether and slow enemies by 8%; it is recorded in the result/replay, retains campaign unlocks and Laurels, and is separated from competitive scores.
 
 ### 7.3 Score and records
 
-Score rewards kills, wave clears, remaining integrity, normalized unspent Aether efficiency, and objective completion. Reserve/Assist Aether is subtracted from the efficiency numerator so an unlock does not grant free efficiency points. It never rewards social actions or owned cosmetics. Exact score constants are content-versioned and visible in the Codex.
+Score rewards kills, wave clears, remaining integrity, bounded unspent-Aether efficiency, and objective completion. Define `eligibleUnspentAether = max(0, finalBank - campaignModifierAether - assistAether)` so Reserve/Assist can neither grant free efficiency points nor produce a negative component. `nonAetherScore` is the final nonnegative integer score from every other component after the difficulty multiplier, and the content-versioned Aether conversion produces nonnegative integer `rawUnspentScore`. Resolve `unspentScore = min(rawUnspentScore, floor(nonAetherScore / 19))`, then `finalScore = nonAetherScore + unspentScore`. This non-circular formula guarantees that unspent Aether contributes at most 5% of the final total score; when `nonAetherScore` is zero, the component is zero. It never rewards social actions or owned cosmetics. Exact conversion and score constants are content-versioned and visible in the Codex.
 
 Records are keyed by mission, difficulty, ruleset hash, resolved simulation-modifier hash, and Assist state. The result screen separately presents best score, fastest clear, and highest Laurels so one metric cannot silently replace another.
 
@@ -223,16 +294,16 @@ There are exactly fifteen player defense families. Sentinel, Chronos, and Siege 
 | Defense | Unlock | Targets | Role | Deliberate weakness |
 |---|---|---|---|---|
 | Sentinel | Starter | Ground + air | Fast focused universal fire | Loses efficiency to armor and crowds |
-| Chronos | Starter | Ground + air | Slow and lane control | Low damage; bosses cap slow |
+| Chronos | Starter | Ground + air | Persistent soft slow and lane control | Low damage; Resolve and boss scaling prevent locks |
 | Siege | Starter | Ground | Heavy circular splash | Slow cadence; cannot hit air |
 | Hoplite Node | `m01` | Ground | Hard-light guard slots halt threats without rerouting | Short blocks, weak damage, air immune |
 | Oracle Relay | `m02` | Ground + air support | Reveal cloak and mark targets for damage | No meaningful solo damage |
 | Artemis Rail | `m03` | Ground + air | Extreme-range armor-piercing precision | Expensive and vulnerable to swarms |
 | Hermes Wing | `m06` | Ground + air | Mobile interceptors with air priority | Light hits struggle with armor |
 | Poseidon Coil | `m07` | Ground | Line damage, drench, bounded knockback | Heavy/boss displacement resistance |
-| Medusa Lens | `m08` | Ground | Periodic petrify and brittle control | Cadence-dependent; bosses heavily resist |
+| Medusa Lens | `m08` | Ground | Periodic charged petrify | Cadence-dependent; Resolve and bosses heavily limit it |
 | Hephaestus Forge | `m11` | Ground | Deterministic mines, burn, anti-regeneration | Setup time and poor air coverage |
-| Athena Nexus | `m12` or approved early access | Friendly towers | Non-stacking range/rate/mark support | Occupies a pad and cannot carry alone |
+| Athena Nexus | `m12` or approved early access | Friendly towers | Capped spatial range/rate/coordinated-fire support | Occupies a pad, links only a few attackers, and cannot carry alone |
 | Apollo Prism | `m13` | Ground + air | Ramping beam and shield stripping | Loses ramp when targets change |
 | Hades Gate | `m16` | Ground + air | Executes wounded non-bosses and prevents revival | Expensive; little benefit on healthy targets |
 | Talos Bastion | `m17` | Ground | Armor break and boss specialization | Very slow; poor against light groups/air |
@@ -250,13 +321,15 @@ There are exactly fifteen player defense families. Sentinel, Chronos, and Siege 
 
 ## 9. Upgrade contract
 
-In production content, every level is a complete immutable stat record, never a runtime delta. UI cards, damage per second, special copy, affordability, next-level comparisons, investment, and refunds derive from those records. The values below are identity/cost-band starting targets, not complete records. Tuning may move a numeric target by up to 15% during the dedicated balance phase without changing the listed role, target mask, cadence identity, level mechanic, or cost order.
+In production content, every level is a complete immutable stat record, never a runtime delta. UI cards, damage per second, special copy, affordability, next-level comparisons, investment, and refunds derive from those records. The costs below are the binding round-zero campaign baseline, and the listed behaviors are the required identity targets. A reviewed content annex may declare a bounded tuning range for a non-cost combat number before balance work begins; it grants no generic ±15% discretion. Changing any cost, Mission 1 envelope, role, deliberate weakness, target mask, or level mechanic requires a specification amendment and Ryan's approval.
 
 ### 9.1 Universal rules
 
 - Level 1 uses `buildCost`; Levels 2 and 3 use `upgradeCost`.
-- `invested = buildCost + paid upgrade costs`; `sellRefund = floor(invested × 0.70)`.
+- `invested = buildCost + paid upgrade costs`; `sellRefund = floor(invested × 70 / 100)` using bounded integer multiplication/division. Floating-point `invested × 0.70` is forbidden because binary underflow can produce an incorrect whole-Aether refund.
 - Level 2 strengthens the core role. Level 3 adds or completes the visible capstone.
+- On an ordinary unused pad, L1 is normally the best raw output per Aether because it consumes another placement. L2 concentrates role value at a modest efficiency premium; L3 is chosen for pad scarcity, an exceptional coverage window, or its matchup capstone rather than as an automatic cheapest purchase.
+- The Mission 1 first-wave teaching reveal is the only upgrade-availability gate. Once Upgrade is revealed, every unlocked defense may buy L2/L3 whenever its exact Aether cost can be paid.
 - Upgrade visuals must change silhouette, energy treatment, and at least one moving layer at normal play scale.
 - No out-of-run mastery increases combat stats. Mastery is codex/cosmetic progression only.
 - Effects use integer ABI time/fixed-point units in simulation; seconds below are player-facing copy.
@@ -265,35 +338,60 @@ In production content, every level is a complete immutable stat record, never a 
 
 | Defense | Costs L1/L2/L3 | Level 1 | Level 2 | Level 3 capstone |
 |---|---:|---|---|---|
-| Sentinel | 40 / 35 / 60 | 8 damage, 450 ms, range 22 | 12 damage, 410 ms, range 24 | 18 damage, 360 ms, range 26; rail-ballista silhouette |
-| Chronos | 55 / 45 / 75 | 3 damage; 35% slow for 1.5 s | 5 damage; 45% for 1.7 s | 8 damage; 55% for 1.9 s; temporal-lock pulse |
-| Siege | 75 / 60 / 90 | 18 damage, 1.35 s, radius 5 | 28 damage, 1.25 s, radius 6 | 42 damage, 1.15 s, radius 7; heavy bombard |
-| Hoplite Node | 50 / 45 / 75 | One guard slot; 1.2 s block; 5 s recharge | Two slots; 1.4 s block; 4.5 s recharge | Three-slot phalanx; first contact shield-bashes for 25 and 0.4 s stun |
-| Oracle Relay | 45 / 40 / 65 | Continuous reveal; marked target takes +8% | +12% mark and larger relay range | Every fifth scan marks up to five targets for 2.5 s |
-| Artemis Rail | 80 / 70 / 100 | 55 damage, 1.9 s, range 38, ignores armor | 85 damage; range 42; pierces one aligned target for 60% | 130 damage; range 46; every fourth shot crits for 175% |
-| Hermes Wing | 65 / 55 / 85 | One drone, 7 damage every 0.4 s, air priority | Two independent 6-damage drones | Every sixth attack triggers a three-shot intercept burst |
-| Poseidon Coil | 75 / 65 / 95 | 15 line damage; 2.5-unit push; drench slow | 22 damage; 3.5 push; longer drench | Every fifth attack is a wide 30-damage maelstrom with 4.5 push |
-| Medusa Lens | 70 / 60 / 90 | Every fifth hit petrifies for 1.0 s | Every fourth hit petrifies for 1.2 s | Petrify lasts 1.4 s and splashes in radius 3 |
-| Hephaestus Forge | 85 / 70 / 105 | One armed mine; 28 blast plus 3 s burn | Two mine slots; 45 blast; longer burn | 65 blast leaves a 2.5 s molten anti-regen field |
-| Athena Nexus | 70 / 65 / 100 | Non-stacking +8% range aura | Adds non-stacking +10% attack rate | Cluster gains +10% damage against Oracle-marked targets |
-| Apollo Prism | 90 / 75 / 110 | Beam pulses every 250 ms, ramps from 6 to 24 damage per pulse, and strips shields | Reaches maximum 30% faster | Forks at 60% power to one additional shielded target |
-| Hades Gate | 95 / 80 / 120 | Executes non-bosses below 10%; its kills cannot revive | Execute threshold 15% | Threshold 20%; every third execute banishes one nearby wounded non-boss |
-| Talos Bastion | 105 / 90 / 130 | 70 armor-piercing damage every 2.2 s | 105 damage and -3 armor for 3 s | 155 damage, stronger break, +40% explicit boss damage |
-| Zeus Array | 110 / 95 / 140 | 20 damage chains to three targets | 28 damage chains to five | Every sixth attack adds a bounded eight-target storm pulse |
+| Sentinel | 60 / 55 / 95 | 8 damage, 450 ms, range 22 | 12 damage, 410 ms, range 24 | 18 damage, 360 ms, range 26; after three consecutive hits on one target, Lock-On adds 15% damage until target switch |
+| Chronos | 75 / 70 / 115 | 2 damage, 900 ms; 32% slow for 1.2 s | 4 damage, 800 ms; 40% slow for 1.35 s | 6 damage, 720 ms; 48% slow for 1.5 s; every fifth attack echoes a weaker slow to at most two nearby enemies, never a hard stun |
+| Siege | 90 / 85 / 140 | 22 damage, 1.50 s, range 24, radius 4.5 | 34 damage, 1.35 s, range 26, radius 5.5 | 52 damage, 1.20 s, range 28, radius 6.5; targets inside the central 2.5 units take 35% extra |
+| Hoplite Node | 80 / 75 / 120 | One guard; 1.0 s block; 6.0 s replenish | Two guards; 1.1 s block; 5.5 s replenish | Three guards; 1.2 s block; 5.0 s replenish; first contact bashes for 12 and stuns for 0.25 s |
+| Oracle Relay | 70 / 70 / 110 | Continuous reveal; one mark grants +8% damage; range 26 | Continuous reveal; two simultaneous +11% marks; range 29 | Continuous reveal and two +11% marks; every fifth scan marks at most five targets for 2.0 s; range 32 |
+| Artemis Rail | 110 / 100 / 155 | 52 damage, 2.0 s, range 38, ignores armor | 80 damage, 1.9 s, range 42; pierces one aligned target for 50% | 118 damage, 1.8 s, range 46; every fourth primary shot deals 150%; the pierce never inherits the crit |
+| Hermes Wing | 85 / 80 / 130 | One drone, 8 damage every 450 ms, air priority | Two independent drones, 7 damage each every 450 ms | Two drones, 8 damage each every 400 ms; every sixth drone attack fires one bonus shot |
+| Poseidon Coil | 100 / 95 / 150 | 16 line damage every 1.25 s to at most three; 1.5 push; 10% drench for 2.0 s | 24 every 1.15 s to at most four; 2.0 push; 12% drench for 2.2 s | 30 every 1.05 s to at most five; 2.5 push; 15% drench for 2.5 s; every fifth attack is a 40-damage six-target maelstrom |
+| Medusa Lens | 95 / 90 / 145 | 8 damage every 650 ms; every sixth tower shot petrifies its primary for 0.75 s | 12 every 600 ms; every fifth shot petrifies for 0.9 s | 16 every 550 ms; every fifth shot petrifies the primary for 1.0 s and secondary targets in radius 2.5 for only 0.35 s |
+| Hephaestus Forge | 110 / 105 / 165 | At most one active mine; 30 blast plus 4/s for 3 s; 5.5 s replenish | At most two; 44 blast plus 5/s for 3.5 s; 5.0 s replenish | At most two; 60 blast plus 6/s for 4 s; 4.5 s replenish; leaves a 2.5 s anti-regeneration molten field |
+| Athena Nexus | 90 / 95 / 155 | Links at most three eligible attackers and grants +10% range | Links at most four and grants +10% range/rate | Links at most four with +10% range/rate; Coordinated Fire adds +8% damage when two linked towers share a target; an Oracle mark may satisfy, but is not required for, that condition |
+| Apollo Prism | 120 / 110 / 175 | 250 ms beam pulses ramp from 4 to 14 damage on one target; +50% shield damage | Pulses ramp from 4 to 16, reach peak 30% faster, and retain +50% shield damage | Pulses ramp from 4 to 18 with +50% shield damage; forks at 45% to any second target or 70% against a shielded second target |
+| Hades Gate | 120 / 110 / 175 | 14 damage every 1.25 s; executes non-bosses below 10%; its kills cannot revive | 20 every 1.20 s; execute threshold 14%; its kills cannot revive | 28 every 1.10 s; threshold 18%; kills cannot revive; every third execute may banish one nearby wounded non-boss, with an 8 s cooldown |
+| Talos Bastion | 130 / 120 / 190 | 68 damage every 2.3 s, range 24; ignores 50% armor and applies -2 armor for 2.5 s | 100 every 2.2 s, range 25; ignores 50% armor and applies -3 armor for 3 s | 145 every 2.0 s, range 26; ignores 50% armor, applies -4 armor for 3 s, and gains +30% explicit boss damage |
+| Zeus Array | 125 / 115 / 185 | 18 damage every 1.0 s to three total targets at 100/70/50% | 24 every 950 ms to five at 100/75/55/40/30% | 30 every 900 ms with the same five-target falloff; every sixth attack adds at most three 30%-damage storm targets |
 
-Before a defense's behavior implementation or production art begins, its reviewed content-annex record receives exact range, cadence, damage/effect values, durations, placement/queue rules, summon/chain caps, boss multipliers, comparator/tie rules, target policies, audio/visual event IDs, and derived UI text at every level. This explicitly includes Oracle scan/mark cadence, Hoplite projection point/queue/recharge, Poseidon drench, Medusa base attack, Forge mine placement/arming, Athena aura radius/source removal, Apollo beam pulse/ramp reset, Hades base attack, and Zeus jump range/falloff. No renderer or HTML file may duplicate balance constants.
+Golden cumulative sell refunds are binding:
+
+| Defense | Refund at L1/L2/L3 |
+|---|---:|
+| Sentinel | 42 / 80 / 147 |
+| Chronos | 52 / 101 / 182 |
+| Siege | 63 / 122 / 220 |
+| Hoplite Node | 56 / 108 / 192 |
+| Oracle Relay | 49 / 98 / 175 |
+| Artemis Rail | 77 / 147 / 255 |
+| Hermes Wing | 59 / 115 / 206 |
+| Poseidon Coil | 70 / 136 / 241 |
+| Medusa Lens | 66 / 129 / 231 |
+| Hephaestus Forge | 77 / 150 / 266 |
+| Athena Nexus | 63 / 129 / 238 |
+| Apollo Prism | 84 / 161 / 283 |
+| Hades Gate | 84 / 161 / 283 |
+| Talos Bastion | 91 / 175 / 308 |
+| Zeus Array | 87 / 168 / 297 |
+
+Before a defense's behavior implementation or production art begins, its reviewed content-annex record receives every remaining exact range, cadence, damage/effect value, duration, placement/queue rule, summon/chain cap, boss multiplier, comparator/tie rule, target policy, audio/visual event ID, and derived UI string at every level. In particular, the annex fixes Oracle scan cadence/selection, Hoplite legal interception markers/queue order, Hermes patrol radius/travel speed, Poseidon line comparator, Forge arming radius/marker choice, Athena link radius/selection/removal, Apollo ramp increment/reset gap, Hades banish comparator, and Zeus jump range/comparator. Hermes never patrols map-wide; Forge can never bank more than its active-mine cap; Apollo resets its ramp on target change or the declared no-target gap; Hades banish and Zeus storm hits cannot recurse or advance their own capstone counters. No renderer or HTML file may duplicate balance constants.
 
 ### 9.3 Control and status rules
 
-- `reveal`, `mark`, `slow`, `drench`, `block`, `stun`, `petrify`, `burn`, `armorBreak`, `shield`, and `reviveSuppressed` are stable status IDs.
-- Each status instance retains its own source, magnitude, application tick, and expiry. Resolution uses the strongest currently active complete instance; equal magnitude prefers later expiry, then lower immutable source ID. It never combines one source's magnitude with another source's duration. Different named statuses may coexist.
+- `reveal`, `mark`, `slow`, `drench`, `block`, `stun`, `petrify`, `resolve`, `burn`, `armorBreak`, `shield`, and `reviveSuppressed` are stable status IDs.
+- Each status instance retains its own source, magnitude, application tick, and expiry. Resolution uses the strongest currently active complete instance; equal magnitude prefers later expiry, then lower immutable source ID. It never combines one source's magnitude with another source's duration. Different named statuses may coexist except that `slow` and the movement reduction from `drench` enter one strongest-only movement bucket; they are never added or multiplied together.
+- The strongest movement reduction resolves in basis points before movement: `scaledReductionBp = floor(strongestReductionBp × enemySlowControlBp / 10000)` and `effectiveSpeedBp = max(enemyMinMovementBp, 10000 - scaledReductionBp)`. This multiplier applies to the enemy's already-resolved post-difficulty/Assist base speed, and control scaling occurs before the floor. Regular enemies default to `enemySlowControlBp = 10000` and `enemyMinMovementBp = 5200`. Every Heavy record declares both visible values; every boss declares `enemyMinMovementBp` and defaults `enemySlowControlBp` to its visible `bossControlBp = 2000` unless its record overrides it. With no active movement reduction, `effectiveSpeedBp = 10000`.
 - Damage-over-time from the same source refreshes that complete instance rather than stacking. Different sources require an explicit small stack cap and stable source-ID processing order in the content annex.
 - Shield pools remain separate source instances and damage consumes the pool with the earliest expiry, then lowest source ID. Aura removal removes only that source's contribution and recomputes the strongest remaining aura.
 - Friendly auras never stack with the same aura; the strongest eligible source wins, then lowest tower ID breaks a tie.
+- For external marks, coordinated-fire bonuses, auras, and equivalent support/debuff sources, same-name instances first resolve to one strongest eligible source using the status comparator. Distinct surviving bonuses then add in stable ASCII source-type order and clamp as `externalDamageBp = min(2000, sumDamageBp)`, `externalRateBp = min(1500, sumRateBp)`, and `externalRangeBp = min(1200, sumRangeBp)`. An attack's own Lock-On, crit, center-hit, pierce, chain/fork falloff, and boss coefficients are internal attack coefficients, not external amplification; execute is a terminal predicate. The engine preserves milli-damage precision and applies the combined external damage bonus only after all internal hit coefficients, so a base `8` attack with only `+8%` external damage resolves to `8640` milli-damage rather than rounding back to `8`. The attack's authored shield coefficient then applies before ordered shield-pool consumption; positive overflow continues in milli-damage through armor/ignore/break, native resistance, and HP. Any positive, non-immune post-mitigation HP hit deals at least one milli-damage. Unusual shield/overflow rules must be explicit content-annex behavior IDs rather than hidden tower branches.
+- Effective external range is `floor(baseRangeUnits × (10000 + externalRangeBp) / 10000)` and targeting compares fixed-point squared distances against that squared integer range. Effective attack cooldown is `ceil(baseCooldownUnits × 10000 / (10000 + externalRateBp))` using the ABI's exact integer ceiling. A build starts ready, but an upgrade, link/unlink, enable/disable, or amplification-source change never rescales a cooldown already in progress; the next accepted attack schedules the then-current effective cooldown.
+- Athena automatically links the nearest `3 / 4 / 4` eligible non-support damage towers within its aura by level. Its comparator uses fixed-point squared distance, then immutable tower ID; there is no manual link command. Links recompute only at mission initialization or after an accepted build, upgrade, sell/reset, disable, enable, or Athena source activation/removal changes eligibility; they never relink on an ordinary simulation tick or presentation frame. It cannot link itself or another support-only tower, and cannot directly accelerate guard replenishment, mine replenishment/arming, summon creation, capstone counters, or other non-attack production. Active links, eligible unlinked towers, and each ineligible/excluded reason are visible and available through the semantic companion state.
 - Air ignores block, ground mines, and knockback unless a level explicitly says otherwise.
-- Heavy enemies receive 50% displacement. Unless a boss record declares another visible value, `bossControlBp = 2000`: block/stun/petrify duration, displacement magnitude, and slow magnitude resolve at 20% of the ordinary value; slow duration remains unchanged. Nonzero scaled duration has a one-tick minimum. The UI shows `RESISTED` rather than unexplained immunity.
+- `block`, `stun`, and `petrify` share one exclusive hard-control bucket. The first accepted application in stable simulation order wins; another hard control while that bucket is occupied is rejected rather than queued. When the accepted control ends, a surviving target gains visible `RESOLVE`: 1.0 s for regular enemies, 1.5 s for Heavy enemies, and 2.5 s for bosses. A new hard-control application during Resolve is rejected deterministically, displays `RESISTED`, and does not consume or postpone Resolve. Slow/drench and direct damage continue to work. A rejected Medusa control still consumes its already-fired charged shot, while a Hoplite comparator skips an ineligible target before assigning a guard. Resolve itself is never shortened by control scaling.
+- Knockback has a 1.5 s per-target displacement cooldown measured from the accepted displacement event. A rejected knockback does not move the target or restart the cooldown. Heavy enemies receive 50% displacement. Unless a boss record declares another visible value, `bossControlBp = 2000`: block/stun/petrify duration, displacement magnitude, and slow magnitude resolve at 20% of the ordinary value, and that same value supplies its default `enemySlowControlBp`; slow duration remains unchanged. Nonzero scaled duration has a one-tick minimum. The UI shows `RESISTED` rather than unexplained immunity.
 - Execute never applies to bosses. Resistance cannot reduce incoming damage by more than 35% in campaign v1.
-- Status/attack order matches the global tick ABI: reveal/target eligibility → shields → armor/resistance → damage/status → guarded boss-threshold transition → terminal death/execute → child/revival scheduling → bounty. Boss execute remains forbidden.
+- Per-hit attack order matches the global tick ABI: reveal/target eligibility snapshot → base milli-damage and authored internal Lock-On/crit/center/pierce/chain/fork/boss coefficients → summed/clamped external damage amplification → authored shield coefficient and ordered shield-pool consumption → armor/ignore/armor-break mitigation → native resistance → minimum-positive HP application and authored status application → guarded boss-threshold transition → terminal death/execute → child/revival scheduling → bounty. Each numeric stage uses the ABI's declared exact rational operation and named rounding boundary; boss execute remains forbidden.
 
 ## 10. Enemy and boss roster
 
@@ -345,6 +443,10 @@ Global roster shuffling is removed. A wave is an ordered list of spawn groups. R
   modifierIds: []
 }
 ```
+
+Each mission declares an integer `baseStartAether` and each wave declares one inclusive `baseAetherEnvelope`. The compiler proves that the wave-start deployment grant plus original-lineage kill bounties plus the authored clear grant equal that envelope exactly on Strategos. A Splitter's descendants divide their original lineage's declared bounty; a revived Wraith, repeated boss phase, summoned child, or secondary death cannot pay the same lineage twice. A final wave's post-clear Aether grant is always zero because no later tactical purchase exists; any final-wave Aether must resolve early enough to leave a declared tactical command window. Mission 1 satisfies that rule with a 60-Aether Wave-6 start grant and zero Wave-6 kill/clear Aether. Victory progression, Laurels, and score are separate transactions.
+
+Difficulty applies its advertised bounty basis points to eligible kill-bounty records using Section 7.2's mission-scoped remainder; it does not silently scale fixed deployment or clear grants. The compiled preview exposes the expected wave envelope, while hidden bonus-income, interest, streak, and early-call multipliers are forbidden. Content validation reports resolved start, realized/potential earnings, gross purchase debits, sale refunds, net consumed Aether, final invested Aether, final owned state, cheapest-pad simultaneous saturation, earliest observed L2/L3 in benchmark fixtures, final bank/distribution, and the share of score attributable to banked Aether.
 
 Regular mission pacing is:
 
@@ -416,7 +518,7 @@ The simulation remains pure and authoritative. DOM, renderer state, wall-clock t
 
 ### 13.1 Content compilation
 
-Authoring uses validated JSON and a dependency-light Node compiler. It canonicalizes keys, resolves complete level records, compiles path segments/tangents/fixed-point lengths, rejects unknown IDs, and emits a no-bundler classic browser artifact plus a canonical ruleset manifest.
+Authoring uses validated JSON and a dependency-light Node compiler. It canonicalizes keys, resolves complete level records, expands hidden-grid control nodes into exact continuous road polylines, compiles path segments/tangents/fixed-point lengths, validates pad geometry/coverage and Aether envelopes, rejects unknown IDs, and emits a no-bundler classic browser artifact plus a canonical ruleset manifest.
 
 ```js
 {
@@ -437,16 +539,17 @@ Content can compose only reviewed behavior IDs such as `direct`, `splash`, `slow
 ### 13.2 Simulation invariants
 
 - Simulation advances at 60 integer ticks/second. `TIME_UNITS_PER_SECOND = 60000` and one tick advances 1000 time units, so an authored integer millisecond duration compiles exactly as `ms × 60`; existing 410 ms and 1350 ms cooldowns do not require quantization.
-- `DISTANCE_SCALE = 1000` and `BASIS_POINTS = 10000`. Authored coordinates/distances permit at most three decimal places and compile with an exact decimal parser; extra precision is rejected. Runtime uses integers only.
-- Nonnegative division floors; signed division truncates toward zero. The compiler rejects any configuration whose validated worst-case intermediate can leave JavaScript's safe-integer range. These constants, rounding rules, and caps are part of the ABI descriptor.
+- `DISTANCE_SCALE = 1000`, `DAMAGE_SCALE = 1000`, and `BASIS_POINTS = 10000`. Authored coordinates/distances and authored HP, shield pools, flat armor, direct damage, and damage-over-time values permit at most three decimal places and compile with an exact decimal parser; extra precision is rejected. Runtime stores those combat quantities as integer milli-units, so authored `8` damage is `8000` until presentation formatting.
+- Nonnegative division floors; signed division truncates toward zero. Exact rational coefficient chains cross-cancel before checked multiplication and floor only at their named final boundary: `preShieldDamageMilli = floor(baseDamageMilli × Π(internalDamageBp) × (10000 + externalDamageBp) / 10000^(internalCoefficientCount + 1))`. The compiler rejects any configuration whose validated worst-case intermediate can leave JavaScript's safe-integer range after cross-cancellation. Integer ceiling uses `ceil(n / d) = floor((n + d - 1) / d)` only after the same range check. These constants, rounding rules, coefficient order, and caps are part of the ABI descriptor.
 - Stable ASCII string IDs identify authored objects. Runtime tower, enemy, summon, projectile, and effect IDs use separate monotonic integer counters allocated only when creation is accepted; denial/reset never rewinds a counter. Batch children/summons allocate in source-ID then authored-index order.
 - Named RNG stream seed is `fnv1a32(UTF8(unsignedMissionSeed + "\\0" + streamId))`, consumed by the existing specified `mulberry32` algorithm. Streams and consumption sites are part of the ABI; cosmetics never consume them.
 - Durations are not rounded to whole ticks, but state changes resolve only at their named tick phase. A remaining timer is due/expired when, after that phase's 1000-unit decrement, it is `<= 0`; negative overshoot is carried into repeated schedules.
-- Tower cooldown begins ready at 0. During the attack phase, subtract 1000 only from a positive remaining cooldown; 0 is already due. If due and a target exists, make at most one attack that tick and add the current level's full cooldown to the negative/zero remainder. If no target exists, clamp to 0 so reacquisition attacks on the next eligible attack phase. Build is immediately ready; upgrade does not rescale an already running cooldown, and the next attack schedules the new level's duration. Content validation requires cooldown at least one tick.
+- Tower cooldown begins ready at 0. During the attack phase, subtract 1000 only from a positive remaining cooldown; 0 is already due. If due and a target exists, make at most one attack that tick and add the current effective cooldown `ceil(baseCooldownUnits × 10000 / (10000 + externalRateBp))` to the negative/zero remainder. If no target exists, clamp to 0 so reacquisition attacks on the next eligible attack phase. Build is immediately ready; upgrade, support link/unlink, enable/disable, and amplification-source changes do not rescale an already running cooldown, and the next attack schedules from the then-current level and external rate. Content validation requires every possible effective cooldown to remain at least one tick.
 - Spawn/boss repeating timers use the same overshoot carry and a strict authored per-tick event cap; simultaneous due events use authored order then stable ID.
-- Movement retains an integer remainder per enemy. Each movement phase computes `numerator = speedDistanceUnitsPerSecond × effectiveSpeedBp + remainder`, divides once by `60 × 10000`, advances by the floor quotient, and stores the modulus. Speed/status changes keep the remainder because the denominator is constant. Signed displacement uses the ABI's truncation rule and route bounds.
+- Movement retains an integer remainder per enemy. Each movement phase first resolves Section 9.3's strongest-only `scaledReductionBp` and minimum movement floor against the post-difficulty/Assist base speed, then computes `numerator = speedDistanceUnitsPerSecond × effectiveSpeedBp + remainder`, divides once by `60 × 10000`, advances by the floor quotient, and stores the modulus. Speed/status changes keep the remainder because the denominator is constant. Signed displacement uses the ABI's truncation rule and route bounds.
 - Statuses applied after the expiry phase begin decrementing on the next tick. At the status-expiry phase subtract 1000 and remove before movement/targeting when remaining is `<= 0`; a sub-tick remainder therefore resolves at the first legal phase boundary, never by wall clock.
-- Simulation commands are structured records with `{tick, seq, type, ...}`. `seq` is zero-based and strictly increasing within one tick. At the beginning of a tick, accepted commands apply in `seq` order; then scheduled spawns → status expiry/movement → leaks → tower acquisition/attacks → shield/damage/status → guarded boss-threshold transition → terminal death/execute/children/revival → bounty → wave clear. A guarded boss threshold clamps HP and permits at most one authored transition per resolved hit, so a large hit cannot silently skip a required phase.
+- Simulation commands are structured records with `{tick, seq, type, ...}`. `seq` is zero-based and strictly increasing within one tick. At the beginning of a tick, accepted commands apply in `seq` order; an accepted start-wave command credits that wave's declared deployment grant before spawning. Then scheduled spawns → status expiry/movement → leaks → tower acquisition/attacks → shield/damage/status → guarded boss-threshold transition → terminal death/execute/children/revival → bounty → wave clear. A guarded boss threshold clamps HP and permits at most one authored transition per resolved hit, so a large hit cannot silently skip a required phase.
+- `tutorialUpgradeGateMode` is resolved into the replay header and canonical initial state. `m01-wave1` rejects pre-clear Upgrade until either the recorded `skipTutorialGate` command or Wave-1 clear opens it; `none` never gates Upgrade. Replay validation never consults the current profile to infer this legality.
 - Manual pause, runner/playback speed, panel state, recording UI, wall-clock timestamps, and animation are scheduler/presentation data, not simulation commands or state.
 - The canonical state encoder accepts integers, ASCII-keyed objects with lexicographically sorted keys, ordered arrays, booleans, strings, and null; it emits UTF-8 JSON with no whitespace. Lightweight checkpoints use the named FNV-1a diagnostic hash and final claims use SHA-256. A hash alone is never gameplay proof.
 - All collection iteration, target comparator, simultaneous event, status source, and allocation ties are explicit and stable.
@@ -466,6 +569,7 @@ Content can compose only reviewed behavior IDs such as `direct`, `splash`, `slow
   loadoutIds: ["sentinel", "chronos", "siege", "oracle", "artemis"],
   campaignModifierIds: ["reserve-1"],
   accessGrantIds: ["campaign.oracle", "campaign.artemis"],
+  tutorialUpgradeGateMode: "none",
   inputs: [{ tick: 0, seq: 0, type: "build", padId: "p01", defenseId: "sentinel" }],
   checkpoints: [{ tick: 600, diagnosticHash: "fnv1a32:..." }],
   finalClaim: { outcome: "victory", score: 12345, laurels: 3, durationTicks: 18420, finalStateHash: "..." }
@@ -606,6 +710,7 @@ The visual language is **ancient Greece meets luminous Armara AI**:
 - Worn limestone, marble, mosaics, olive wood, bronze mechanisms, colonnades, harbors, temples, foundries, underworld glass, and storm-lit Olympus.
 - Cyan/violet/gold circuitry appears as inlaid magical technology, not modern roads or city hardware.
 - Every travel route is ancient material: limestone paving, marble blocks, mosaic, packed earth, bridge stone, temple tile, or bronze channels. No asphalt, lane paint, modern curb, or highway texture.
+- The hidden authoring grid never appears as a modern gameplay grid. Road art may soften or ornament compiled polyline joins, but its visible centerline, twelve-unit buffered width, pad clearance, and tactical coverage must remain faithful to compiled geometry.
 - Backgrounds remain lower contrast and less saturated than gameplay pieces. Route edges and intersections remain clear.
 - Towers and enemies use thick navy contours, bright faction color, ivory/gold rim light, large readable shapes, and three-value cartoon shading.
 - User-provided Armara reference images guide palette, shape language, material, and finish. They are not copied into generated scenes unless licensed and intentionally used.
@@ -672,10 +777,11 @@ Budgets are reviewed after the three-mission vertical slice and may be tightened
 
 ### 19.1 Interaction and comprehension
 
-- Mission 1 teaches: identify Aether → select highlighted pad → compare/build → start wave. Upgrade and sell appear only when first useful, with Skip/Replay Tutorial.
+- Mission 1 teaches: identify Aether → select highlighted pad → compare/build → start wave. On a new profile's first non-skipped tutorial run, Upgrade is absent/disabled through Wave 1, then reveals with exact cost/comparison; skipping or completing that reveal keeps it visible on replays and it has no later tier lock. Sell appears when a built tower is first inspected and remains optional. Skip/Replay Tutorial is always available.
 - For the first three missions the HUD says `AETHER — BUILD CURRENCY`.
 - Build cards show portrait, name, role, exact cost, damage, attacks/second, range, target mask, and special from engine data.
 - Unaffordable cards say `NEED N MORE`; color/dimming is supplemental.
+- Build preview and tower selection show the exact range boundary plus a high-contrast glow on every covered road window; the effect remains readable without color and does not expose numeric debug heatmaps.
 - Sell shows the exact refund and requires a second deliberate confirmation while management is suspended. Only the confirmed `sell` command reaches simulation; once dispatched it is final, with no wall-clock undo ambiguity.
 - Primary battle controls and construction pads are at least `48 × 48` CSS pixels. Secondary non-battle controls are at least `44 × 44`.
 - Moderated target: at least four of five first-time players can begin Mission 1, build, explain price/current Aether, and launch Wave 1 without outside instruction; four of five can later find Upgrade and Sell.
@@ -728,10 +834,22 @@ There are no daily streak losses, energy timers, expiring power, or modal claim 
 ### 22.1 Content and balance
 
 - Exactly 20 valid missions, 15 defenses × 3 complete levels, 11 regular enemies, and 5 boss/scripted-elite records.
-- Every reference resolves; IDs are unique/stable; paths reach a gate; pads are legal; waves are ordered and finite; unlock graph has no cycle.
+- Every reference resolves; IDs are unique/stable; paths reach a gate; pads are legal; waves are ordered and finite; unlock graph has no cycle. The map analyzer also proves snapped control nodes, legal continuous segments/joins, road width, exclusion/clearance/separation, intent tags, route-stage ordering, and role-probe coverage.
 - Automated headless simulations and manual review show starter-trio campaign completion on Story/Strategos. Strategos diversity requires one available-roster fixture for new-profile `m01`, two for `m02`, and at least three materially different available-roster fixtures for `m03`–`m20`.
 - No defense has a strictly dominant cost/damage/control profile across the test matrix.
 - Every mission has a distinct battlefield/path/rule, a briefing, a preview, and measurable Laurel objective.
+
+Mission 1 has direct binding gates:
+
+- Compiled geometry matches Section 6.7 exactly: route length 260, ten named pads, all `E20 >= 24`, Standard-pad `E22 = 29.539–30.199`, Strong-pad `E22 = 48.530`, max/min `1.643` (never above 1.65), no Specialist pad, and only `p04`/`p08` in the Strong band. Neither Strong pocket is best for all three starter roles across all waves.
+- An unassisted, unmodified new-profile Strategos run compiles to 150 starting Aether and inclusive perfect-kill envelopes `30 / 40 / 45 / 50 / 55 / 60`; cumulative gross is exactly 430. Wave 6 credits its 60 before its first spawn, has zero kill/clear Aether, and leaves the full envelope spendable before victory. The validator fails any deployment/bounty/clear double count and golden tests cover Story's remainder timing/hash plus `178 / 150 / 136` base and `198 / 170 / 156` Assist starts.
+- At least three deterministic purchase/placement witnesses win with materially different emphasis: focused Sentinel fire, Chronos control, and Siege clustering. Their representative final simultaneous states use four or five towers and approximately two paid upgrades, consume 360–410 net Aether, and never fill all ten pads. The 430 gross budget can own at most seven cheapest L1 defenses simultaneously at any state; sell-churn/refund tests separately prove lifetime purchase debits may exceed gross without creating Aether or increasing simultaneous investment.
+- In representative successful unassisted, unmodified Strategos fixtures using that 430-gross ledger, median ending bank is less than 65 Aether. The analyzer reports p90 and the full bank distribution diagnostically without imposing a p90 threshold. Goldens prove `eligibleUnspentAether`, `unspentScore = min(rawUnspentScore, floor(nonAetherScore / 19))`, and a final-total unspent-Aether share never above 5%, including zero-score and modifier-exclusion boundaries.
+- On a new profile's first non-skipped tutorial run, Upgrade is unavailable only through Wave 1 and permanently available thereafter; tutorial skip reveals it immediately. Replay/header fixtures prove the initial gate mode, stable hostile-command denial, recorded skip, Wave-1 release, and profile-independent replay validation. Typical winning fixtures do not rush an L3 before Wave 4; this is a balance observation and regression signal, never an engine lock.
+- A route-aware Strategos fixture finishes with 18–20 integrity; a reasonable but deliberately imperfect placement finishes with 12–17. Both use legal new-profile information and no Assist/debug command. One-tower/no-upgrade and seeded legal-random baselines fail during Wave 5 or Wave 6.
+- At the same seed, loadout, resolved spend, command timing, upgrade timing, target policies, and wave inputs, a route-aware pad plan achieves at least 15% greater `combatValuePerAether` than its paired naïve placement. `combatValuePerAether = (non-overkill damage + declared control/support credit + prevented-leak damage at the same checkpoint) / net Aether consumed`; campaign score is excluded. A route-aware clear paired with a naïve Wave-5/6 defeat passes automatically, but both raw values remain in the versioned balance report.
+
+The automated tower matrix measures damage per 100 Aether against unarmored, armored, shielded, air, boss, single-, three-, and six-target fixtures; actual delivered damage after overkill/idle/retarget time; coverage-adjusted marginal L2/L3 value on Standard and Strong pads; credited support/control value; and pair/trio synergy. It flags any interaction above 35% uplift over its matched independent baseline for review. Direct tests prove strongest-only slow/drench, exclusive hard control and Resolve windows, knockback cooldown, amplification caps, Athena's deterministic auto-link comparator/recompute triggers, mine/drone/guard limits, non-recursive capstones, exact integer refunds against every Section 9.2 golden, and one-bounty-per-lineage behavior.
 
 For this gate, a viable loadout has a committed deterministic replay fixture that wins Strategos with at least 5 integrity and no debug/Assist command. Where three are required, the fixtures differ from one another by at least two equipped defense IDs and materially use those differences in their command logs. A defense is not accepted until it has at least one matched-cost fixture where its role outperforms each plausible substitute and one fixture that visibly exposes its listed weakness; no defense may improve victory/score in every matched role scenario. Full-roster debug fixtures may broaden regression coverage but do not satisfy an unavailable new-profile slot.
 
@@ -756,7 +874,7 @@ For this gate, a viable loadout has a committed deterministic replay fixture tha
 - All actionable icons have visible labels or unambiguous accompanying text.
 - Progress saves before any share/community UI and provider outages cannot block play.
 
-Moderated timing uses active simulation time at `1×`, excluding planning, manual pause, and contextual management suspension: Mission 1 median time to first launched wave is at most 90 wall-clock seconds; regular-mission clear median is 5–9 active minutes and p90 at most 12; boss/finale p90 is at most 15. Per-act testing uses at least five representative players, median post-session clarity and enjoyment of at least 4/5, and zero unassisted task-blocking failures in the core loop. A task-blocking issue means a participant cannot discover or complete the required next action without facilitator intervention. Any different sample or device matrix requires a recorded test-plan amendment rather than an informal exception.
+Moderated timing uses active simulation time at `1×`, excluding planning, manual pause, and contextual management suspension: Mission 1 median time to first launched wave is at most 90 wall-clock seconds; regular-mission clear median is 5–9 active minutes and p90 at most 12; boss/finale p90 is at most 15. Mission 1 Strategos calibration uses at least 20 first-time participants across at least two moderated rounds: 60–70% should win their first attempt, and cumulative cohort success after at most one informed retry must exceed 85% after seeing the game's ordinary failure explanation, without facilitator advice or Assist. A separate cohort of at least 20 first-time Story participants has a greater-than-90% first-attempt win target. These rates are tuning targets; comprehension/task-blocking failures remain release blockers independently of win rate. Per-act qualitative testing separately uses at least five representative players, median post-session clarity and enjoyment of at least 4/5, and zero unassisted task-blocking failures in the core loop. A task-blocking issue means a participant cannot discover or complete the required next action without facilitator intervention. Any different sample or device matrix requires a recorded test-plan amendment rather than an informal exception.
 
 ### 22.5 Repository and live delivery
 
@@ -768,7 +886,9 @@ Moderated timing uses active simulation time at `1×`, excluding planning, manua
 
 ## 23. Deferred approval gates
 
-The offline campaign can proceed with the defaults in this specification. Before the relevant later phase, Ryan must approve one batched decision set covering:
+Ryan resolved the campaign-balance decision set on 2026-08-26: compact Aether values and binding round-zero costs; the 150-start/430-gross Mission 1 envelope with no post-final clear payment; the one-wave tutorial reveal with no later upgrade tier locks; visible Resolve plus control/amplification caps; the hidden `40 × 25` fixed-pad authoring grid and binding Gate of Dawn geometry; and the 60–70% first-attempt and >85% informed-retry Strategos targets plus >90% first-attempt Story calibration. These decisions are no longer deferred and may not be silently reopened during implementation.
+
+The offline campaign can proceed with those binding defaults. Before the relevant later phase, Ryan must still approve one batched operational decision set covering:
 
 1. Backend operator/host/budget and production domains.
 2. Official immutable Armara X account ID and Telegram group/channel ID; bot/admin readiness.
