@@ -6,8 +6,11 @@ const crypto = require("node:crypto");
 const { AegisContentError, diagnostic, fail } = require("./diagnostics.js");
 const { loadSourceTree } = require("./source-loader.js");
 const { buildArtifacts } = require("./artifacts.js");
+const V3Compiler = require("./v3-compiler.js");
+const V3Artifacts = require("./v3-artifacts.js");
+const V3MapAdapter = require("./v3-map-adapter.js");
 
-const ARTIFACT_NAME = /^(aegis-sim|aegis-content|manifest)\.([0-9a-f]{64})\.(js|json)$/;
+const ARTIFACT_NAME = /^(aegis-sim|aegis-content|aegis-presentation|aegis-release|manifest)\.([0-9a-f]{64})\.(js|json)$/;
 
 function readSimulation(input) {
   if (input.simulationBytes !== undefined) return Buffer.from(input.simulationBytes);
@@ -23,14 +26,15 @@ function compileSourceTree(input) {
     manifestPath: input.manifestPath,
     repositoryRoot: input.repositoryRoot,
   });
-  if (source.manifest.schemaVersion === 3) {
-    fail(
-      "SOURCE_SCHEMA_INCOMPLETE",
-      "/schemaVersion",
-      "Source schema v3 passed structural preflight but cannot emit artifacts until the complete v3 compiler is installed"
-    );
-  }
   const simulationBytes = readSimulation(input);
+  const simulationLabel = input.simulationPath ? path.basename(input.simulationPath) : "explicit simulation bytes";
+  if (source.manifest.schemaVersion === 3) {
+    return V3Compiler.compileVerifiedV3Source(source, {
+      simulationBytes: simulationBytes,
+      simulationLabel: simulationLabel,
+      normalizeAndValidateMap: V3MapAdapter.normalizeAndValidateMap,
+    });
+  }
   const missionIds = source.manifest.schemaVersion === 1
     ? source.manifest.missionIds.slice()
     : source.missionMaps.map(function (mission) { return mission.id; });
@@ -38,7 +42,7 @@ function compileSourceTree(input) {
     abi: source.abi,
     behaviorContracts: source.behaviorContracts,
     simulationBytes: simulationBytes,
-    simulationLabel: input.simulationPath ? path.basename(input.simulationPath) : "explicit simulation bytes",
+    simulationLabel: simulationLabel,
     contentVersion: source.manifest.contentVersion,
     missionIds: missionIds,
     missionMaps: source.manifest.schemaVersion === 2 ? source.missionMaps : undefined,
@@ -59,6 +63,7 @@ function artifactEntries(result) {
   }
   const entries = [];
   const kinds = new Set();
+  const entriesByKind = new Map();
   for (const entry of outputs) {
     if (!Array.isArray(entry) || entry.length !== 2 || typeof entry[0] !== "string") {
       fail("ARTIFACT_SET", "/generated", "Artifact entries must be [name, bytes] pairs");
@@ -78,9 +83,42 @@ function artifactEntries(result) {
       fail("ARTIFACT_IDENTITY", "/generated/" + name, "Artifact bytes do not match the immutable filename digest");
     }
     entries.push([name, bytes]);
+    entriesByKind.set(match[1], [name, bytes]);
   }
-  if (entries.length !== 3 || !kinds.has("aegis-sim") || !kinds.has("aegis-content") || !kinds.has("manifest")) {
-    fail("ARTIFACT_SET", "/generated", "Artifact set must contain exactly one simulation, content, and manifest artifact");
+  const schemaVersion = result && result.source && result.source.manifest && result.source.manifest.schemaVersion;
+  const expectedKinds = schemaVersion === 3
+    ? ["aegis-content", "aegis-presentation", "aegis-release", "aegis-sim", "manifest"]
+    : (schemaVersion === 1 || schemaVersion === 2
+      ? ["aegis-content", "aegis-sim", "manifest"]
+      : null);
+  if (!expectedKinds || entries.length !== expectedKinds.length ||
+      expectedKinds.some(function (kind) { return !kinds.has(kind); })) {
+    fail(
+      "ARTIFACT_SET",
+      "/generated",
+      schemaVersion === 3
+        ? "Schema 3 artifact set must contain exactly one simulation, content, presentation, release, and manifest artifact"
+        : "Artifact set must contain exactly one simulation, content, and manifest artifact"
+    );
+  }
+  if (schemaVersion === 3) {
+    const releaseEntry = entriesByKind.get("aegis-release");
+    const manifestEntry = entriesByKind.get("manifest");
+    const verified = V3Artifacts.verifyV3ReleaseSelection({
+      pinnedReleaseName: releaseEntry[0],
+      releaseName: releaseEntry[0],
+      releaseBytes: releaseEntry[1],
+      manifestBytes: manifestEntry[1],
+      artifacts: new Map(entries),
+    });
+    if (
+      result.artifacts.releaseName !== releaseEntry[0] ||
+      result.artifacts.manifestName !== manifestEntry[0] ||
+      result.artifacts.rulesetHash !== verified.release.rulesetHash ||
+      result.source.manifestHash !== verified.release.sourceManifestHash
+    ) {
+      fail("ARTIFACT_SET", "/generated", "Schema 3 artifact metadata must bind the exact verified release selection");
+    }
   }
   entries.sort(function (a, b) { return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0); });
   return entries;
@@ -154,9 +192,9 @@ function checkArtifacts(result, override) {
 }
 
 function writeArtifacts(result, override) {
+  const entries = artifactEntries(result);
   const directory = outputDirectory(result, override);
   fs.mkdirSync(directory, { recursive: true });
-  const entries = artifactEntries(result);
   const names = entries.map(function (entry) { return entry[0]; });
   for (const entry of entries) {
     const name = entry[0];

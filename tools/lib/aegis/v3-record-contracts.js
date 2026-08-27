@@ -2284,9 +2284,6 @@ function validateNonMapSliceRecordSet(value, optionInput) {
     presentationCatalog: value.presentationCatalog,
     pendingPreviewProofRecords: pendingPreviewProofRecords,
     defenseUnlockGrantMappings: defenseUnlockGrantMappings,
-    // Compatibility for the in-flight Task-5 compiler. This alias is the same
-    // alphabetical mapping and must never be serialized as replay Start grants.
-    defenseAccessGrantRecords: defenseUnlockGrantMappings,
   };
   return deepFrozenClone(normalized);
 }

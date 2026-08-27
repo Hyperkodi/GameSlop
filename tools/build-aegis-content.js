@@ -19,8 +19,9 @@ const USAGE = [
   "  node tools/build-aegis-content.js --check --fixture <name>",
   "  node tools/build-aegis-content.js --write --fixture <name>",
   "  node tools/build-aegis-content.js --check --manifest <repo-relative-file>",
+  "  node tools/build-aegis-content.js --write --manifest <repo-relative-file>",
   "  production defaults to the complete declared deterministic simulation module bundle",
-  "  append --manifest <repo-relative-file> to preflight an alternate contained source manifest",
+  "  append --manifest <repo-relative-file> to compile an alternate contained source manifest",
   "  append --simulation <repo-relative-file> only to override the explicit simulation seam",
   "Exit codes: 0 success, 1 source/build/I/O failure, 2 invalid CLI usage.",
 ].join("\n");
