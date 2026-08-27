@@ -5,10 +5,12 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { AegisContentError } = require("./lib/aegis/diagnostics.js");
 const { executeBuild } = require("./lib/aegis/compiler.js");
+const { buildSimulationBundle } = require("./lib/aegis/simulation-bundle.js");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_SOURCE = path.join(REPO_ROOT, "games", "aegis", "content");
 const DEFAULT_SIMULATION = path.join(REPO_ROOT, "games", "aegis", "js", "sim", "abi.js");
+const DEFAULT_SIMULATION_ROOT = path.dirname(DEFAULT_SIMULATION);
 const FIXTURE_ROOT = path.join(REPO_ROOT, "games", "aegis", "tests", "fixtures", "compiler");
 const USAGE = [
   "Usage:",
@@ -16,6 +18,7 @@ const USAGE = [
   "  node tools/build-aegis-content.js --write",
   "  node tools/build-aegis-content.js --check --fixture <name>",
   "  node tools/build-aegis-content.js --write --fixture <name>",
+  "  production defaults to the complete declared deterministic simulation module bundle",
   "  append --simulation <repo-relative-file> only to override the explicit simulation seam",
   "Exit codes: 0 success, 1 source/build/I/O failure, 2 invalid CLI usage.",
 ].join("\n");
@@ -81,7 +84,20 @@ function parseArgs(argv) {
     }
     simulationPath = realSimulation;
   }
-  return { help: false, mode: mode, sourceRoot: sourceRoot, simulationPath: simulationPath };
+  return {
+    help: false,
+    mode: mode,
+    sourceRoot: sourceRoot,
+    simulationPath: simulationPath,
+    useDefaultSimulationBundle: !fixture && !simulation,
+  };
+}
+
+function materializeBuildOptions(options) {
+  if (!options.useDefaultSimulationBundle) return options;
+  const buildOptions = Object.assign({}, options);
+  buildOptions.simulationBytes = buildSimulationBundle({ sourceRoot: DEFAULT_SIMULATION_ROOT });
+  return buildOptions;
 }
 
 function main(argv) {
@@ -96,7 +112,7 @@ function main(argv) {
     return 0;
   }
   try {
-    const output = executeBuild(options);
+    const output = executeBuild(materializeBuildOptions(options));
     console.log("Aegis content " + options.mode + " passed: " + output.rulesetHash);
     output.files.forEach(function (file) { console.log("  " + file); });
     return 0;
@@ -117,5 +133,6 @@ if (require.main === module) process.exitCode = main(process.argv.slice(2));
 module.exports = Object.freeze({
   USAGE: USAGE,
   parseArgs: parseArgs,
+  materializeBuildOptions: materializeBuildOptions,
   main: main,
 });

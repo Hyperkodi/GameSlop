@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { fail } = require("./diagnostics.js");
 const { parseStrictJsonBytes } = require("./strict-json.js");
+const { validateMissionMap } = require("./map-validation.js");
 const {
   validateSourceManifest,
   validateBehaviorContracts,
@@ -54,6 +55,44 @@ function readJson(filePath, label) {
   return parseStrictJsonBytes(readBytes(filePath, "/"), label || path.basename(filePath));
 }
 
+function loadMissionMaps(root, manifest) {
+  if (manifest.schemaVersion === 1) {
+    return Object.freeze({
+      records: Object.freeze([]),
+      paths: Object.freeze([]),
+    });
+  }
+  const resolvedIdentities = new Set();
+  const paths = [];
+  const records = manifest.missionMaps.map(function (reference, index) {
+    const basePath = "/missionMaps/" + index;
+    const resolved = resolveReference(root, reference.source, basePath + "/source");
+    const identity = process.platform === "win32" ? resolved.toLowerCase() : resolved;
+    if (resolvedIdentities.has(identity)) {
+      fail("SOURCE_DUPLICATE_REALPATH", basePath + "/source", "Mission sources must resolve to unique regular files");
+    }
+    resolvedIdentities.add(identity);
+    const parsed = readJson(resolved, reference.source);
+    if (!parsed || parsed.id !== reference.id) {
+      fail("MAP_MANIFEST_ID", basePath + "/id", "Manifest mission ID must exactly match the referenced map ID");
+    }
+    const compiled = validateMissionMap(parsed);
+    if (compiled.approvalEligible !== true || compiled.sourceKind !== "campaign") {
+      fail("MAP_MANIFEST_APPROVAL", basePath + "/source", "Manifest mission map must be campaign approval eligible");
+    }
+    paths.push(resolved);
+    return Object.freeze({
+      id: reference.id,
+      source: reference.source,
+      compiled: compiled,
+    });
+  });
+  return Object.freeze({
+    records: Object.freeze(records),
+    paths: Object.freeze(paths),
+  });
+}
+
 function loadSourceTree(sourceRoot) {
   if (typeof sourceRoot !== "string" || !sourceRoot) fail("SOURCE_READ", "/", "Content source root is required");
   let root;
@@ -72,12 +111,19 @@ function loadSourceTree(sourceRoot) {
     readJson(behaviorPath, manifest.behaviorContracts),
     abi.behaviorRegistry.contracts
   );
+  const missionMaps = loadMissionMaps(root, manifest);
   return Object.freeze({
     sourceRoot: root,
     manifest: manifest,
     abi: abi,
     behaviorContracts: behaviorContracts,
-    paths: Object.freeze({ manifest: manifestPath, abi: abiPath, behaviors: behaviorPath }),
+    missionMaps: missionMaps.records,
+    paths: Object.freeze({
+      manifest: manifestPath,
+      abi: abiPath,
+      behaviors: behaviorPath,
+      missionMaps: missionMaps.paths,
+    }),
   });
 }
 
@@ -85,5 +131,6 @@ module.exports = Object.freeze({
   readBytes: readBytes,
   readJson: readJson,
   resolveReference: resolveReference,
+  loadMissionMaps: loadMissionMaps,
   loadSourceTree: loadSourceTree,
 });

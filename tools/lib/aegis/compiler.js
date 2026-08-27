@@ -21,13 +21,17 @@ function readSimulation(input) {
 function compileSourceTree(input) {
   const source = loadSourceTree(input.sourceRoot);
   const simulationBytes = readSimulation(input);
+  const missionIds = source.manifest.schemaVersion === 1
+    ? source.manifest.missionIds.slice()
+    : source.missionMaps.map(function (mission) { return mission.id; });
   const artifacts = buildArtifacts({
     abi: source.abi,
     behaviorContracts: source.behaviorContracts,
     simulationBytes: simulationBytes,
     simulationLabel: input.simulationPath ? path.basename(input.simulationPath) : "explicit simulation bytes",
     contentVersion: source.manifest.contentVersion,
-    missionIds: source.manifest.missionIds,
+    missionIds: missionIds,
+    missionMaps: source.manifest.schemaVersion === 2 ? source.missionMaps : undefined,
     schemaVersion: source.manifest.schemaVersion,
     sourceKind: source.manifest.sourceKind,
   });
@@ -82,10 +86,24 @@ function checkArtifacts(result, override) {
     const name = entry[0];
     const expected = entry[1];
     const target = path.join(directory, name);
+    let targetType;
+    try { targetType = fs.lstatSync(target); }
+    catch (error) {
+      if (error && error.code === "ENOENT") {
+        diagnostics.push(diagnostic("ARTIFACT_MISSING", "/generated/" + name, "Expected generated artifact is missing"));
+        continue;
+      }
+      diagnostics.push(diagnostic("ARTIFACT_READ", "/generated/" + name, "Cannot inspect generated artifact"));
+      continue;
+    }
+    if (!targetType.isFile()) {
+      diagnostics.push(diagnostic("ARTIFACT_TYPE", "/generated/" + name, "Expected generated artifact must be a regular file, not a link or special entry"));
+      continue;
+    }
     let actual;
     try { actual = fs.readFileSync(target); }
     catch (error) {
-      diagnostics.push(diagnostic("ARTIFACT_MISSING", "/generated/" + name, "Expected generated artifact is missing"));
+      diagnostics.push(diagnostic("ARTIFACT_READ", "/generated/" + name, "Cannot read generated artifact"));
       continue;
     }
     if (!actual.equals(expected)) {
@@ -134,7 +152,17 @@ function writeArtifacts(result, override) {
     const name = entry[0];
     const bytes = entry[1];
     const target = path.join(directory, name);
-    if (fs.existsSync(target)) {
+    let targetType = null;
+    try { targetType = fs.lstatSync(target); }
+    catch (error) {
+      if (!error || error.code !== "ENOENT") {
+        fail("ARTIFACT_WRITE", "/generated/" + name, "Cannot inspect generated artifact target");
+      }
+    }
+    if (targetType !== null) {
+      if (!targetType.isFile()) {
+        fail("ARTIFACT_COLLISION", "/generated/" + name, "Immutable artifact target must be a regular file, not a link or special entry");
+      }
       const current = fs.readFileSync(target);
       if (!current.equals(bytes)) {
         fail("ARTIFACT_COLLISION", "/generated/" + name, "Immutable artifact filename already exists with different bytes");

@@ -6,6 +6,8 @@ const { canonicalEncode } = require("./canonical.js");
 
 const CONTENT_ID = /^[a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*$/;
 const CONTENT_VERSION = /^[a-z0-9][a-z0-9.-]*$/;
+const CAMPAIGN_MISSION_ID = /^[a-z][a-z0-9-]*$/;
+const PORTABLE_SOURCE_SEGMENT = /^[A-Za-z0-9._-]+$/;
 const ABI_V1_SHA256 = "4a788f71581d4b1c4e79318d72ae45ffa1c6b79281c3ae32e6c29f22a8b2256b";
 
 const ABI_SHAPE = Object.freeze({
@@ -122,9 +124,22 @@ function requireStringArray(value, path, pattern) {
   });
 }
 
-function validateSourceManifest(value) {
+function requirePortableSourceReference(value, path) {
+  requireString(value, path);
+  if (value.indexOf("\\") !== -1 || value.startsWith("/") || value.endsWith("/")) {
+    fail("SOURCE_REFERENCE", path, "Source references must be nonempty relative POSIX paths");
+  }
+  const segments = value.split("/");
+  if (segments.some(function (segment) {
+    return !segment || segment === "." || segment === ".." || !PORTABLE_SOURCE_SEGMENT.test(segment);
+  })) {
+    fail("SOURCE_REFERENCE", path, "Source references must use portable path segments without aliases or alternate streams");
+  }
+  return value;
+}
+
+function validateSourceManifestV1(value) {
   const path = "/";
-  requireObject(value, path);
   const keys = new Set([
     "schemaVersion", "contentVersion", "sourceKind", "abiDescriptor",
     "behaviorContracts", "missionIds",
@@ -143,6 +158,65 @@ function validateSourceManifest(value) {
     fail("FOUNDATION_SCOPE", "/missionIds", "The foundation compiler slice cannot author campaign missions yet");
   }
   return value;
+}
+
+function validateSourceManifestV2(value) {
+  const path = "/";
+  const keys = new Set([
+    "schemaVersion", "contentVersion", "sourceKind", "abiDescriptor",
+    "behaviorContracts", "missionMaps",
+  ]);
+  rejectUnknownKeys(value, keys, path);
+  requireKeys(value, keys, path);
+  requireSafeInteger(value.schemaVersion, "/schemaVersion", 2);
+  requireString(value.contentVersion, "/contentVersion", CONTENT_VERSION);
+  if (value.sourceKind !== "foundation") {
+    fail("SCHEMA_ENUM", "/sourceKind", "Source schema v2 requires sourceKind foundation");
+  }
+  requirePortableSourceReference(value.abiDescriptor, "/abiDescriptor");
+  requirePortableSourceReference(value.behaviorContracts, "/behaviorContracts");
+  if (!Array.isArray(value.missionMaps) || value.missionMaps.length === 0) {
+    fail("SCHEMA_ARRAY", "/missionMaps", "Source schema v2 requires a nonempty missionMaps array");
+  }
+  const ids = new Set();
+  const sources = new Set();
+  let previousId = null;
+  value.missionMaps.forEach(function (record, index) {
+    const itemPath = pointerJoin("/missionMaps", index);
+    requireObject(record, itemPath);
+    const recordKeys = new Set(["id", "source"]);
+    rejectUnknownKeys(record, recordKeys, itemPath);
+    requireKeys(record, recordKeys, itemPath);
+    requireString(record.id, pointerJoin(itemPath, "id"), CAMPAIGN_MISSION_ID);
+    if (record.id === "legacy-proving-ground") {
+      fail("MISSION_LEGACY_FORBIDDEN", pointerJoin(itemPath, "id"), "Legacy proving ground cannot enter a campaign manifest");
+    }
+    if (ids.has(record.id)) {
+      fail("SCHEMA_DUPLICATE_ID", pointerJoin(itemPath, "id"), "Duplicate mission ID " + JSON.stringify(record.id));
+    }
+    if (previousId !== null && previousId > record.id) {
+      fail("SCHEMA_UNSTABLE_ORDER", pointerJoin(itemPath, "id"), "Mission map records must use ascending ASCII ID order");
+    }
+    requirePortableSourceReference(record.source, pointerJoin(itemPath, "source"));
+    if (!record.source.endsWith(".json")) {
+      fail("SOURCE_REFERENCE", pointerJoin(itemPath, "source"), "Mission sources must use the lowercase .json extension");
+    }
+    if (sources.has(record.source)) {
+      fail("SCHEMA_DUPLICATE_SOURCE", pointerJoin(itemPath, "source"), "Duplicate mission source " + JSON.stringify(record.source));
+    }
+    ids.add(record.id);
+    sources.add(record.source);
+    previousId = record.id;
+  });
+  return value;
+}
+
+function validateSourceManifest(value) {
+  requireObject(value, "/");
+  requireSafeInteger(value.schemaVersion, "/schemaVersion");
+  if (value.schemaVersion === 1) return validateSourceManifestV1(value);
+  if (value.schemaVersion === 2) return validateSourceManifestV2(value);
+  fail("SCHEMA_INTEGER", "/schemaVersion", "Expected source schemaVersion 1 or 2");
 }
 
 function validateBehaviorContracts(value, registryContracts) {
@@ -213,6 +287,7 @@ function validateAbiDescriptor(value) {
 
 module.exports = Object.freeze({
   ABI_V1_SHA256: ABI_V1_SHA256,
+  CAMPAIGN_MISSION_ID: CAMPAIGN_MISSION_ID,
   validateSourceManifest: validateSourceManifest,
   validateBehaviorContracts: validateBehaviorContracts,
   validateAbiDescriptor: validateAbiDescriptor,

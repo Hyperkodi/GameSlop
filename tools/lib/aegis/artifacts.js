@@ -214,7 +214,7 @@ function buildArtifacts(input) {
   }
 
   const abiHashHex = sha256Hex(authoredAbiBytes);
-  const content = deepFreezeData(JSON.parse(canonicalEncode({
+  const contentRecord = {
     abi: abi,
     abiHash: "sha256:" + abiHashHex,
     behaviorContracts: behaviorContracts,
@@ -222,14 +222,26 @@ function buildArtifacts(input) {
     missionIds: input.missionIds.slice(),
     schemaVersion: input.schemaVersion,
     sourceKind: input.sourceKind,
-  })));
+  };
+  if (input.schemaVersion === 2) {
+    if (!Array.isArray(input.missionMaps) || input.missionMaps.length === 0) {
+      fail("ARTIFACT_MISSION_MAPS", "/missionMaps", "Source schema v2 requires compiled mission maps");
+    }
+    contentRecord.missionMaps = input.missionMaps.map(function (mission) {
+      // Source locations are authoring provenance, not simulation semantics. Keeping them out of
+      // the content artifact lets an identical compiled map retain its ruleset identity after a
+      // repository-only file move; the generated manifest still records the declared source.
+      return { id: mission.id, compiled: mission.compiled };
+    });
+  }
+  const content = deepFreezeData(JSON.parse(canonicalEncode(contentRecord)));
   const contentBytes = renderContentArtifact(content);
   const simulationHashHex = sha256Hex(simulationBytes);
   const contentHashHex = sha256Hex(contentBytes);
   const rulesetHashHex = sha256Hex(frameRulesetBytes(authoredAbiBytes, simulationBytes, contentBytes));
   const simulationName = "aegis-sim." + simulationHashHex + ".js";
   const contentName = "aegis-content." + contentHashHex + ".js";
-  const manifest = deepFreezeData({
+  const manifestRecord = {
     abiHash: "sha256:" + abiHashHex,
     contentArtifact: contentName,
     contentHash: "sha256:" + contentHashHex,
@@ -239,7 +251,13 @@ function buildArtifacts(input) {
     schemaVersion: input.schemaVersion,
     simulationArtifact: simulationName,
     simulationHash: "sha256:" + simulationHashHex,
-  });
+  };
+  if (input.schemaVersion === 2) {
+    manifestRecord.missionMaps = input.missionMaps.map(function (mission) {
+      return { id: mission.id, source: mission.source };
+    });
+  }
+  const manifest = deepFreezeData(manifestRecord);
   const manifestBytes = Buffer.concat([canonicalBytes(manifest), Buffer.from("\n", "utf8")]);
   const manifestHashHex = sha256Hex(manifestBytes);
   const manifestName = "manifest." + manifestHashHex + ".json";
