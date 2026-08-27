@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" role="img" aria-labelledby="title desc">
+  <title id="title">Aegis m04 normalized physical map heatmap</title>
+  <desc id="desc">3 physical lanes, 2 logical routes, and 10 approved tower pads. Solid ochre marks ground roads; dashed cyan marks air lanes; rings mark declared crossings.</desc>
+  <rect width="160" height="100" fill="#111a24"/>
+  <rect x="1" y="1" width="158" height="98" rx="3" fill="#24313a" stroke="#d1a95b" stroke-width="1"/>
+  <g id="grid" stroke="#8aa0a8" stroke-width="0.16" opacity="0.14">
+    <path d="M 4 0 V 100"/>
+    <path d="M 8 0 V 100"/>
+    <path d="M 12 0 V 100"/>
+    <path d="M 16 0 V 100"/>
+    <path d="M 20 0 V 100"/>
+    <path d="M 24 0 V 100"/>
+    <path d="M 28 0 V 100"/>
+    <path d="M 32 0 V 100"/>
+    <path d="M 36 0 V 100"/>
+    <path d="M 40 0 V 100"/>
+    <path d="M 44 0 V 100"/>
+    <path d="M 48 0 V 100"/>
+    <path d="M 52 0 V 100"/>
+    <path d="M 56 0 V 100"/>
+    <path d="M 60 0 V 100"/>
+    <path d="M 64 0 V 100"/>
+    <path d="M 68 0 V 100"/>
+    <path d="M 72 0 V 100"/>
+    <path d="M 76 0 V 100"/>
+    <path d="M 80 0 V 100"/>
+    <path d="M 84 0 V 100"/>
+    <path d="M 88 0 V 100"/>
+    <path d="M 92 0 V 100"/>
+    <path d="M 96 0 V 100"/>
+    <path d="M 100 0 V 100"/>
+    <path d="M 104 0 V 100"/>
+    <path d="M 108 0 V 100"/>
+    <path d="M 112 0 V 100"/>
+    <path d="M 116 0 V 100"/>
+    <path d="M 120 0 V 100"/>
+    <path d="M 124 0 V 100"/>
+    <path d="M 128 0 V 100"/>
+    <path d="M 132 0 V 100"/>
+    <path d="M 136 0 V 100"/>
+    <path d="M 140 0 V 100"/>
+    <path d="M 144 0 V 100"/>
+    <path d="M 148 0 V 100"/>
+    <path d="M 152 0 V 100"/>
+    <path d="M 156 0 V 100"/>
+    <path d="M 0 4 H 160"/>
+    <path d="M 0 8 H 160"/>
+    <path d="M 0 12 H 160"/>
+    <path d="M 0 16 H 160"/>
+    <path d="M 0 20 H 160"/>
+    <path d="M 0 24 H 160"/>
+    <path d="M 0 28 H 160"/>
+    <path d="M 0 32 H 160"/>
+    <path d="M 0 36 H 160"/>
+    <path d="M 0 40 H 160"/>
+    <path d="M 0 44 H 160"/>
+    <path d="M 0 48 H 160"/>
+    <path d="M 0 52 H 160"/>
+    <path d="M 0 56 H 160"/>
+    <path d="M 0 60 H 160"/>
+    <path d="M 0 64 H 160"/>
+    <path d="M 0 68 H 160"/>
+    <path d="M 0 72 H 160"/>
+    <path d="M 0 76 H 160"/>
+    <path d="M 0 80 H 160"/>
+    <path d="M 0 84 H 160"/>
+    <path d="M 0 88 H 160"/>
+    <path d="M 0 92 H 160"/>
+    <path d="M 0 96 H 160"/>
+  </g>
+  <g id="physical-lanes">
+    <g id="lane-lane.north.approach" data-lane-segment-id="lane.north.approach" data-kind="ground" data-layer="surface" data-route-ids="route.north">
+      <polyline points="-6,18 34,18 34,34 74,34 94,50" fill="none" stroke="#130e0a" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="-6,18 34,18 34,34 74,34 94,50" fill="none" stroke="#b9a274" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="-6,18 34,18 34,34 74,34 94,50" fill="none" stroke="#dfc994" stroke-width="0.8" stroke-dasharray="3 2" stroke-linejoin="round"/>
+    </g>
+    <g id="lane-lane.shared.trunk" data-lane-segment-id="lane.shared.trunk" data-kind="ground" data-layer="surface" data-route-ids="route.north,route.south">
+      <polyline points="94,50 118,50 118,82 166,82" fill="none" stroke="#130e0a" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="94,50 118,50 118,82 166,82" fill="none" stroke="#b9a274" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="94,50 118,50 118,82 166,82" fill="none" stroke="#dfc994" stroke-width="0.8" stroke-dasharray="3 2" stroke-linejoin="round"/>
+    </g>
+    <g id="lane-lane.south.approach" data-lane-segment-id="lane.south.approach" data-kind="ground" data-layer="surface" data-route-ids="route.south">
+      <polyline points="-6,82 34,82 34,66 74,66 94,50" fill="none" stroke="#130e0a" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="-6,82 34,82 34,66 74,66 94,50" fill="none" stroke="#b9a274" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="-6,82 34,82 34,66 74,66 94,50" fill="none" stroke="#dfc994" stroke-width="0.8" stroke-dasharray="3 2" stroke-linejoin="round"/>
+    </g>
+  </g>
+  <g id="joins" fill="#48c986" stroke="#d9ffea" stroke-width="0.55">
+    <polygon id="join-join.harbor-merge" points="94,47 97,50 94,53 91,50" data-join-kind="merge"/>
+  </g>
+  <g id="anchors" font-family="system-ui,Segoe UI,sans-serif" font-size="2.5" font-weight="700">
+    <g id="anchor-entry.north" data-anchor-kind="entry">
+      <circle cx="-6" cy="18" r="2.2" fill="#8ff0bd" stroke="#0b1118" stroke-width="0.7"/>
+    </g>
+    <g id="anchor-entry.south" data-anchor-kind="entry">
+      <circle cx="-6" cy="82" r="2.2" fill="#8ff0bd" stroke="#0b1118" stroke-width="0.7"/>
+    </g>
+    <g id="anchor-gate.east" data-anchor-kind="gate">
+      <circle cx="166" cy="82" r="2.2" fill="#ff865c" stroke="#0b1118" stroke-width="0.7"/>
+    </g>
+  </g>
+  <g id="pads" font-family="system-ui,Segoe UI,sans-serif" text-anchor="middle">
+    <g id="pad-p01" data-quality="strong" data-selection-order="0" data-exposure-milli="41364">
+      <circle cx="14" cy="34" r="22" fill="none" stroke="#f3b61f" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="14" cy="34" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="14" cy="34" r="3" fill="#ffd34d" stroke="#fff3a6" stroke-width="0.65"/>
+      <text x="14" y="33.5" fill="#071018" font-size="2.7" font-weight="800">1</text>
+      <text x="14" y="40.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p01 / 41.364</text>
+    </g>
+    <g id="pad-p02" data-quality="strong" data-selection-order="2" data-exposure-milli="51299">
+      <circle cx="50" cy="18" r="22" fill="none" stroke="#f3b61f" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="50" cy="18" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="50" cy="18" r="3" fill="#ffd34d" stroke="#fff3a6" stroke-width="0.65"/>
+      <text x="50" y="17.5" fill="#071018" font-size="2.7" font-weight="800">3</text>
+      <text x="50" y="24.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p02 / 51.299</text>
+    </g>
+    <g id="pad-p03" data-quality="standard" data-selection-order="4" data-exposure-milli="30199">
+      <circle cx="54" cy="50" r="22" fill="none" stroke="#18a8ce" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="54" cy="50" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="54" cy="50" r="3" fill="#44dcff" stroke="#d5f8ff" stroke-width="0.65"/>
+      <text x="54" y="49.5" fill="#071018" font-size="2.7" font-weight="800">5</text>
+      <text x="54" y="56.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p03 / 30.199</text>
+    </g>
+    <g id="pad-p04" data-quality="strong" data-selection-order="1" data-exposure-milli="41364">
+      <circle cx="14" cy="66" r="22" fill="none" stroke="#f3b61f" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="14" cy="66" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="14" cy="66" r="3" fill="#ffd34d" stroke="#fff3a6" stroke-width="0.65"/>
+      <text x="14" y="65.5" fill="#071018" font-size="2.7" font-weight="800">2</text>
+      <text x="14" y="72.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p04 / 41.364</text>
+    </g>
+    <g id="pad-p05" data-quality="specialist" data-selection-order="5" data-exposure-milli="25579">
+      <circle cx="70" cy="18" r="22" fill="none" stroke="#9966dd" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="70" cy="18" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="70" cy="18" r="3" fill="#bb8cff" stroke="#e8d8ff" stroke-width="0.65"/>
+      <text x="70" y="17.5" fill="#071018" font-size="2.7" font-weight="800">6</text>
+      <text x="70" y="24.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p05 / 25.579</text>
+    </g>
+    <g id="pad-p06" data-quality="specialist" data-selection-order="6" data-exposure-milli="25579">
+      <circle cx="70" cy="82" r="22" fill="none" stroke="#9966dd" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="70" cy="82" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="70" cy="82" r="3" fill="#bb8cff" stroke="#e8d8ff" stroke-width="0.65"/>
+      <text x="70" y="81.5" fill="#071018" font-size="2.7" font-weight="800">7</text>
+      <text x="70" y="88.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p06 / 25.579</text>
+    </g>
+    <g id="pad-p07" data-quality="standard" data-selection-order="7" data-exposure-milli="27541">
+      <circle cx="102" cy="34" r="22" fill="none" stroke="#18a8ce" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="102" cy="34" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="102" cy="34" r="3" fill="#44dcff" stroke="#d5f8ff" stroke-width="0.65"/>
+      <text x="102" y="33.5" fill="#071018" font-size="2.7" font-weight="800">8</text>
+      <text x="102" y="40.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p07 / 27.541</text>
+    </g>
+    <g id="pad-p08" data-quality="standard" data-selection-order="8" data-exposure-milli="27594">
+      <circle cx="134" cy="58" r="22" fill="none" stroke="#18a8ce" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="134" cy="58" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="134" cy="58" r="3" fill="#44dcff" stroke="#d5f8ff" stroke-width="0.65"/>
+      <text x="134" y="57.5" fill="#071018" font-size="2.7" font-weight="800">9</text>
+      <text x="134" y="64.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p08 / 27.594</text>
+    </g>
+    <g id="pad-p09" data-quality="specialist" data-selection-order="9" data-exposure-milli="24733">
+      <circle cx="102" cy="78" r="22" fill="none" stroke="#9966dd" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="102" cy="78" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="102" cy="78" r="3" fill="#bb8cff" stroke="#e8d8ff" stroke-width="0.65"/>
+      <text x="102" y="77.5" fill="#071018" font-size="2.7" font-weight="800">10</text>
+      <text x="102" y="84.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p09 / 24.733</text>
+    </g>
+    <g id="pad-p10" data-quality="strong" data-selection-order="3" data-exposure-milli="51299">
+      <circle cx="50" cy="82" r="22" fill="none" stroke="#f3b61f" stroke-width="0.45" opacity="0.26"/>
+      <circle cx="50" cy="82" r="4" fill="#081016" stroke="#05090c" stroke-width="1.2"/>
+      <circle cx="50" cy="82" r="3" fill="#ffd34d" stroke="#fff3a6" stroke-width="0.65"/>
+      <text x="50" y="81.5" fill="#071018" font-size="2.7" font-weight="800">4</text>
+      <text x="50" y="88.5" fill="#f3f7f8" stroke="#111a24" stroke-width="0.6" paint-order="stroke" font-size="2.7" font-weight="700">p10 / 51.299</text>
+    </g>
+  </g>
+  <g transform="translate(4 8)" font-family="system-ui,Segoe UI,sans-serif" font-size="2.8" fill="#f6ead0">
+    <rect x="0" y="-4.5" width="76" height="6" rx="1.5" fill="#111a24" opacity="0.9"/>
+    <path d="M 2 -1.5 H 9" stroke="#b9a274" stroke-width="2"/><text x="11" y="-0.5">Ground</text>
+    <path d="M 29 -1.5 H 36" stroke="#5be7ff" stroke-width="1.3" stroke-dasharray="2 1"/><text x="38" y="-0.5">Air</text>
+    <circle cx="57" cy="-1.5" r="1.5" fill="#44dcff"/><text x="60" y="-0.5">Pad</text>
+  </g>
+</svg>
