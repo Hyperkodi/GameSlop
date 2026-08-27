@@ -3,7 +3,10 @@
 /games/aegis/js/sim/** text eol=lf
 /games/aegis/js/delivery/** text eol=lf
 /games/aegis/tests/fixtures/** text eol=lf
-/docs/aegis-balance/maps/** text eol=lf
+/docs/aegis/** text eol=lf
+/docs/superpowers/specs/** text eol=lf
+/docs/superpowers/plans/** text eol=lf
+/docs/aegis-balance/** text eol=lf
 /tools/build-aegis-content.js text eol=lf
 /tools/analyze-aegis-map.js text eol=lf
 /tools/lib/aegis/** text eol=lf

@@ -78,6 +78,24 @@ The current Armara Aegis PNG baseline demonstrates why this is binding:
 
 The decoded set remains under the proposed 64 MB mobile ceiling, but the current eager transfer set exceeds the 5 MB initial ceiling. The 5 MB initial and 3 MB additional-pack ceilings therefore remain accepted and enforce a concrete implementation requirement: split/lazy-load mission packs and optimize production images before release. Mass asset generation cannot begin until explicit atlas records and budget validation exist.
 
+### ADR-008 — Bound replay kernel and authoritative validation boundaries
+
+Canonical replay state uses completed-tick boundaries. A state whose `tick` is `N` represents exactly `N` completed fixed combat ticks and is the boundary at which the current-tick command bucket for tick `N` may be consumed. Checkpoint 0 hashes the canonical initial state before any tick-0 command. Checkpoint `N` hashes the boundary after command buckets `0` through `N - 1` and every declared simulation phase for those ticks.
+
+Planning is clock-suspended. The kernel groups commands into one explicit current-tick bucket and applies that bucket in `seq` order. A planning bucket that does not accept `startWave` does not advance combat time; commands recorded at a later tick cannot bypass that suspended boundary. When wave clear produces planning state during tick `N`, the next planning/current-tick bucket is at boundary `N + 1`.
+
+Replay `durationTicks` identifies the first terminal boundary. Terminal padding and post-terminal no-op ticks are invalid. If a leak causes defeat, the kernel enters every remaining named phase for that tick as a deterministic no-op and commits the completed tick boundary; it never exposes or hashes an ambiguous partial-tick state.
+
+The semantic event schema is an artifact-owned version independent from the command schema. Replay code must not infer `eventSchemaVersion` from the commands descriptor merely because both versions currently equal 1.
+
+Checkpoint and final hashes cover canonical boundary simulation state only. Semantic event logs, diagnostics, renderer or presentation state, cached seek snapshots, pause or speed state, and platform metadata are excluded. A hash remains a comparison result, not gameplay proof.
+
+The immutable release loader or server validator authenticates exact manifest, simulation-artifact, and compiled-content bytes and filenames. The bound kernel receives those authenticated records explicitly and verifies their semantic agreement: ruleset, ABI, content, mission, event-schema, and behavior-registry identities. It does not discover content through globals or platform I/O, and semantic binding alone does not claim to reauthenticate source bytes.
+
+Compiled content schema v2 is insufficient for authoritative replay simulation because it contains the map foundation but not the complete combat, economy, objective, scoring, and behavior records. The production replay kernel must reject it with a stable unsupported-schema result rather than fall back to the variable-delta legacy engine. Synthetic immutable fixtures may exercise the kernel seam, tick driver, management transitions, limits, diagnostics, and execution-mode parity, but they are nonproduction and cannot validate a live Aegis run.
+
+A replay outcome, score, Laurels total, checkpoint, or final-state hash becomes authoritative only after the matching immutable ruleset is fully re-simulated through its first terminal boundary by the complete combat kernel. Plan Task 1.3 remains explicitly incomplete until content schema v3 and the required artifact-owned behavior registry can reproduce those production results; implementing a fail-closed seam or passing synthetic fixtures does not satisfy that exit gate.
+
 ## Initial risk register
 
 | Risk | Evidence | Required mitigation | Gate |
