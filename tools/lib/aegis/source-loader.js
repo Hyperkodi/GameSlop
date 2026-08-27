@@ -5,6 +5,7 @@ const path = require("node:path");
 const { fail } = require("./diagnostics.js");
 const { parseStrictJsonBytes } = require("./strict-json.js");
 const { validateMissionMap } = require("./map-validation.js");
+const { preflightV3SourceTree } = require("./v3-source-loader.js");
 const {
   validateSourceManifest,
   validateBehaviorContracts,
@@ -55,6 +56,28 @@ function readJson(filePath, label) {
   return parseStrictJsonBytes(readBytes(filePath, "/"), label || path.basename(filePath));
 }
 
+function selectManifest(root, manifestPath) {
+  if (manifestPath === undefined) {
+    return Object.freeze({
+      source: "schema-version.json",
+      path: resolveReference(root, "schema-version.json", "/"),
+    });
+  }
+  if (typeof manifestPath !== "string" || !manifestPath) {
+    fail("SOURCE_REFERENCE", "/manifest", "Alternate manifest path must be a nonempty path string");
+  }
+  const selected = path.resolve(manifestPath);
+  const relative = path.relative(path.resolve(root), selected);
+  if (!relative || relative === ".." || relative.startsWith(".." + path.sep) || path.isAbsolute(relative)) {
+    fail("SOURCE_REFERENCE", "/manifest", "Alternate manifest must stay inside the content source root");
+  }
+  const source = relative.split(path.sep).join("/");
+  return Object.freeze({
+    source: source,
+    path: resolveReference(root, source, "/manifest"),
+  });
+}
+
 function loadMissionMaps(root, manifest) {
   if (manifest.schemaVersion === 1) {
     return Object.freeze({
@@ -93,8 +116,9 @@ function loadMissionMaps(root, manifest) {
   });
 }
 
-function loadSourceTree(sourceRoot) {
+function loadSourceTree(sourceRoot, options) {
   if (typeof sourceRoot !== "string" || !sourceRoot) fail("SOURCE_READ", "/", "Content source root is required");
+  options = options || {};
   let root;
   try {
     root = fs.realpathSync(path.resolve(sourceRoot));
@@ -102,8 +126,17 @@ function loadSourceTree(sourceRoot) {
   } catch (error) {
     fail("SOURCE_READ", "/", "Content source root must be an existing directory");
   }
-  const manifestPath = resolveReference(root, "schema-version.json", "/");
-  const manifest = validateSourceManifest(readJson(manifestPath, "schema-version.json"));
+  const selectedManifest = selectManifest(root, options.manifestPath);
+  const parsedManifest = readJson(selectedManifest.path, selectedManifest.source);
+  if (parsedManifest && parsedManifest.schemaVersion === 3) {
+    return preflightV3SourceTree({
+      sourceRoot: root,
+      repositoryRoot: options.repositoryRoot === undefined ? root : options.repositoryRoot,
+      manifestSource: selectedManifest.source,
+    });
+  }
+  const manifestPath = selectedManifest.path;
+  const manifest = validateSourceManifest(parsedManifest);
   const abiPath = resolveReference(root, manifest.abiDescriptor, "/abiDescriptor");
   const behaviorPath = resolveReference(root, manifest.behaviorContracts, "/behaviorContracts");
   const abi = validateAbiDescriptor(readJson(abiPath, manifest.abiDescriptor));
@@ -131,6 +164,7 @@ module.exports = Object.freeze({
   readBytes: readBytes,
   readJson: readJson,
   resolveReference: resolveReference,
+  selectManifest: selectManifest,
   loadMissionMaps: loadMissionMaps,
   loadSourceTree: loadSourceTree,
 });

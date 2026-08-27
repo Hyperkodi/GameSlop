@@ -2,6 +2,7 @@
 /games/aegis/content/** text eol=lf
 /games/aegis/js/sim/** text eol=lf
 /games/aegis/js/delivery/** text eol=lf
+/games/aegis/tests/** text eol=lf
 /games/aegis/tests/fixtures/** text eol=lf
 /docs/aegis/** text eol=lf
 /docs/superpowers/specs/** text eol=lf

@@ -19,7 +19,17 @@ function readSimulation(input) {
 }
 
 function compileSourceTree(input) {
-  const source = loadSourceTree(input.sourceRoot);
+  const source = loadSourceTree(input.sourceRoot, {
+    manifestPath: input.manifestPath,
+    repositoryRoot: input.repositoryRoot,
+  });
+  if (source.manifest.schemaVersion === 3) {
+    fail(
+      "SOURCE_SCHEMA_INCOMPLETE",
+      "/schemaVersion",
+      "Source schema v3 passed structural preflight but cannot emit artifacts until the complete v3 compiler is installed"
+    );
+  }
   const simulationBytes = readSimulation(input);
   const missionIds = source.manifest.schemaVersion === 1
     ? source.manifest.missionIds.slice()

@@ -203,6 +203,13 @@ function immutableOutputs(entries) {
 }
 
 function buildArtifacts(input) {
+  if (!input || (input.schemaVersion !== 1 && input.schemaVersion !== 2)) {
+    fail(
+      "ARTIFACT_SCHEMA_UNIMPLEMENTED",
+      "/schemaVersion",
+      "Artifact emission is implemented only for complete source schemas 1 and 2"
+    );
+  }
   const abi = input.abi;
   const behaviorContracts = input.behaviorContracts;
   const simulationBytes = Buffer.from(input.simulationBytes);

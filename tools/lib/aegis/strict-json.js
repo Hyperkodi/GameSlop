@@ -3,6 +3,61 @@
 const { TextDecoder } = require("node:util");
 const { fail, pointerJoin } = require("./diagnostics.js");
 const MAX_JSON_DEPTH = 256;
+const DEFAULT_OPTIONS = Object.freeze({
+  maxDepth: MAX_JSON_DEPTH,
+  maxObjectFields: Number.MAX_SAFE_INTEGER,
+  rejectNegativeZero: false,
+});
+
+function normalizeOptions(input) {
+  if (input === undefined) return DEFAULT_OPTIONS;
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new TypeError("Strict JSON options must be a plain object");
+  }
+  const prototype = Object.getPrototypeOf(input);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("Strict JSON options must be a plain object");
+  }
+  if (Object.getOwnPropertySymbols(input).length !== 0) {
+    throw new TypeError("Strict JSON options cannot contain symbol properties");
+  }
+  const allowed = new Set(["maxDepth", "maxObjectFields", "rejectNegativeZero"]);
+  const values = {};
+  Object.getOwnPropertyNames(input).forEach(function (key) {
+    const descriptor = Object.getOwnPropertyDescriptor(input, key);
+    if (!descriptor.enumerable || descriptor.get || descriptor.set) {
+      throw new TypeError("Strict JSON options must contain only enumerable data properties");
+    }
+    if (!allowed.has(key)) throw new TypeError("Unknown strict JSON option " + key);
+    values[key] = descriptor.value;
+  });
+  ["maxDepth", "maxObjectFields"].forEach(function (key) {
+    if (!Object.prototype.hasOwnProperty.call(values, key)) return;
+    if (!Number.isSafeInteger(values[key]) || values[key] < 0 || Object.is(values[key], -0)) {
+      throw new RangeError("Strict JSON option " + key + " must be a nonnegative safe integer");
+    }
+    if (values[key] > DEFAULT_OPTIONS[key]) {
+      throw new RangeError("Strict JSON option " + key + " cannot relax the default maximum");
+    }
+  });
+  if (
+    Object.prototype.hasOwnProperty.call(values, "rejectNegativeZero") &&
+    typeof values.rejectNegativeZero !== "boolean"
+  ) {
+    throw new TypeError("Strict JSON option rejectNegativeZero must be boolean");
+  }
+  return Object.freeze({
+    maxDepth: Object.prototype.hasOwnProperty.call(values, "maxDepth")
+      ? values.maxDepth
+      : DEFAULT_OPTIONS.maxDepth,
+    maxObjectFields: Object.prototype.hasOwnProperty.call(values, "maxObjectFields")
+      ? values.maxObjectFields
+      : DEFAULT_OPTIONS.maxObjectFields,
+    rejectNegativeZero: Object.prototype.hasOwnProperty.call(values, "rejectNegativeZero")
+      ? values.rejectNegativeZero
+      : DEFAULT_OPTIONS.rejectNegativeZero,
+  });
+}
 
 function decodeUtf8(bytes, label) {
   const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
@@ -16,8 +71,9 @@ function decodeUtf8(bytes, label) {
   }
 }
 
-function parseStrictJsonBytes(bytes, label) {
+function parseStrictJsonBytes(bytes, label, optionOverrides) {
   label = label || "JSON source";
+  const options = normalizeOptions(optionOverrides);
   const text = decodeUtf8(bytes, label);
   let index = 0;
 
@@ -93,6 +149,9 @@ function parseStrictJsonBytes(bytes, label) {
     if (!/^-?(0|[1-9][0-9]*)$/.test(token)) {
       fail("JSON_NUMBER_FORMAT", path, label + ": JSON numbers must be plain integers; author exact decimals as strings");
     }
+    if (options.rejectNegativeZero && token === "-0") {
+      fail("JSON_NUMBER_NEGATIVE_ZERO", path, label + ": negative zero is forbidden");
+    }
     const value = Number(token);
     if (!Number.isSafeInteger(value)) fail("JSON_NUMBER_UNSAFE", path, label + ": JSON integer exceeds the safe-integer range");
     return Object.is(value, -0) ? 0 : value;
@@ -121,12 +180,21 @@ function parseStrictJsonBytes(bytes, label) {
     // cannot alter the parsed object's prototype before unknown-key validation runs.
     const value = Object.create(null);
     const keys = new Set();
+    let fieldCount = 0;
     if (text[index] === "}") { index++; return value; }
     while (index < text.length) {
       const key = parseString(path);
       const keyPath = pointerJoin(path, key);
       if (keys.has(key)) fail("JSON_DUPLICATE_KEY", keyPath, label + ": duplicate object key " + JSON.stringify(key));
       keys.add(key);
+      fieldCount++;
+      if (fieldCount > options.maxObjectFields) {
+        fail(
+          "JSON_OBJECT_FIELDS",
+          keyPath,
+          label + ": JSON object exceeds " + options.maxObjectFields + " fields"
+        );
+      }
       whitespace();
       if (text[index] !== ":") syntax(keyPath, "Expected ':' after object key");
       index++;
@@ -142,7 +210,9 @@ function parseStrictJsonBytes(bytes, label) {
   }
 
   function parseValue(path, depth) {
-    if (depth > MAX_JSON_DEPTH) fail("JSON_DEPTH", path, label + ": JSON nesting exceeds " + MAX_JSON_DEPTH);
+    if (depth > options.maxDepth) {
+      fail("JSON_DEPTH", path, label + ": JSON nesting exceeds " + options.maxDepth);
+    }
     whitespace();
     const token = text[index];
     if (token === "{") return parseObject(path, depth);
@@ -162,4 +232,8 @@ function parseStrictJsonBytes(bytes, label) {
   return value;
 }
 
-module.exports = Object.freeze({ decodeUtf8: decodeUtf8, parseStrictJsonBytes: parseStrictJsonBytes });
+module.exports = Object.freeze({
+  DEFAULT_OPTIONS: DEFAULT_OPTIONS,
+  decodeUtf8: decodeUtf8,
+  parseStrictJsonBytes: parseStrictJsonBytes,
+});

@@ -18,7 +18,9 @@ const USAGE = [
   "  node tools/build-aegis-content.js --write",
   "  node tools/build-aegis-content.js --check --fixture <name>",
   "  node tools/build-aegis-content.js --write --fixture <name>",
+  "  node tools/build-aegis-content.js --check --manifest <repo-relative-file>",
   "  production defaults to the complete declared deterministic simulation module bundle",
+  "  append --manifest <repo-relative-file> to preflight an alternate contained source manifest",
   "  append --simulation <repo-relative-file> only to override the explicit simulation seam",
   "Exit codes: 0 success, 1 source/build/I/O failure, 2 invalid CLI usage.",
 ].join("\n");
@@ -32,6 +34,7 @@ function usageError(message) {
 function parseArgs(argv) {
   let mode = null;
   let fixture = null;
+  let manifest = null;
   let simulation = null;
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index];
@@ -59,6 +62,23 @@ function parseArgs(argv) {
         throw usageError("--simulation must stay inside the repository");
       }
       simulation = normalized;
+    } else if (arg === "--manifest") {
+      if (manifest !== null || index + 1 >= argv.length) throw usageError("--manifest requires one value");
+      manifest = argv[++index];
+      if (path.isAbsolute(manifest) || manifest.indexOf("\\") !== -1) {
+        throw usageError("--manifest must be a repo-relative POSIX path");
+      }
+      const segments = manifest.split("/");
+      if (segments.some(function (segment) {
+        return !segment || segment === "." || segment === ".." || !/^[A-Za-z0-9._-]+$/.test(segment);
+      })) {
+        throw usageError("--manifest must use portable path segments without aliases or alternate streams");
+      }
+      const normalized = path.posix.normalize(manifest);
+      if (normalized === ".." || normalized.startsWith("../") || normalized.startsWith("/")) {
+        throw usageError("--manifest must stay inside the repository");
+      }
+      manifest = normalized;
     } else if (arg === "--help" && argv.length === 1) {
       return { help: true };
     } else {
@@ -66,7 +86,9 @@ function parseArgs(argv) {
     }
   }
   if (!mode) throw usageError("Specify exactly one of --check or --write");
+  if (fixture && manifest) throw usageError("--fixture and --manifest cannot be combined");
   const sourceRoot = fixture ? path.join(FIXTURE_ROOT, fixture) : DEFAULT_SOURCE;
+  const manifestPath = manifest ? path.resolve(REPO_ROOT, manifest) : undefined;
   let simulationPath = simulation
     ? path.resolve(REPO_ROOT, simulation)
     : (fixture ? path.join(sourceRoot, "simulation.js") : DEFAULT_SIMULATION);
@@ -87,7 +109,9 @@ function parseArgs(argv) {
   return {
     help: false,
     mode: mode,
+    repositoryRoot: REPO_ROOT,
     sourceRoot: sourceRoot,
+    manifestPath: manifestPath,
     simulationPath: simulationPath,
     useDefaultSimulationBundle: !fixture && !simulation,
   };
