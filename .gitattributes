@@ -1,0 +1,7 @@
+/.gitattributes text eol=lf
+/games/aegis/content/** text eol=lf
+/games/aegis/js/sim/** text eol=lf
+/games/aegis/js/delivery/** text eol=lf
+/games/aegis/tests/fixtures/** text eol=lf
+/tools/build-aegis-content.js text eol=lf
+/tools/lib/aegis/** text eol=lf
