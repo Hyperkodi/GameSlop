@@ -141,3 +141,13 @@ Temporary reinforcements deploy only at authored, validated markers. Player-acti
 The normal public Aegis route remains on the current proving ground while new campaign work runs behind an explicit development manifest/profile. No slice completion can mutate a production profile. Production art follows reviewed behavior and balance records, not speculative content. A release is live only after the committed suites pass, `games/.nojekyll` is present, public `_kit/shell.js` returns 200, and a live boot reaches the ready state with required art loaded.
 
 The remaining Ryan decisions are the single deferred operational set in specification Section 23: backend/operator/budget/domains, official provider IDs and credentials, provider terms/copy, account recovery/merge, retention/deletion periods, ranked scope, downloadable-video scope, and final measured release budgets. None blocks offline campaign implementation.
+
+### ADR-014 — One kernel, version-dispatched phase tables, and the foundation rulings annex
+
+**Decision date:** 2026-08-29
+
+The unlock runtime does not add a second reducer. `kernel.js` binds an ABI version from the authenticated content schema (`3 → ABI v1`, `4 → ABI v2`) and selects that version's declared phase table; every phase function is shared, and v2-only phases (Aether payments for new command families, expiry/enable transitions, scheduled Protocol/mechanism resolutions, reinforcement attacks, zone pulses, leak arbitration with Aegis Ward, cooldown/effect decrement) execute only under a v4 binding. Historical v1/v3 releases keep their exact phase order, events, and hashes; their immutable generated artifacts are never modified or deleted, and a rebuilt bundle receives a new ruleset hash rather than replacing an old file.
+
+Management remains the sole Aether authority for every command family. Under ABI v2 an unknown command type is a stable denial event, never a throw. Every hit/status intent carries one closed combat-source record (`tower`, `protocol`, `mechanism`, `unit`) and resolves through the single damage reducer; mastery attribution counts only `tower` sources. Tower investment is the sum of actual Relic-modified payments, and the 70% refund derives from that sum.
+
+Specification §17 (rulings R1–R15) records the defaults adopted during the foundation re-audit: bp-delta Relic composition with one clamp and one rounding, single-ceiling Titan Gear folding, Tier-1-only loans, single-key case-insensitive bindings, one mechanism per mission, Zeus nonempty selection, replay-derived run authorization with linear-prefix campaign completion, Recon-free run snapshots, and Strategos-gated mastery. Reversing any ruling is a content/annex change that requires Ryan's approval, not an architecture change.

@@ -91,6 +91,8 @@ resolvedCastCost = ceil(baseCost × (10000 + 2500 × priorAcceptedCasts) / 10000
 
 The first, second, third, and fourth casts therefore cost 100%, 125%, 150%, and 175% of base. Rejected commands do not pay, start cooldown, or increment the count. Accepted casts immediately pay, start their individual cooldown, and start a 15,000 ms shared Protocol cooldown. A Protocol is legal only when both cooldowns are zero.
 
+Ordinary `repeat-surcharge` Protocol tiers declare `maximumAcceptedCasts: null`: the rising Aether cost and replay/command resource ceilings bound them, not an arbitrary gameplay cap. Only Armara Ascension uses `castPolicyId: once-per-mission` and `maximumAcceptedCasts: 1`; its second-cast denial derives from that policy identity.
+
 Cooldowns, telegraphs, buffs, debuffs, zones, and summons use ABI integer time and advance only during combat ticks. Planning and Pause suspend them. Cooldowns carry across wave boundaries. Temporary active effects end at wave clear unless their record explicitly says `carryAcrossWave: true`; campaign v1 declares none. An accepted delayed strike keeps the combat wave open through its final scheduled resolution so a telegraph cannot freeze in planning.
 
 ### 5.2 Targeting and rejection
@@ -103,6 +105,8 @@ Target selection freezes simulation but not presentation animation. Cancel is fr
 - `world-vector` with an in-board origin and aim point for a cone.
 
 The command rejects with stable reasons for a locked/unequipped tier, wrong target kind, planning/terminal state, shared or individual cooldown, insufficient Aether, missing eligible target, stale tower, out-of-board vector, or mission-local loan mismatch. Presentation may explain the reason but may not repair or retarget the command.
+
+The deterministic geometry selector supplies a command-bound `targetSelection` proof containing exactly `{ protocolId, target, eligibleTargetIds }`. Its Protocol and canonical target must match the submitted command. Route, tower, cone, and immediate global-damage casts require a nonempty sorted eligible-ID list; an eligible unit elsewhere cannot authorize payment for an empty selected area. Future-spawn global fields and Aegis Ward explicitly permit an empty list because their effects attach to future simulation events rather than the current selection.
 
 ### 5.3 Effect composition
 
@@ -415,7 +419,7 @@ V2 retains v1 commands and adds these strict payload families:
 
 ```text
 specializeTower     { towerRuntimeId, specializationId }
-activatePower       { powerId, tier, target }
+activatePower       { protocolId, tier, target }
 deployReinforcement { reinforcementId, markerId }
 activateMechanism   { mechanismId, activationId }
 resetPlan           { }
@@ -428,9 +432,10 @@ resetPlan           { }
 In addition to retained v1 identities, the canonical start header contains exact resolved records for:
 
 ```text
-protocolLoadout: [{ id, tier }]
+protocolLoadout: [{ slot, protocolId, tier }]
 protocolSlotCap
-missionProtocolLoan: null | { id, tier }
+protocolAuthority: [{ protocolId, availableTier }]
+missionProtocolLoan: null | { protocolId, tier }
 relicIds
 relicSlotCap
 reinforcementId: null | id
@@ -438,6 +443,10 @@ specializationAccessIds
 ```
 
 Arrays are unique and ASCII sorted unless slot order affects controls, in which case the record contains explicit `slot` and sorts by slot. Campaign progression is consulted only to construct and authenticate this header. The running kernel never reads the mutable profile.
+
+Permanent Protocol authority is distinct from equipment: every equipped tier must be no greater than its matching `availableTier`. Mission loans never enter permanent authority, must be Tier 1, and remain a separate nullable header record.
+
+`activatePower` remains the stable command verb, while every Protocol identity field uses the unambiguous name `protocolId` across commands, profiles, replay headers, runtime ledgers, and presentation models.
 
 Recon, presentation settings, key bindings, Reduced Motion, share-card selections, timestamps, and provider/social data remain noncanonical.
 
@@ -542,3 +551,25 @@ The systems ship to the candidate preview through independently green checkpoint
 10. twenty-mission integration, balance witnesses, replay corpus, live preview QA, and release review.
 
 Each slice retains historical replay fixtures and the current candidate vertical slice. No slice is allowed to make the public proving-ground route less reliable while the campaign is still behind its development descriptor.
+
+## 17. Implementation rulings annex (2026-08-29, foundation re-audit)
+
+These rulings resolve ambiguities found by adversarial review. Each is the recommended default and was adopted so implementation could continue; Ryan may overturn any of them, and a reversal is a content/annex change, not an architecture change.
+
+| # | Ruling | Rationale |
+|---|---|---|
+| R1 | Relic multipliers on one named stat sum as basis-point deltas from `10000` (Forge Ember + Titan Gear build = `11600` bp, upgrade/specialization = `9600` bp), then clamp once, then round once. | Literal reading of §8.2 "sum by named stat … clamp before one rounding operation". |
+| R2 | Titan Gear folds into the Protocol cast formula as one ceiling: `ceil(base × (10000 + 2500 × prior) × relicBp / 10^8)`. Cards display the folded value. | §8.2 forbids a second rounding stage; two ceilings differ from one in 9 of 40 sampled cases. |
+| R3 | `add-bp` Relic stats (`tower-range`, `tower-rate`) resolve as `floor(base × (10000 + bp) / 10000)` with the declared policy rounding, never raw integer addition. | Basis points are dimensionless; raw addition was a defect. |
+| R4 | Additive starting Aether that would resolve below zero clamps to `0`; it never throws and never blocks run creation. | Broken Aegis on a low difficulty envelope must remain a legal loadout. |
+| R5 | Bounty multiplier stat has authored bounds `5000–15000` bp. | Every other stat has a clamp; an unbounded `×0` bounty would be authorable. |
+| R6 | Tutorial loans are exactly Tier 1 everywhere (profile, header, presentation). | §4 and §13.4. |
+| R7 | Key bindings are one printable ASCII letter/digit, compared case-insensitively; chords, `Escape`, `Tab`, `Enter`, `Space`, and function keys are rejected. `Escape` remains the fixed cancel key. | §12.2 "never collide with browser-reserved shortcuts". |
+| R8 | A mission features at most one player mechanism; its control uses the single mechanism binding. | §10 "the mission mechanism"; two runtimes on one key would collide. |
+| R9 | Zeus Skyfire is treated as immediate global damage for selection: acceptance requires a nonempty eligible list even though strikes resolve later. Temporal Edict, Armara Ascension, and Aegis Ward remain the only empty-selection Protocols. | §5.2 prevents paying Aether against an empty battlefield. |
+| R10 | Specialization cards resolve their displayed cost through the run's `specialization-cost` Relic multiplier exactly as the reducer charges it. | §15.2 "what each action currently costs". |
+| R11 | Verified-victory records carry a `runAuthorization` derived from the authenticated replay-v2 header (`formatVersion 2`, `rulesetHash`, `profileContentIdentity`, `missionId`, `difficultyId`, `loadoutIds`, `specializationAccessIds`). Evidence is authorized only by that record; the pre-application profile only bounds it (every authorized defense/branch must already be granted, and the loadout must fit the slot cap). The campaign is linear: `m01` has no prerequisite and `mNN` requires `m(N-1)` completed. | §11.2 "a replay/profile validator, not mutable presentation state, supplies the qualifying result". |
+| R12 | `resolveRunSnapshot` never exposes the generic applied-grant ledger; Recon grants cannot reach a run header, ruleset hash, or record key. | §11.1. |
+| R13 | One kernel, one reducer. The kernel binds an ABI version from the authenticated content schema (`schemaVersion 3 → ABI v1 phase order`, `schemaVersion 4 → ABI v2 phase order`). Historical v1/v3 releases keep their exact phase order and outcomes; v2 phases run only under a v4 binding. | ADR-009 and §13.5. |
+| R14 | Content-v4 mission sources reuse the v3 mission/map record formats and add `protocolLoan`, `mechanism` (one authored activation record set), and `reinforcementMarkers`. The v4 compiler is the v3 compiler plus the unlock collections and their cross-references. | §13.2; avoids a second map grammar. |
+| R15 | `mastered` flips only at a verified Strategos-or-higher victory that leaves both branches represented; a Story victory that adds the second branch does not master the family until the next Strategos-or-higher victory fielding it. Stored `completedMissionIds` must be a prefix of the linear campaign; reconciliation fails closed rather than inventing intermediate completions. Victory/first-clear plans report every reconciliation repair. | §11.2 literal reading; §13.6 "never invents". |

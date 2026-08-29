@@ -522,3 +522,65 @@ Ryan's test build is ready when:
 - generated/integrated art is readable, animated, Armara-branded, and Reduced-Motion-safe;
 - the full test/replay/compiler/live-boot gates pass;
 - no debug-only strategic-pad labels, ticks, hashes, or mission setup appear in ordinary play.
+
+## 20. Amendment B — integration execution partition (2026-08-29)
+
+Checkpoints A–C landed as pure modules; the runtime map (kernel, loader, bundle, compiler) does not yet reference any of them. This amendment binds how Checkpoints D–P are executed so parallel agents never share a write set, and records the cross-module contracts each lane builds against. Spec §17 rulings R1–R15 are binding for this work.
+
+### 20.1 Foundation commits (sequential, root)
+
+1. `Bind Aegis victories to immutable run authorization` — profile/progression fixes and tests.
+2. `Harden Aegis Protocol and command contracts` — protocols/commands-v2 audit fixes.
+3. `Harden Aegis player presentation models` — player-ui/effect-timeline audit fixes.
+4. `Harden Aegis Relic resolver` — relics audit fixes.
+
+Each commit stages exact paths only and requires a green full bare suite.
+
+### 20.2 Lanes and write sets
+
+| Lane | Owner | Write set (exclusive) | Reads |
+|---|---|---|---|
+| K — kernel v2 | one agent at a time, sequential batches K1…K6 | `js/sim/kernel.js`, `js/sim/management.js`, `js/sim/behaviors.js`, `js/sim/effects.js`, `js/sim/timers.js`, `js/sim/economy.js`, `js/sim/movement.js`, `js/sim/targeting.js`, kernel/management/behaviors/effects/economy tests, new `tests/kernel-v2-*.test.js`, `tests/fixtures/behaviors/**`, `content-v4/defenses/**` (family records for the batch) | protocols.js, relics.js, commands-v2.js, abi-v2.js, content-v4 bindings |
+| C — compiler/content v4 | one agent | `tools/lib/aegis/v4-*.js`, `tools/lib/aegis/compiler.js` (schema-4 branch only), `tools/lib/aegis/simulation-bundle.js` (MODULE_SPECS additions only), `tools/lib/aegis/artifacts.js` / `v3-artifacts.js` (v4 release record only), `content-v4/manifests/**`, `content-v4/annexes/**`, `content-v4/campaign-rules/**`, `content-v4/events/**`, `content-v4/strings/**`, `content-v4/presentation/**`, `tests/content-v4-*.test.js`, `tests/fixtures/compiler/v4-*` | v3 compiler modules (unchanged), K state/behaviour contract |
+| M — mission authoring | roster agent, then one agent per act (files are per mission) | `content-v4/missions/mNN.*.json`, `content-v4/maps/mNN.*.json`, `content-v4/map-proofs/mNN.*.json`; the roster agent owns `content-v4/enemies/**` and `content-v4/bosses/**` before act agents start; act agents report manifest entries and root merges `content-v4/manifests/candidate-v4.json` | map validation tools, campaign spec §6, §10, §11 |
+| U — delivery/UI | one agent at a time (shared controller), U1…U3 | `js/delivery/**`, `preview.html`, `css/**`, wiring-only edits in `js/presentation/player-ui.js` and `effect-timeline.js`, new `js/presentation/*-view.js`, `tests/preview-*.test.js`, `tests/delivery.test.js` | K state contract, C artifact contract, profile/progression API |
+| P — persistence | one agent | `js/progression/storage-*.js`, `js/progression/victory-transaction.js`, `js/progression/migration-v1-v2.js`, `tests/storage-*.test.js`, `tests/victory-transaction.test.js` | profile-v2.js, progression.js, replay-v2.js |
+| B — balance/QA | root + one agent | `tools/simulate-aegis.js` (new v4 scenarios only), `tests/balance-v4*.test.js`, `tests/fixtures/balance/v4/**`, `tests/fixtures/replays/candidate-v4/**`, `docs/aegis/*-qa.md` | everything |
+
+Shared files with one owner at a time: `content-v4/manifests/candidate-v4.json` (root), `docs/aegis/architecture-decisions.md` (root), `tools/lib/aegis/simulation-bundle.js` (C), `content-v4/defenses/**` (K batches, sequential).
+
+### 20.3 Cross-lane contracts (binding before code)
+
+**K→C, K→U: v2 kernel binding and state.**
+
+- `Kernel.createRulesetBinding({ release, content, simulation })` reads `content.schemaVersion`; `3` binds ABI v1 (existing behaviour, byte-identical outcomes), `4` binds ABI v2 (`abi-v2.js` descriptor hash, command schema 2, event schema 2, behavior registry 2, `phaseOrder` from `abi-v2.js`). The binding exposes `abiVersion`.
+- `createInitialState(binding, header)`: v1 header for ABI v1; the replay-v2 header (`replay-v2.js` `normalizeReplayEnvelope` field set minus `inputs/checkpoints/finalClaim`) for ABI v2. The kernel never reads a profile.
+- Canonical v2 state adds exactly these top-level collections (all bounded, closed, ASCII-keyed): `protocols` (`sharedReadyTick`, per equipped record `{ protocolId, tier, readyTick, acceptedCastCount, loan }`, `effects[]`, `schedules[]`, `wardCharges`), `income` (`protocolAetherEarned`, `specializationAetherEarned`, `wardPreventedIntegrity`), `relics` (resolved modifier table from `relics.js` `resolveRelicLoadout`), `reinforcement` (`{ reinforcementId, readyTick, liveUnitId | null }`), `mechanism` (`{ mechanismId, readyTick, activationsUsed, pending | null, zones[] }`), and per-tower `specializationId | null`, `paidCosts[]`, `disableSources[]`. Tower `investedAether` is the sum of `paidCosts` (R1/R2 Relic-modified actual payments) and the refund stays `floor(invested × 70 / 100)`.
+- Management is the sole Aether authority for `build`, `upgrade` (v4: Level 2 → 3 denies `specialization-required`), `specializeTower`, `sell`, `activatePower`, `deployReinforcement`, `activateMechanism`, `resetPlan`, `startWave`, `skipTutorialGate`, `setTargetPolicy`. Unknown types under ABI v2 deny with `unknown-command`; they never throw. Every denial is a semantic event with a stable reason and no state mutation.
+- Combat source record `{ kind: "tower" | "protocol" | "mechanism" | "unit", sourceId, runtimeId | null }` is carried on every hit/status intent; one damage reducer (`runDamage`) serves all kinds; mastery attribution counts only `tower`.
+- Semantic event ids for v2 systems are exactly those declared in `content-v4/**/binding-v1.json`; the event catalog v2 closes over them.
+
+**C→K, C→U: compiled content v4.**
+
+- `content.schemaVersion === 4`; the v3 lock tree is retained verbatim and the collections `protocols`, `specializations`, `relics`, `reinforcements`, `mechanisms`, `progression` are added with the exact record shapes emitted today by `v4-unlock-compiler.js` (`compileUnlockSimulationContent`). `protocols.js` `adaptCompiledProtocolContent` and `relics.js` `normalizeRelicCatalog` consume them unchanged.
+- Defense records: the third level entry is replaced by `specializations: [defaultId, alternateId]`, and each specialization record is a complete Level-3 record (`purchase.costAether` = the family's L3 cost, `rangeWorldUnits`, `behaviors[]`, `ui`). Historical v3 defense records are untouched.
+- Mission records add `protocolLoan: null | { protocolId, tier: 1 }`, `mechanism: null | { mechanismId, activations: [...] }`, and `reinforcementMarkers: [{ id, column, row, supportedReinforcementIds }]` (R14). Maps add authored `mechanismGeometry` (zones, beam lines, gate contacts) referenced by activation ids; they never mutate routes.
+- Release descriptor `candidate-v4` (developer-only, `approvalState: "candidate-balance"`, `releaseEligible: false`) is emitted by `tools/build-aegis-content.js --write --manifest games/aegis/content-v4/manifests/candidate-v4.json`. The simulation bundle for schema 4 appends `abi-v2`, `commands-v2`, `protocols`, `relics`, `replay-v2`, `replay-formats` after the 14 v1 modules. Historical generated artifacts are never modified or deleted.
+
+**U→P, U→K: delivery.**
+
+- `preview-loader.js` becomes descriptor-driven: the release record carries `contentIds`, `approvalState`, `abiVersion`, and required globals; the hard-coded release id and mission allowlist are removed. Direct-file (`file://`) loading stays classic-script only.
+- The campaign shell (loadout → briefing → battle → result) reads `Profile.resolveRunSnapshot` once to build the replay-v2 header through a new pure `js/delivery/run-header-v2.js`, then never touches the profile until the result screen calls `Progression.planApplyVerifiedVictory` with `deriveRunAuthorization(header, snapshot.contentIdentity)` and the storage adapter commits the plan atomically.
+- Training uses the same shell with a synthetic all-grants snapshot that is never persisted.
+
+### 20.4 Execution order
+
+1. **K1 kernel v2 core** (binding/phase table, command dispatch, generic source, disable sources, bounded v2 collections, Management payments incl. specialization/protocol/reinforcement/mechanism, paidCosts refunds, resetPlan) in parallel with **C1 compiler v4** (manifest, bundle, artifacts, v4 defense scaffold for the five existing families), **U1 shell skeleton** (descriptor-driven loader, loadout screen, HUD command deck, targeting confirm/cancel, results, against fixture content), and **P1 storage** (IndexedDB adapter, session fallback, atomic victory transaction, migration).
+2. **K2 Protocol effects** (Temporal, Skyfire, Ward, Poseidon, Athena, Hephaestus, Hermes, Medusa, Hades, Ascension) with replay parity tests.
+3. **K3–K5 specializations + ten new families** in the plan's five family batches (Sentinel/Chronos/Siege; Hoplite/Oracle/Artemis; Hermes/Poseidon/Medusa; Hephaestus/Athena/Apollo; Hades/Talos/Zeus), each batch authoring its `content-v4/defenses` records and behaviour goldens.
+4. **K6 Relics, reinforcements, mechanisms** runtime integration.
+5. **M roster** (enemies incl. Harpy, Shield Bearer, Splitter, Myrmidon, Wraith, Courier; bosses Cyclops, Oracle Core, Titan Prime, Chronarch) then **M acts I–IV** in parallel.
+6. **U2** full integration against real candidate-v4 artifacts, Recon/mastery/Codex/share badges, accessibility; **U3** mobile/keyboard/reduced-motion/photosensitivity pass.
+7. **B** balance witnesses, replay corpus, live CDP boot, release-gate checklist.
+
+Each step ends with a green full bare suite, syntax checks, `git diff --check`, an adversarial review of the lane, and one commit.

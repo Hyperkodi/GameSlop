@@ -100,15 +100,15 @@ const SPECIALIZATION_DEFINITIONS = [
 
 const PROTOCOL_RECORDS = [
   protocol("aegis-ward", "none", "repeat-surcharge", [
-    tier(1, 70, 85000, 32, {
+    tier(1, 70, 85000, null, {
       kind: "leak-ward", durationMs: 12000, charges: 1, maximumPreventedIntegrityPerLeak: 2,
       carryAcrossWave: false,
     }, ["protocol.aegis-ward.accepted", "protocol.aegis-ward.resolved"]),
-    tier(2, 105, 100000, 32, {
+    tier(2, 105, 100000, null, {
       kind: "leak-ward", durationMs: 15000, charges: 2, maximumPreventedIntegrityPerLeak: 3,
       carryAcrossWave: false,
     }, ["protocol.aegis-ward.accepted", "protocol.aegis-ward.resolved"]),
-    tier(3, 145, 115000, 32, {
+    tier(3, 145, 115000, null, {
       kind: "leak-ward", durationMs: 18000, charges: 3, maximumPreventedIntegrityPerLeak: 4,
       carryAcrossWave: false,
     }, ["protocol.aegis-ward.accepted", "protocol.aegis-ward.resolved"]),
@@ -131,122 +131,122 @@ const PROTOCOL_RECORDS = [
     }, ["protocol.armara-ascension.accepted", "protocol.armara-ascension.resolved"]),
   ]),
   protocol("athena-command", "tower", "repeat-surcharge", [
-    tier(1, 85, 80000, 32, {
+    tier(1, 85, 80000, null, {
       kind: "tower-cluster-amplification", radiusWorldUnits: 28, maximumTowers: 3,
       damageBp: 0, rateBp: 2500, rangeBp: 0, durationMs: 8000, carryAcrossWave: false,
     }, ["protocol.athena-command.accepted", "protocol.athena-command.resolved"]),
-    tier(2, 125, 95000, 32, {
+    tier(2, 125, 95000, null, {
       kind: "tower-cluster-amplification", radiusWorldUnits: 28, maximumTowers: 4,
       damageBp: 0, rateBp: 3500, rangeBp: 0, durationMs: 10000, carryAcrossWave: false,
     }, ["protocol.athena-command.accepted", "protocol.athena-command.resolved"]),
-    tier(3, 170, 110000, 32, {
+    tier(3, 170, 110000, null, {
       kind: "tower-cluster-amplification", radiusWorldUnits: 28, maximumTowers: 5,
       damageBp: 0, rateBp: 4000, rangeBp: 1000, durationMs: 12000, carryAcrossWave: false,
     }, ["protocol.athena-command.accepted", "protocol.athena-command.resolved"]),
   ]),
   protocol("hades-bargain", "route-point", "repeat-surcharge", [
-    tier(1, 65, 80000, 32, {
+    tier(1, 65, 80000, null, {
       kind: "bargain-mark", radiusWorldUnits: 16, maximumTargets: 12, durationMs: 10000,
       enemySpeedIncreaseBp: 1000, bountyIncreaseBp: 2500, addedLeakIntegrity: 1,
       targetKinds: ["air", "ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.hades-bargain.accepted", "protocol.hades-bargain.resolved"]),
-    tier(2, 90, 95000, 32, {
+    tier(2, 90, 95000, null, {
       kind: "bargain-mark", radiusWorldUnits: 16, maximumTargets: 18, durationMs: 12000,
       enemySpeedIncreaseBp: 1200, bountyIncreaseBp: 3500, addedLeakIntegrity: 1,
       targetKinds: ["air", "ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.hades-bargain.accepted", "protocol.hades-bargain.resolved"]),
-    tier(3, 125, 110000, 32, {
+    tier(3, 125, 110000, null, {
       kind: "bargain-mark", radiusWorldUnits: 16, maximumTargets: 24, durationMs: 15000,
       enemySpeedIncreaseBp: 1500, bountyIncreaseBp: 5000, addedLeakIntegrity: 1,
       targetKinds: ["air", "ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.hades-bargain.accepted", "protocol.hades-bargain.resolved"]),
   ]),
   protocol("hephaestus-overclock", "tower", "repeat-surcharge", [
-    tier(1, 70, 75000, 32, {
+    tier(1, 70, 75000, null, {
       kind: "tower-overclock", damageBp: 4500, rateBp: 4500, rangeBp: 0,
       durationMs: 10000, shutdownMs: 4000, carryAcrossWave: false,
     }, ["protocol.hephaestus-overclock.accepted", "protocol.hephaestus-overclock.resolved"]),
-    tier(2, 105, 90000, 32, {
+    tier(2, 105, 90000, null, {
       kind: "tower-overclock", damageBp: 6500, rateBp: 6500, rangeBp: 0,
       durationMs: 12000, shutdownMs: 4000, carryAcrossWave: false,
     }, ["protocol.hephaestus-overclock.accepted", "protocol.hephaestus-overclock.resolved"]),
-    tier(3, 150, 105000, 32, {
+    tier(3, 150, 105000, null, {
       kind: "tower-overclock", damageBp: 8500, rateBp: 8500, rangeBp: 1000,
       durationMs: 14000, shutdownMs: 5000, carryAcrossWave: false,
     }, ["protocol.hephaestus-overclock.accepted", "protocol.hephaestus-overclock.resolved"]),
   ]),
   protocol("hermes-rewind", "route-point", "repeat-surcharge", [
-    tier(1, 80, 90000, 32, {
+    tier(1, 80, 90000, null, {
       kind: "route-front-rewind", maximumTargets: 3, routeLengthBp: 1200,
       targetKinds: ["air", "ground"], selectionComparatorId: "route-front-id",
     }, ["protocol.hermes-rewind.accepted", "protocol.hermes-rewind.resolved"]),
-    tier(2, 120, 105000, 32, {
+    tier(2, 120, 105000, null, {
       kind: "route-front-rewind", maximumTargets: 5, routeLengthBp: 1800,
       targetKinds: ["air", "ground"], selectionComparatorId: "route-front-id",
     }, ["protocol.hermes-rewind.accepted", "protocol.hermes-rewind.resolved"]),
-    tier(3, 170, 120000, 32, {
+    tier(3, 170, 120000, null, {
       kind: "route-front-rewind", maximumTargets: 8, routeLengthBp: 2500,
       targetKinds: ["air", "ground"], selectionComparatorId: "route-front-id",
     }, ["protocol.hermes-rewind.accepted", "protocol.hermes-rewind.resolved"]),
   ]),
   protocol("medusa-lock", "world-vector", "repeat-surcharge", [
-    tier(1, 100, 100000, 32, {
+    tier(1, 100, 100000, null, {
       kind: "aimed-petrify-cone", rangeWorldUnits: 36, fullAngleDegrees: 50,
       maximumTargets: 8, durationMs: 2000, targetKinds: ["ground"],
       selectionComparatorId: "projection-perpendicular-id",
     }, ["protocol.medusa-lock.accepted", "protocol.medusa-lock.resolved"]),
-    tier(2, 145, 110000, 32, {
+    tier(2, 145, 110000, null, {
       kind: "aimed-petrify-cone", rangeWorldUnits: 42, fullAngleDegrees: 60,
       maximumTargets: 12, durationMs: 3000, targetKinds: ["ground"],
       selectionComparatorId: "projection-perpendicular-id",
     }, ["protocol.medusa-lock.accepted", "protocol.medusa-lock.resolved"]),
-    tier(3, 195, 120000, 32, {
+    tier(3, 195, 120000, null, {
       kind: "aimed-petrify-cone", rangeWorldUnits: 48, fullAngleDegrees: 70,
       maximumTargets: 16, durationMs: 4000, targetKinds: ["ground"],
       selectionComparatorId: "projection-perpendicular-id",
     }, ["protocol.medusa-lock.accepted", "protocol.medusa-lock.resolved"]),
   ]),
   protocol("poseidon-surge", "route-point", "repeat-surcharge", [
-    tier(1, 95, 90000, 32, {
+    tier(1, 95, 90000, null, {
       kind: "route-point-surge", radiusWorldUnits: 18, maximumTargets: 12,
       displacementWorldUnits: 8, drenchBp: 2000, durationMs: 4000,
       targetKinds: ["ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.poseidon-surge.accepted", "protocol.poseidon-surge.resolved"]),
-    tier(2, 135, 100000, 32, {
+    tier(2, 135, 100000, null, {
       kind: "route-point-surge", radiusWorldUnits: 18, maximumTargets: 12,
       displacementWorldUnits: 12, drenchBp: 2500, durationMs: 5000,
       targetKinds: ["ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.poseidon-surge.accepted", "protocol.poseidon-surge.resolved"]),
-    tier(3, 180, 110000, 32, {
+    tier(3, 180, 110000, null, {
       kind: "route-point-surge", radiusWorldUnits: 18, maximumTargets: 12,
       displacementWorldUnits: 16, drenchBp: 3000, durationMs: 6000,
       targetKinds: ["ground"], selectionComparatorId: "distance-progress-id",
     }, ["protocol.poseidon-surge.accepted", "protocol.poseidon-surge.resolved"]),
   ]),
   protocol("temporal-edict", "none", "repeat-surcharge", [
-    tier(1, 75, 80000, 32, {
+    tier(1, 75, 80000, null, {
       kind: "global-slow-field", magnitudeBp: 2500, durationMs: 10000,
       targetKinds: ["air", "ground"], affectsFutureSpawns: true, carryAcrossWave: false,
     }, ["protocol.temporal-edict.accepted", "protocol.temporal-edict.resolved"]),
-    tier(2, 115, 95000, 32, {
+    tier(2, 115, 95000, null, {
       kind: "global-slow-field", magnitudeBp: 5000, durationMs: 10000,
       targetKinds: ["air", "ground"], affectsFutureSpawns: true, carryAcrossWave: false,
     }, ["protocol.temporal-edict.accepted", "protocol.temporal-edict.resolved"]),
-    tier(3, 165, 110000, 32, {
+    tier(3, 165, 110000, null, {
       kind: "global-slow-field", magnitudeBp: 5000, durationMs: 15000,
       targetKinds: ["air", "ground"], affectsFutureSpawns: true, carryAcrossWave: false,
     }, ["protocol.temporal-edict.accepted", "protocol.temporal-edict.resolved"]),
   ]),
   protocol("zeus-skyfire", "none", "repeat-surcharge", [
-    tier(1, 90, 90000, 32, {
+    tier(1, 90, 90000, null, {
       kind: "scheduled-global-damage", targetKinds: ["air", "ground"],
       strikes: [{ offsetMs: 900, damage: 40, shieldCoefficientBp: 10000, bossCoefficientBp: 5000, hardControl: null }],
     }, ["protocol.zeus-skyfire.accepted", "protocol.zeus-skyfire.resolved"]),
-    tier(2, 135, 100000, 32, {
+    tier(2, 135, 100000, null, {
       kind: "scheduled-global-damage", targetKinds: ["air", "ground"],
       strikes: [{ offsetMs: 900, damage: 70, shieldCoefficientBp: 15000, bossCoefficientBp: 5000, hardControl: null }],
     }, ["protocol.zeus-skyfire.accepted", "protocol.zeus-skyfire.resolved"]),
-    tier(3, 190, 115000, 32, {
+    tier(3, 190, 115000, null, {
       kind: "scheduled-global-damage", targetKinds: ["air", "ground"],
       strikes: [
         { offsetMs: 900, damage: 65, shieldCoefficientBp: 17500, bossCoefficientBp: 5000, hardControl: null },
@@ -282,7 +282,7 @@ const RELIC_RECORDS = [
   {
     id: "hermes-greaves", nameKey: "relic.hermes-greaves.name", unlockGrantId: "grant.relic.hermes-greaves",
     benefitKey: "relic.hermes-greaves.benefit", drawbackKey: "relic.hermes-greaves.drawback",
-    benefitModifiers: [{ statId: "tower-rate", operation: "add-bp", amount: 800, rounding: "none" }],
+    benefitModifiers: [{ statId: "tower-rate", operation: "add-bp", amount: 800, rounding: "floor" }],
     drawbackModifiers: [{ statId: "tower-range", operation: "add-bp", amount: -800, rounding: "floor" }],
   },
   {
@@ -301,7 +301,7 @@ const RELIC_RECORDS = [
     id: "owl-lens", nameKey: "relic.owl-lens.name", unlockGrantId: "grant.relic.owl-lens",
     benefitKey: "relic.owl-lens.benefit", drawbackKey: "relic.owl-lens.drawback",
     benefitModifiers: [{ statId: "tower-range", operation: "add-bp", amount: 1000, rounding: "floor" }],
-    drawbackModifiers: [{ statId: "tower-rate", operation: "add-bp", amount: -800, rounding: "none" }],
+    drawbackModifiers: [{ statId: "tower-rate", operation: "add-bp", amount: -800, rounding: "floor" }],
   },
   {
     id: "tideglass", nameKey: "relic.tideglass.name", unlockGrantId: "grant.relic.tideglass",
