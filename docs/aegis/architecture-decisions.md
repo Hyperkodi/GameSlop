@@ -6,9 +6,9 @@
 
 **Owner:** Ryan
 
-**Binding specification:** `docs/superpowers/specs/2026-08-26-armara-aegis-campaign-expansion.md`
+**Binding specifications:** `docs/superpowers/specs/2026-08-26-armara-aegis-campaign-expansion.md` and its approved amendment `docs/superpowers/specs/2026-08-29-armara-aegis-divine-protocols-and-unlocks.md`
 
-**Implementation plan:** `docs/superpowers/plans/2026-08-26-armara-aegis-campaign-expansion.md`
+**Implementation plans:** `docs/superpowers/plans/2026-08-26-armara-aegis-campaign-expansion.md` and `docs/superpowers/plans/2026-08-29-armara-aegis-divine-protocols-and-unlocks.md`
 
 This record freezes the Phase 0 architecture and the baseline against which the campaign runtime is developed. It does not replace the binding specification. Any conflict is resolved in favor of that specification until Ryan approves an amendment.
 
@@ -40,9 +40,9 @@ All battlefields use the existing `160 × 100` logical world and a hidden `40 ×
 
 The ordinary road buffer is twelve world units. Ordinary pad centers remain at least sixteen world units from a lane center, twenty from another pad, eight inside the board, and twenty from gates, breaches, large props, or stricter exclusion masks. Authored exceptions require a named annex waiver and validator coverage.
 
-### ADR-002 — Three linear in-run levels
+### ADR-002 — Three paid in-run levels with a specialized capstone
 
-Every defense has exactly three complete authored level records. No renderer, HTML file, skin, or fallback table may own combat values. Level 2 concentrates a role; Level 3 spends scarce pad capacity on a capstone. Mission 1's Wave-1 tutorial reveal is the only upgrade-availability gate.
+Every defense has exactly three paid in-run levels. No renderer, HTML file, skin, or fallback table may own combat values. Level 2 concentrates a role; from Level 2 the player chooses one of two complete authored Level-3 specialization records. The chosen branch spends scarce pad capacity on a distinct capstone, is final for that tower, uses the family's existing Level-3 cost, and preserves refund math from actual investment. Mission 1's Wave-1 tutorial reveal is the only ordinary upgrade-availability gate. Historical schema-v3 runs retain their original linear Level-3 behavior.
 
 ### ADR-003 — Deterministic ABI before campaign scale
 
@@ -103,6 +103,24 @@ The authoritative kernel has one advancement seam. `advanceTick` returns exactly
 Balance-telemetry schema v1 is exactly `{ schemaVersion, tick, records }`. `tick` is the input boundary tick, records use contiguous zero-based ordinals in actual reducer order, and every record has one closed kind-specific shape from the Candidate-slice specification. The kernel exports the frozen authorities `BALANCE_TELEMETRY_SCHEMA_VERSION = 1`, `MAX_BALANCE_TELEMETRY_RECORDS_PER_TICK = 65536`, and `MAX_BALANCE_TELEMETRY_TARGET_IDS = 4096`. Unknown kinds or fields, unsafe integers, free-form text, noncanonical values, reordered/duplicate ordinals, target-list overflow, or record overflow fail the tick without truncated output. Telemetry contains raw authoritative facts and conserved attribution inputs; it does not embed a mutable report formula or claim that a human-playtest target passed.
 
 The replay runner validates that telemetry is exact, deeply frozen, canonical, correctly ticked, ordinally contiguous, and within those exported bounds, then deliberately ignores it when hashing or verifying claims. The balance harness folds the per-tick stream into bounded aggregates and does not retain an unbounded session log. A telemetry-schema or report-formula revision changes the simulation artifact identity because the producing/validating code changes, but it does not add diagnostic history to canonical state or make a report-only formula part of gameplay consensus.
+
+### ADR-010 — Active campaign powers spend ordinary Aether
+
+Divine Protocols are authoritative simulation actions, not presentation shortcuts. An accepted cast spends the same visible Aether used by construction, starts one individual cooldown and the shared Protocol cooldown, and enters canonical state/replay through a versioned command. Repeated accepted casts of one Protocol use the content-locked linear 25% surcharge. Rejected casts have no state effect. Targeting UI and animation are nonauthoritative; the kernel validates the confirmed target and resolves every hit/status through the ordinary damage/control pipeline.
+
+The campaign grants at most two permanent Protocol slots. Combat-affecting tiers and Relics are resolved into the immutable run header before initial state exists. The running kernel never reads the current profile. Missions remain beatable with empty Protocol/Relic/reinforcement loadouts and without map-mechanism activation.
+
+### ADR-011 — Laurels allocate refundable Protocol proficiency
+
+Laurels remain objective identities earned from verified mission results. They may now be allocated outside a run to Protocol Tier 2 for 6 Laurels and Tier 3 for another 12. Allocation is freely and atomically refundable outside a run so experimentation cannot permanently damage a profile. All ten maximized Protocols cost 180 Laurels, equal to complete three-difficulty campaign mastery. No Laurel allocation permanently changes tower base stats; defense mastery unlocks branches and cosmetics through verified-result milestones.
+
+### ADR-012 — Versioned v2 unlock runtime preserves historical meaning
+
+The unlock expansion uses source/compiled-content v4, presentation catalog v2, behavior/event/command/replay/profile v2 contracts, and a new authenticated simulation artifact/ABI identity. Historical v1–v3 content, command, replay, and profile fixtures are not rewritten or silently translated. The loader dispatches by authenticated declared version and fails closed on a mismatch. A new version is not release authority: it remains behind the candidate descriptor until its own compiler, replay, balance, presentation, accessibility, and live-boot gates pass.
+
+### ADR-013 — Map actions never mutate a live route
+
+Temporary reinforcements deploy only at authored, validated markers. Player-activated mechanisms reference authored activation records and may damage, block, slow, or select a future authored route, but cannot add/delete topology or relocate a hostile already walking a route. Hidden authoring-grid coordinates, pad-quality classifications, runtime IDs, ticks, hashes, and mission-setup structures remain absent from the ordinary player view.
 
 ## Initial risk register
 
