@@ -434,6 +434,8 @@ const GRANT_RECORDS = [
   grant("grant.reinforcement-slots.1", "set-reinforcement-slot-cap", null, 1),
 ]).concat(REINFORCEMENT_RECORDS.map(function (record) {
   return grant(record.unlockGrantId, "unlock-reinforcement", record.id, 0);
+})).concat(SPECIALIZATION_RECORDS.map(function (record) {
+  return grant(record.unlockGrantId, "unlock-specialization", record.id, 0);
 })).concat([
   grant("grant.relic-slots.1", "set-relic-slot-cap", null, 1),
   grant("grant.relic-slots.2", "set-relic-slot-cap", null, 2),
