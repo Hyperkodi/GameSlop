@@ -1,7 +1,9 @@
 "use strict";
 
 const crypto = require("node:crypto");
+const path = require("node:path");
 const { fail } = require("./diagnostics.js");
+const AssetInspector = require("./asset-inspector.js");
 const Annex = require("./v3-annex.js");
 const CrossReferences = require("./v3-cross-references.js");
 const Presentation = require("./v3-presentation.js");
@@ -51,6 +53,68 @@ function buildSimulationContent(preflight, resolved, abiHash) {
   });
 }
 
+function fileBackedPreflight(preflight) {
+  return typeof preflight.sourceRoot === "string" || typeof preflight.repositoryRoot === "string";
+}
+
+function verifyPresentationAssetClaims(preflight, presentation, options) {
+  if (!presentation || presentation.schemaVersion !== 2) return Object.freeze([]);
+  options = options || {};
+  const assetRoot = options.assetRoot;
+  const injectedVerifier = options.verifyAssetClaim;
+  const isFileBacked = fileBackedPreflight(preflight);
+
+  if (isFileBacked) {
+    if (typeof preflight.sourceRoot !== "string" || typeof preflight.repositoryRoot !== "string") {
+      fail(
+        "V3_ASSET_ROOT",
+        "/presentationCatalog/assetRecords",
+        "File-backed v3 asset verification requires the source and repository root identities"
+      );
+    }
+    if (injectedVerifier !== undefined) {
+      fail(
+        "V3_ASSET_VERIFIER",
+        "/presentationCatalog/assetRecords",
+        "File-backed v3 compilation cannot replace repository asset inspection"
+      );
+    }
+    const expectedRoot = path.resolve(preflight.repositoryRoot, "games", "aegis");
+    if (typeof assetRoot !== "string" || path.resolve(assetRoot) !== expectedRoot) {
+      fail(
+        "V3_ASSET_ROOT",
+        "/presentationCatalog/assetRecords",
+        "File-backed v3 compilation requires the canonical games/aegis repository asset root"
+      );
+    }
+  } else if (assetRoot === undefined && typeof injectedVerifier !== "function") {
+    fail(
+      "V3_ASSET_VERIFIER",
+      "/presentationCatalog/assetRecords",
+      "Synthetic schema-v2 compilation requires an explicit asset root or measured-claim verifier"
+    );
+  }
+  if (assetRoot !== undefined && injectedVerifier !== undefined) {
+    fail(
+      "V3_ASSET_VERIFIER",
+      "/presentationCatalog/assetRecords",
+      "Choose repository asset inspection or the synthetic verifier, never both"
+    );
+  }
+
+  const inspections = presentation.assetRecords.map(function (claim, index) {
+    const diagnosticPath = "/presentationCatalog/assetRecords/" + index;
+    if (assetRoot !== undefined) {
+      return AssetInspector.inspectManifestClaim(assetRoot, claim, {
+        diagnosticPath: diagnosticPath,
+      });
+    }
+    const measured = injectedVerifier(claim, diagnosticPath);
+    return AssetInspector.compareManifestClaim(claim, measured, diagnosticPath);
+  });
+  return Object.freeze(inspections.slice());
+}
+
 // Production callers must pass the direct immutable loadSourceTree result
 // returned by the strict v3 source loader. Synthetic object graphs are
 // accepted only so isolated compiler tests can exercise post-loader contracts.
@@ -84,6 +148,7 @@ function compileVerifiedV3Source(preflight, options) {
     stringCatalog: preflight.normalizedSource.stringCatalog,
     presentationCatalog: preflight.normalizedSource.presentationCatalog,
   });
+  verifyPresentationAssetClaims(preflight, presentation, options);
   const provenance = Provenance.buildV3Provenance(preflight);
   const includedIds = deepFrozenClone({
     missions: Object.keys(resolved.lockTree.missions).sort(),
@@ -118,4 +183,5 @@ function compileVerifiedV3Source(preflight, options) {
 module.exports = Object.freeze({
   buildSimulationContent: buildSimulationContent,
   compileVerifiedV3Source: compileVerifiedV3Source,
+  verifyPresentationAssetClaims: verifyPresentationAssetClaims,
 });

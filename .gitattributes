@@ -11,3 +11,9 @@
 /tools/build-aegis-content.js text eol=lf
 /tools/analyze-aegis-map.js text eol=lf
 /tools/lib/aegis/** text eol=lf
+
+# Generated and authored raster assets must never pass through line-ending filters.
+*.png binary
+*.webp binary
+*.jpg binary
+*.jpeg binary

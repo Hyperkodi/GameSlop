@@ -4,6 +4,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { AegisContentError, diagnostic, fail } = require("./diagnostics.js");
+const { canonicalBytes, canonicalEncode } = require("./canonical.js");
+const { parseStrictJsonBytes } = require("./strict-json.js");
 const { loadSourceTree } = require("./source-loader.js");
 const { buildArtifacts } = require("./artifacts.js");
 const V3Compiler = require("./v3-compiler.js");
@@ -11,6 +13,11 @@ const V3Artifacts = require("./v3-artifacts.js");
 const V3MapAdapter = require("./v3-map-adapter.js");
 
 const ARTIFACT_NAME = /^(aegis-sim|aegis-content|aegis-presentation|aegis-release|manifest)\.([0-9a-f]{64})\.(js|json)$/;
+const RELEASE_ALIAS_NAME = /^release\.([a-z0-9][a-z0-9-]*)\.(js|json)$/;
+const RELEASE_ALIAS_FIELDS = Object.freeze([
+  "approvalState", "contentVersion", "id", "releaseArtifact", "releaseEligible",
+  "releaseHash", "schemaVersion",
+]);
 
 function readSimulation(input) {
   if (input.simulationBytes !== undefined) return Buffer.from(input.simulationBytes);
@@ -29,7 +36,9 @@ function compileSourceTree(input) {
   const simulationBytes = readSimulation(input);
   const simulationLabel = input.simulationPath ? path.basename(input.simulationPath) : "explicit simulation bytes";
   if (source.manifest.schemaVersion === 3) {
+    const repositoryAssetRoot = path.join(source.repositoryRoot, "games", "aegis");
     return V3Compiler.compileVerifiedV3Source(source, {
+      assetRoot: repositoryAssetRoot,
       simulationBytes: simulationBytes,
       simulationLabel: simulationLabel,
       normalizeAndValidateMap: V3MapAdapter.normalizeAndValidateMap,
@@ -124,12 +133,135 @@ function artifactEntries(result) {
   return entries;
 }
 
+function validateReleaseAliasRecord(alias, expectedId) {
+  const prototype = alias && typeof alias === "object" ? Object.getPrototypeOf(alias) : undefined;
+  if (!alias || typeof alias !== "object" || Array.isArray(alias) ||
+      (prototype !== Object.prototype && prototype !== null) ||
+      canonicalEncode(Object.keys(alias).sort()) !== canonicalEncode(RELEASE_ALIAS_FIELDS.slice().sort())) {
+    fail("RELEASE_ALIAS", "/generated/releaseAlias", "Release alias must contain exactly the approved data fields");
+  }
+  if (alias.schemaVersion !== 1 || typeof alias.id !== "string" ||
+      !/^[a-z0-9][a-z0-9-]*$/.test(alias.id) || alias.contentVersion !== alias.id ||
+      (expectedId !== undefined && alias.id !== expectedId)) {
+    fail("RELEASE_ALIAS", "/generated/releaseAlias/id", "Release alias identity is invalid");
+  }
+  if (["candidate-balance", "balance-approved"].indexOf(alias.approvalState) === -1 ||
+      alias.releaseEligible !== false) {
+    fail("RELEASE_ALIAS", "/generated/releaseAlias/approvalState", "Release alias must remain developer-only");
+  }
+  const artifact = typeof alias.releaseArtifact === "string"
+    ? /^aegis-release\.([0-9a-f]{64})\.js$/.exec(alias.releaseArtifact)
+    : null;
+  if (!artifact || alias.releaseHash !== "sha256:" + artifact[1]) {
+    fail("RELEASE_ALIAS", "/generated/releaseAlias/releaseHash", "Release alias filename and hash identity differ");
+  }
+  return alias;
+}
+
+function releaseAliasEntries(result, verifiedArtifactEntries) {
+  const schemaVersion = result && result.source && result.source.manifest &&
+    result.source.manifest.schemaVersion;
+  if (schemaVersion !== 3) return [];
+  const entries = verifiedArtifactEntries || artifactEntries(result);
+  const releaseEntry = entries.find(function (entry) {
+    return entry[0].startsWith("aegis-release.");
+  });
+  if (!releaseEntry) fail("RELEASE_ALIAS", "/generated", "Schema 3 alias requires an immutable release artifact");
+  const release = V3Artifacts.readGeneratedData(
+    releaseEntry[1], "AegisRelease", "RELEASE", releaseEntry[0]
+  );
+  V3Artifacts.validateReleaseRecord(release);
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(release.contentVersion)) {
+    fail("RELEASE_ALIAS", "/generated/contentVersion", "Release alias contentVersion is not filename-safe");
+  }
+  if (["candidate-balance", "balance-approved"].indexOf(release.approvalState) === -1 ||
+      release.releaseEligible !== false) {
+    fail("RELEASE_ALIAS", "/generated/approvalState", "Developer release aliases require a non-production approval state");
+  }
+  const match = /^aegis-release\.([0-9a-f]{64})\.js$/.exec(releaseEntry[0]);
+  if (!match) fail("RELEASE_ALIAS", "/generated/releaseArtifact", "Release alias target must be immutable");
+  const alias = Object.freeze({
+    schemaVersion: 1,
+    id: release.contentVersion,
+    contentVersion: release.contentVersion,
+    approvalState: release.approvalState,
+    releaseEligible: false,
+    releaseArtifact: releaseEntry[0],
+    releaseHash: "sha256:" + match[1],
+  });
+  validateReleaseAliasRecord(alias, release.contentVersion);
+  const jsonBytes = Buffer.concat([canonicalBytes(alias), Buffer.from("\n", "utf8")]);
+  const jsBytes = V3Artifacts.renderDataArtifact(
+    "AegisReleaseAlias", "RELEASE_ALIAS", alias, "stable developer release alias"
+  );
+  return [
+    ["release." + release.contentVersion + ".js", jsBytes],
+    ["release." + release.contentVersion + ".json", jsonBytes],
+  ];
+}
+
+function verifyHistoricalReleaseAlias(directory, id) {
+  const jsonName = "release." + id + ".json";
+  const jsName = "release." + id + ".js";
+  let jsonBytes;
+  let jsBytes;
+  [jsonName, jsName].forEach(function (name) {
+    let stat;
+    try { stat = fs.lstatSync(path.join(directory, name)); }
+    catch (error) { fail("RELEASE_ALIAS", "/generated/" + name, "Historical release alias pair is incomplete"); }
+    if (!stat.isFile()) fail("ARTIFACT_TYPE", "/generated/" + name, "Historical release alias must be a regular file");
+  });
+  try {
+    jsonBytes = fs.readFileSync(path.join(directory, jsonName));
+    jsBytes = fs.readFileSync(path.join(directory, jsName));
+  } catch (error) {
+    fail("ARTIFACT_READ", "/generated/release." + id, "Cannot read historical release alias pair");
+  }
+  let alias;
+  try {
+    alias = parseStrictJsonBytes(jsonBytes, jsonName, {
+      maxDepth: 4, maxObjectFields: 8, rejectNegativeZero: true,
+    });
+  } catch (error) {
+    fail("RELEASE_ALIAS", "/generated/" + jsonName, "Historical release alias JSON is invalid");
+  }
+  validateReleaseAliasRecord(alias, id);
+  const expectedJson = Buffer.concat([canonicalBytes(alias), Buffer.from("\n", "utf8")]);
+  const expectedJs = V3Artifacts.renderDataArtifact(
+    "AegisReleaseAlias", "RELEASE_ALIAS", alias, "stable developer release alias"
+  );
+  if (!jsonBytes.equals(expectedJson) || !jsBytes.equals(expectedJs)) {
+    fail("ARTIFACT_STALE", "/generated/release." + id, "Historical release alias pair is not canonical");
+  }
+  const releaseTarget = path.join(directory, alias.releaseArtifact);
+  let releaseType;
+  let releaseBytes;
+  try {
+    releaseType = fs.lstatSync(releaseTarget);
+    releaseBytes = fs.readFileSync(releaseTarget);
+  } catch (error) {
+    fail("RELEASE_ALIAS", "/generated/" + alias.releaseArtifact, "Historical release alias target is missing");
+  }
+  if (!releaseType.isFile() ||
+      "sha256:" + crypto.createHash("sha256").update(releaseBytes).digest("hex") !== alias.releaseHash) {
+    fail("RELEASE_ALIAS", "/generated/" + alias.releaseArtifact, "Historical release alias target identity is invalid");
+  }
+}
+
+function expectedOutputEntries(result) {
+  const immutable = artifactEntries(result);
+  return immutable.concat(releaseAliasEntries(result, immutable)).sort(function (a, b) {
+    return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0);
+  });
+}
+
 function checkArtifacts(result, override) {
   const directory = outputDirectory(result, override);
   const diagnostics = [];
-  const entries = artifactEntries(result);
+  const entries = expectedOutputEntries(result);
   const names = entries.map(function (entry) { return entry[0]; });
   const expectedNames = new Set(names);
+  const historicalAliasIds = new Set();
   for (const entry of entries) {
     const name = entry[0];
     const expected = entry[1];
@@ -171,6 +303,11 @@ function checkArtifacts(result, override) {
   for (const directoryEntry of directoryEntries) {
     const name = directoryEntry.name;
     if (expectedNames.has(name)) continue;
+    const aliasMatch = RELEASE_ALIAS_NAME.exec(name);
+    if (aliasMatch) {
+      historicalAliasIds.add(aliasMatch[1]);
+      continue;
+    }
     const match = ARTIFACT_NAME.exec(name);
     if (!directoryEntry.isFile() || !match || (match[1] === "manifest") !== (match[3] === "json")) {
       diagnostics.push(diagnostic("ARTIFACT_UNEXPECTED", "/generated/" + name, "Unexpected mutable or non-artifact entry in generated directory"));
@@ -187,16 +324,27 @@ function checkArtifacts(result, override) {
       diagnostics.push(diagnostic("ARTIFACT_IDENTITY", "/generated/" + name, "Historical artifact bytes do not match the immutable filename digest"));
     }
   }
+  historicalAliasIds.forEach(function (id) {
+    try { verifyHistoricalReleaseAlias(directory, id); }
+    catch (error) {
+      if (error instanceof AegisContentError) diagnostics.push.apply(diagnostics, error.diagnostics);
+      else diagnostics.push(diagnostic("RELEASE_ALIAS", "/generated/release." + id, String(error)));
+    }
+  });
   if (diagnostics.length) throw new AegisContentError(diagnostics);
   return names;
 }
 
 function writeArtifacts(result, override) {
-  const entries = artifactEntries(result);
+  const immutableEntries = artifactEntries(result);
+  const aliasEntries = releaseAliasEntries(result, immutableEntries);
+  const entries = immutableEntries.concat(aliasEntries).sort(function (a, b) {
+    return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0);
+  });
   const directory = outputDirectory(result, override);
   fs.mkdirSync(directory, { recursive: true });
   const names = entries.map(function (entry) { return entry[0]; });
-  for (const entry of entries) {
+  for (const entry of immutableEntries) {
     const name = entry[0];
     const bytes = entry[1];
     const target = path.join(directory, name);
@@ -220,6 +368,31 @@ function writeArtifacts(result, override) {
     try { fs.writeFileSync(target, bytes, { flag: "wx" }); }
     catch (error) { fail("ARTIFACT_WRITE", "/generated/" + name, "Cannot write generated artifact: " + String(error && error.code || error)); }
   }
+  aliasEntries.forEach(function (entry, index) {
+    const name = entry[0];
+    if (!RELEASE_ALIAS_NAME.test(name)) {
+      fail("RELEASE_ALIAS", "/generated/" + name, "Stable release alias filename is invalid");
+    }
+    const target = path.join(directory, name);
+    let targetType = null;
+    try { targetType = fs.lstatSync(target); }
+    catch (error) {
+      if (!error || error.code !== "ENOENT") {
+        fail("ARTIFACT_WRITE", "/generated/" + name, "Cannot inspect stable release alias target");
+      }
+    }
+    if (targetType !== null && !targetType.isFile()) {
+      fail("ARTIFACT_COLLISION", "/generated/" + name, "Stable release alias target must be a regular file");
+    }
+    const temporary = path.join(directory, "." + name + "." + process.pid + "." + index + ".tmp");
+    try {
+      fs.writeFileSync(temporary, entry[1], { flag: "wx" });
+      fs.renameSync(temporary, target);
+    } catch (error) {
+      try { fs.unlinkSync(temporary); } catch (_cleanupError) {}
+      fail("ARTIFACT_WRITE", "/generated/" + name, "Cannot atomically write stable release alias: " + String(error && error.code || error));
+    }
+  });
   return names;
 }
 
@@ -240,6 +413,8 @@ function executeBuild(input) {
 module.exports = Object.freeze({
   compileSourceTree: compileSourceTree,
   artifactEntries: artifactEntries,
+  releaseAliasEntries: releaseAliasEntries,
+  validateReleaseAliasRecord: validateReleaseAliasRecord,
   checkArtifacts: checkArtifacts,
   writeArtifacts: writeArtifacts,
   executeBuild: executeBuild,

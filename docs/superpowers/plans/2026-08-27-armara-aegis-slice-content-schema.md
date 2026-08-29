@@ -592,6 +592,7 @@ The kernel must:
 7. Emit only catalog-valid events and evaluate objectives/rewards from canonical state/events.
 8. Make defeat/victory terminal at the kernel boundary; commands never reach management after terminal outcome.
 9. Implement `simulateReplay` from the pinned immutable ruleset, verify checkpoints/final claim, and never consult mutable profile/tutorial state.
+10. Return specification Section 11.2's bounded telemetry from that same `advanceTick` call. Replay validates its exact frozen schema/tick/ordinals/limits and excludes it from every checkpoint/final hash; no second balance-only reducer is permitted.
 
 Golden scenarios cover m01 gate/build/upgrade/sell, m04 shared-route priority/leaks, m05 thresholds/pods/exposure, Story remainder, defeat, victory, IDs, simultaneous events, objectives, rewards, and Node/classic final hashes.
 
@@ -604,7 +605,7 @@ After 7B, balance agent owns:
 - `games/aegis/tests/fixtures/balance/**` — new
 - `docs/aegis-balance/slice/**` — generated/reviewable deterministic reports and witness replay evidence only
 
-The harness reports exact economy sources, purchase debits, refunds, net consumed Aether, simultaneous investment, bank, owned state, upgrade timing, route/pad use, overkill, control/support credit, leak prevention, objective results, and `combatValuePerAether`.
+The harness reports exact economy sources, purchase debits, refunds, net consumed Aether, simultaneous investment, bank, owned state, upgrade timing, route/pad use, overkill, control/support credit, leak prevention, objective results, and `combatValuePerAether`. It folds the bounded per-tick telemetry stream and bound canonical states; it never copies combat, movement, economy, targeting, or objective formulas. Report formula and all formerly qualitative machine gates are exactly specification Section 11.2.
 
 Required gates include:
 
@@ -612,11 +613,17 @@ Required gates include:
 - Three materially different m01 witnesses: Sentinel focus, Chronos control, Siege clustering.
 - At least two materially different available-slice witnesses for m04/m05 at this slice checkpoint; retain the higher full-campaign diversity target for later acts.
 - M1 representative final four/five towers and roughly two upgrades, 360–410 net consumed, no ten-pad saturation, median bank below 65, and exact score cap.
-- One-tower/no-upgrade and seeded legal-random controls fail in Wave 5/6.
+- The one-tower/no-upgrade control fails in Wave 5/6. The exact twelve-seed legal-random aggregate remains command-clean, records at least eight defeats and no more than four victories, and includes at least one Wave-5/6 defeat; an unaffordable random purchase is skipped rather than denied or fabricated.
 - Route-aware versus naïve paired evidence holds seed/loadout/spend/timing/policies/waves constant and meets the binding placement gate.
 - Each defense has one matched role win and one visible weakness; no strict dominance.
 - M04 route-local and M05 boss behavior are materially exercised, not merely equipped.
 - Seeded fuzz/soak covers sell/build churn, shared routes, status stacks, guard markers, boss thresholds, entity/event caps, parser limits, and replay parity.
+- The core mission witness set is ten runs: three `m01` emphasis wins, the paired imperfect `m01` win, one-tower and twelve-seed legal-random `m01` controls, two materially different `m04` wins, and two materially different `m05` wins. Matched role/weakness matrices remain separate deterministic scenarios rather than inflated mission-witness counts.
+- Human cohort/timing/clarity targets remain explicitly `manual`; headless evidence never marks them passed. The absent air-hostile and shield-pool axes are explicitly `unavailable` for this exact compiled slice and retain named deferred gates; synthetic content mutation cannot turn either into a pass.
+
+`tools/simulate-aegis.js` is an import-safe strict CommonJS CLI with injected I/O. It accepts exactly one contained repo-relative POSIX `--manifest`, exactly one of `--check` or explicit `--write`, and optional diagnostic projection `--mission m01|m04|m05 --difficulty story|strategos|titan --matrix`; unknown/duplicate flags fail. It compiles current simulation bytes in memory, authenticates the exact release/content/simulation selection, executes those bytes in a locked VM, and writes only content-addressed canonical evidence under `docs/aegis-balance/slice/<contentVersion>.<rulesetHash>/`. `--check` regenerates in memory and byte-compares; it never repairs evidence.
+
+Source scenarios contain exact `{ schemaVersion, id, kind, header, strategyVersion, commands, pair, expectations }`. Generated witnesses are ordinary replay-v1 envelopes revalidated through the bound replay runner. `balance-report.json` contains exact `{ schemaVersion, formulaVersion, binding, scenarioResults, matrixResults, aggregates, gateResults, manualTargets }`; every ratio retains numerator/denominator, gate status is one of `pass|fail|review|manual|unavailable`, source fixture hashes are retained, and no time/random/platform path enters evidence. Synergy above 35% is `review`, L3-before-Wave-4 and bank p90 are diagnostics, and promoted evidence cannot contain a failing required gate or falsely passed manual/unavailable gate.
 
 ### Task 7 verification
 

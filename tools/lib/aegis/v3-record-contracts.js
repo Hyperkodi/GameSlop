@@ -3,6 +3,7 @@
 const { fail, pointerJoin } = require("./diagnostics.js");
 const { parseExactDecimal } = require("./exact-decimal.js");
 const Catalog = require("./v3-rule-catalog.js");
+const PresentationV2 = require("./v3-presentation-v2.js");
 
 const MAX_GROUPS_PER_WAVE = 32;
 const MAX_SPAWN_COUNT = 1000;
@@ -1653,6 +1654,112 @@ function validatePresentationCatalog(value, optionInput) {
   return deepFrozenClone(value);
 }
 
+function requirePresentationSchemaVersion(value, path) {
+  const versionPath = pointerJoin(path, "schemaVersion");
+  if (!value || typeof value !== "object" || Array.isArray(value) ||
+      !Object.prototype.hasOwnProperty.call(value, "schemaVersion") ||
+      !Number.isSafeInteger(value.schemaVersion)) {
+    fail("PRESENTATION_SCHEMA_VERSION", versionPath, "Presentation catalog schemaVersion must be explicitly 1 or 2");
+  }
+  if (value.schemaVersion !== 1 && value.schemaVersion !== 2) {
+    fail("PRESENTATION_SCHEMA_VERSION", versionPath, "Presentation catalog schemaVersion must be explicitly 1 or 2");
+  }
+  return value.schemaVersion;
+}
+
+function validatePresentationCatalogV2Bindings(value, path, options) {
+  if (options.approvalState === "production-approved") {
+    fail("PRESENTATION_PRODUCTION_FORBIDDEN", path, "Presentation schema v2 is not production-authorized");
+  }
+  requireEnum(options.approvalState, ["balance-approved", "candidate-balance"], "/approvalState");
+  requireSortedUniqueIds(options.missionIds, "/options/missionIds", { minimum: 1, maximum: LIMITS.maxMissions });
+  requireSortedUniqueIds(options.cueIds, "/options/cueIds", { minimum: 0, maximum: LIMITS.maxCatalogRecords });
+
+  const packsPath = pointerJoin(path, "packRecords");
+  const missionAssignments = new Map();
+  const packIds = new Set();
+  value.packRecords.forEach(function (record, packIndex) {
+    packIds.add(record.id);
+    record.missionIds.forEach(function (missionId, missionIndex) {
+      const missionPath = pointerJoin(pointerJoin(pointerJoin(packsPath, packIndex), "missionIds"), missionIndex);
+      if (missionAssignments.has(missionId)) {
+        fail("PRESENTATION_MISSION_ASSIGNMENT", missionPath, "Mission is assigned to more than one presentation pack");
+      }
+      missionAssignments.set(missionId, record.id);
+    });
+  });
+
+  const expectedMissions = new Set(options.missionIds);
+  if (missionAssignments.size !== expectedMissions.size || Array.from(expectedMissions).some(function (id) {
+    return !missionAssignments.has(id);
+  })) {
+    fail("PRESENTATION_MISSION_ASSIGNMENT", packsPath, "Every included mission must belong to exactly one pack");
+  }
+  requireArray(options.missionPackRecords, "/options/missionPackRecords", options.missionIds.length, options.missionIds.length);
+  const assignmentMissions = new Set();
+  options.missionPackRecords.forEach(function (assignment, index) {
+    const assignmentPath = pointerJoin("/options/missionPackRecords", index);
+    exactFields(assignment, ["missionId", "presentationPackId"], assignmentPath);
+    requireId(assignment.missionId, pointerJoin(assignmentPath, "missionId"));
+    requireId(assignment.presentationPackId, pointerJoin(assignmentPath, "presentationPackId"));
+    if (assignmentMissions.has(assignment.missionId) || !expectedMissions.has(assignment.missionId) ||
+        !packIds.has(assignment.presentationPackId) ||
+        missionAssignments.get(assignment.missionId) !== assignment.presentationPackId) {
+      fail("PRESENTATION_MISSION_ASSIGNMENT", assignmentPath, "Mission presentationPackId does not match its unique pack assignment");
+    }
+    assignmentMissions.add(assignment.missionId);
+  });
+
+  const cuesPath = pointerJoin(path, "cueMappings");
+  const mappedCues = new Set(value.cueMappings.map(function (record) { return record.cueId; }));
+  const expectedCues = new Set(options.cueIds);
+  if (mappedCues.size !== expectedCues.size || Array.from(expectedCues).some(function (id) {
+    return !mappedCues.has(id);
+  })) {
+    fail("PRESENTATION_CUE_ASSIGNMENT", cuesPath, "Every referenced cue must resolve exactly once and no extra cue is allowed");
+  }
+}
+
+function ordinaryPresentationClone(value) {
+  if (value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) return value.map(ordinaryPresentationClone);
+  const output = {};
+  Object.keys(value).forEach(function (key) {
+    Object.defineProperty(output, key, {
+      value: ordinaryPresentationClone(value[key]),
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  });
+  return output;
+}
+
+function validatePresentationCatalogByVersionCore(value, path, options) {
+  const schemaVersion = requirePresentationSchemaVersion(value, path);
+  if (schemaVersion === 1) {
+    validatePresentationCatalogCore(value, path, options);
+    return value;
+  }
+  // The strict source parser intentionally emits null-prototype records. The
+  // aggregate preflight above has already rejected hostile prototypes,
+  // accessors, symbols, cycles, and shared references, so normalize that one
+  // safe parser representation before invoking v2's ordinary-JSON validator.
+  const catalog = PresentationV2.validatePresentationCatalogV2(
+    ordinaryPresentationClone(value),
+    { requireRuntimeReady: true }
+  );
+  validatePresentationCatalogV2Bindings(catalog, path, options);
+  return catalog;
+}
+
+function validatePresentationCatalogByVersion(value, optionInput) {
+  const options = normalizePresentationOptions(optionInput);
+  preflight(value, "/");
+  const catalog = validatePresentationCatalogByVersionCore(value, "/", options);
+  return deepFrozenClone(catalog);
+}
+
 function requireSliceIds(records, expected, path, code) {
   const actual = records.map(function (record) { return record.id; });
   requireExactArray(actual, expected, path, code);
@@ -2261,7 +2368,7 @@ function validateNonMapSliceRecordSet(value, optionInput) {
   });
   const cueIds = Array.from(cueIdSet).sort();
   const missionIds = value.missions.map(function (mission) { return mission.id; });
-  validatePresentationCatalogCore(value.presentationCatalog, "/presentationCatalog", {
+  validatePresentationCatalogByVersionCore(value.presentationCatalog, "/presentationCatalog", {
     approvalState: value.approvalState,
     missionIds: missionIds,
     missionPackRecords: value.missions.map(function (mission) {
@@ -2298,6 +2405,7 @@ module.exports = Object.freeze({
   validateEventCatalog: validateEventCatalog,
   validateStringCatalog: validateStringCatalog,
   validatePresentationCatalog: validatePresentationCatalog,
+  validatePresentationCatalogByVersion: validatePresentationCatalogByVersion,
   validateNonMapSliceRecordSet: validateNonMapSliceRecordSet,
   validateSliceRecordSet: validateNonMapSliceRecordSet,
 });

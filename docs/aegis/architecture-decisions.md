@@ -96,6 +96,14 @@ Compiled content schema v2 is insufficient for authoritative replay simulation b
 
 A replay outcome, score, Laurels total, checkpoint, or final-state hash becomes authoritative only after the matching immutable ruleset is fully re-simulated through its first terminal boundary by the complete combat kernel. Plan Task 1.3 remains explicitly incomplete until content schema v3 and the required artifact-owned behavior registry can reproduce those production results; implementing a fail-closed seam or passing synthetic fixtures does not satisfy that exit gate.
 
+### ADR-009 — Bounded noncanonical balance telemetry
+
+The authoritative kernel has one advancement seam. `advanceTick` returns exactly frozen `{ events, state, telemetry }`; a second diagnostic or balance-only advancement path is forbidden because two reducers could drift. `telemetry` is deterministic output from the same resolved phases, but it is not canonical simulation state. It never enters replay envelopes, checkpoint hashes, final claims, score, objectives, progression, presentation behavior, or semantic event catalogs.
+
+Balance-telemetry schema v1 is exactly `{ schemaVersion, tick, records }`. `tick` is the input boundary tick, records use contiguous zero-based ordinals in actual reducer order, and every record has one closed kind-specific shape from the Candidate-slice specification. The kernel exports the frozen authorities `BALANCE_TELEMETRY_SCHEMA_VERSION = 1`, `MAX_BALANCE_TELEMETRY_RECORDS_PER_TICK = 65536`, and `MAX_BALANCE_TELEMETRY_TARGET_IDS = 4096`. Unknown kinds or fields, unsafe integers, free-form text, noncanonical values, reordered/duplicate ordinals, target-list overflow, or record overflow fail the tick without truncated output. Telemetry contains raw authoritative facts and conserved attribution inputs; it does not embed a mutable report formula or claim that a human-playtest target passed.
+
+The replay runner validates that telemetry is exact, deeply frozen, canonical, correctly ticked, ordinally contiguous, and within those exported bounds, then deliberately ignores it when hashing or verifying claims. The balance harness folds the per-tick stream into bounded aggregates and does not retain an unbounded session log. A telemetry-schema or report-formula revision changes the simulation artifact identity because the producing/validating code changes, but it does not add diagnostic history to canonical state or make a report-only formula part of gameplay consensus.
+
 ## Initial risk register
 
 | Risk | Evidence | Required mitigation | Gate |

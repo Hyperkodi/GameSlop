@@ -27,6 +27,14 @@ const MODULE_SPECS = Object.freeze([
     Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
     Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
   ]) }),
+  Object.freeze({ id: "behaviors", relativePath: "behaviors.js", globalName: "AegisBehaviors", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+    Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
+    Object.freeze({ id: "timers", parameterName: "Timers", requirePath: "./timers.js" }),
+    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
+    Object.freeze({ id: "effects", parameterName: "Effects", requirePath: "./effects.js" }),
+    Object.freeze({ id: "targeting", parameterName: "Targeting", requirePath: "./targeting.js" }),
+  ]) }),
   Object.freeze({ id: "commands", relativePath: "commands.js", globalName: "AegisCommands", dependencies: Object.freeze([
     Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
   ]) }),
@@ -36,9 +44,31 @@ const MODULE_SPECS = Object.freeze([
     Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
     Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
   ]) }),
+  Object.freeze({ id: "objectives", relativePath: "objectives.js", globalName: "AegisObjectives", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+  ]) }),
+  Object.freeze({ id: "kernel", relativePath: "kernel.js", globalName: "AegisKernel", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+    Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
+    Object.freeze({ id: "timers", parameterName: "Timers", requirePath: "./timers.js" }),
+    Object.freeze({ id: "economy", parameterName: "Economy", requirePath: "./economy.js" }),
+    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
+    Object.freeze({ id: "effects", parameterName: "Effects", requirePath: "./effects.js" }),
+    Object.freeze({ id: "targeting", parameterName: "Targeting", requirePath: "./targeting.js" }),
+    Object.freeze({ id: "behaviors", parameterName: "Behaviors", requirePath: "./behaviors.js" }),
+    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
+    Object.freeze({ id: "management", parameterName: "Management", requirePath: "./management.js" }),
+    Object.freeze({ id: "objectives", parameterName: "Objectives", requirePath: "./objectives.js" }),
+  ]) }),
+  Object.freeze({ id: "replay-runner", relativePath: "replay-runner.js", globalName: "AegisReplayRunner", dependencies: Object.freeze([
+    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
+    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
+    Object.freeze({ id: "kernel", parameterName: "Kernel", requirePath: "./kernel.js" }),
+  ]) }),
   Object.freeze({ id: "replay", relativePath: "replay.js", globalName: "AegisReplay", dependencies: Object.freeze([
     Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
     Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
+    Object.freeze({ id: "replay-runner", parameterName: "ReplayRunner", requirePath: "./replay-runner.js" }),
   ]) }),
 ]);
 
@@ -125,11 +155,18 @@ function classicDependencySeam(spec, dependencies) {
         dependency.module.globalName + " must be installed before " + spec.relativePath + "\");"
     );
   });
-  lines.push(
-    "  const api = factory(" + dependencies.map(function (dependency) {
-      return "game." + dependency.module.globalName;
-    }).join(", ") + ");"
-  );
+  const classicArguments = dependencies.map(function (dependency) {
+    return "game." + dependency.module.globalName;
+  });
+  if (classicArguments.length <= 2) {
+    lines.push("  const api = factory(" + classicArguments.join(", ") + ");");
+  } else {
+    lines.push("  const api = factory(");
+    classicArguments.forEach(function (argument, index) {
+      lines.push("    " + argument + (index + 1 === classicArguments.length ? "" : ","));
+    });
+    lines.push("  );");
+  }
   return lines.join("\n");
 }
 
@@ -212,11 +249,20 @@ function transformSource(source, spec) {
   const parameterList = dependencies.map(function (dependency) {
     return dependency.declaration.parameterName;
   }).join(", ");
-  const declaredRootSeam = ROOT_SEAM + "(" + parameterList + ") {";
+  let factoryParameters;
+  if (dependencies.length <= 2) {
+    factoryParameters = "(" + parameterList + ") {";
+  } else {
+    factoryParameters = "(\n" + dependencies.map(function (dependency, index) {
+      return "  " + dependency.declaration.parameterName +
+        (index + 1 === dependencies.length ? "" : ",");
+    }).join("\n") + "\n) {";
+  }
+  const declaredRootSeam = ROOT_SEAM + factoryParameters;
   transformed = replaceExactly(
     transformed,
     declaredRootSeam,
-    "})(BUNDLE_ROOT, function (" + parameterList + ") {",
+    "})(BUNDLE_ROOT, function " + factoryParameters,
     "SIMULATION_BUNDLE_SEAM",
     "/simulationBundle/" + spec.id,
     spec.relativePath + " root capture seam drifted"

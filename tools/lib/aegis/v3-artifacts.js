@@ -5,6 +5,7 @@ const vm = require("node:vm");
 const { canonicalEncode, canonicalBytes } = require("./canonical.js");
 const { fail } = require("./diagnostics.js");
 const { validateRepositoryPath } = require("./v3-annex.js");
+const Presentation = require("./v3-presentation.js");
 const {
   frameRulesetBytes,
   immutableOutputs,
@@ -253,6 +254,42 @@ function validateIncludedIdParity(release, content) {
   });
 }
 
+function presentationBindings(content, includedIds) {
+  if (!isPlainRecord(content) || !isPlainRecord(content.eventCatalog) || !isPlainRecord(content.missions)) {
+    fail("PRESENTATION_CONTENT_BINDING", "/content", "Compiled content must expose mission and event records for presentation binding");
+  }
+  const cueIds = new Set();
+  Object.keys(content.eventCatalog).forEach(function (eventId) {
+    const event = content.eventCatalog[eventId];
+    if (!isPlainRecord(event)) {
+      fail("PRESENTATION_CONTENT_BINDING", "/content/eventCatalog/" + eventId, "Compiled event record is invalid");
+    }
+    requireStableId(event.presentationCueId, "/content/eventCatalog/" + eventId + "/presentationCueId", "Presentation cue ID");
+    cueIds.add(event.presentationCueId);
+  });
+  includedIds.missions.forEach(function (missionId) {
+    const mission = content.missions[missionId];
+    const missionPath = "/content/missions/" + missionId;
+    if (!isPlainRecord(mission) || !Array.isArray(mission.previewDeclarations)) {
+      fail("PRESENTATION_CONTENT_BINDING", missionPath, "Compiled mission must expose preview cue declarations");
+    }
+    mission.previewDeclarations.forEach(function (declaration, declarationIndex) {
+      const declarationPath = missionPath + "/previewDeclarations/" + declarationIndex;
+      if (!isPlainRecord(declaration) || !Array.isArray(declaration.semanticCueIds)) {
+        fail("PRESENTATION_CONTENT_BINDING", declarationPath, "Compiled preview declaration must expose semantic cue IDs");
+      }
+      declaration.semanticCueIds.forEach(function (cueId, cueIndex) {
+        requireStableId(cueId, declarationPath + "/semanticCueIds/" + cueIndex, "Presentation cue ID");
+        cueIds.add(cueId);
+      });
+    });
+  });
+  return Object.freeze({
+    missionIds: Object.freeze(includedIds.missions.slice()),
+    cueIds: Object.freeze(Array.from(cueIds).sort(compareAscii)),
+  });
+}
+
 function buildV3Artifacts(input) {
   if (!input || input.schemaVersion !== 3) fail("V3_ARTIFACT_SCHEMA", "/schemaVersion", "V3 artifact builder accepts exactly source schema 3");
   const abiBytes = Buffer.from(input.abiBytes);
@@ -272,12 +309,18 @@ function buildV3Artifacts(input) {
   if (input.content.abiHash !== abiHash) fail("ABI_HASH_BINDING_MISMATCH", "/abiHash", "Compiled content abiHash must bind the exact verified ABI source bytes");
 
   const content = deepFrozenClone(input.content);
-  const presentation = deepFrozenClone(input.presentation);
+  validateIncludedIds(input.includedIds);
+  validateIncludedIdParity({ includedIds: input.includedIds }, content);
+  const presentation = Presentation.validatePresentationCompanion(
+    input.presentation,
+    "/presentation",
+    presentationBindings(content, input.includedIds)
+  );
+  if (content.contentVersion !== input.contentVersion || presentation.contentVersion !== input.contentVersion) {
+    fail("CONTENT_VERSION_BINDING_MISMATCH", "/contentVersion", "Compiled content and presentation versions must match the release version");
+  }
   if (input.approvalState === "production-approved") {
     fail("PRESENTATION_PRODUCTION_FORBIDDEN", "/approvalState", "No implemented presentation schema can authorize production approval");
-  }
-  if (!presentation || presentation.schemaVersion !== 1) {
-    fail("PRESENTATION_SCHEMA_UNIMPLEMENTED", "/presentation/schemaVersion", "Only presentation schema v1 is implemented");
   }
   const contentBytes = renderDataArtifact("AegisContent", "CONTENT", content, "canonical simulation-content artifact");
   const presentationBytes = renderDataArtifact("AegisPresentation", "PRESENTATION", presentation, "presentation companion artifact");
@@ -389,9 +432,11 @@ function verifyV3ReleaseSelection(input) {
   const content = readGeneratedData(contentBytes, "AegisContent", "CONTENT", release.contentArtifact);
   const presentation = readGeneratedData(presentationBytes, "AegisPresentation", "PRESENTATION", release.presentationArtifact);
   validateIncludedIdParity(release, content);
-  if (!presentation || presentation.schemaVersion !== 1) {
-    fail("PRESENTATION_SCHEMA_UNIMPLEMENTED", "/presentation/schemaVersion", "Only presentation schema v1 is implemented");
-  }
+  const validatedPresentation = Presentation.validatePresentationCompanion(
+    presentation,
+    "/presentation",
+    presentationBindings(content, release.includedIds)
+  );
   const bindings = simulationBindings(simulationBytes, release.simulationArtifact);
   if (content.abiHash !== release.abiHash) fail("ABI_HASH_BINDING_MISMATCH", "/content/abiHash", "Release and compiled content ABI hashes differ");
   if (content.eventSchemaVersion !== release.eventSchemaVersion || bindings.eventSchemaVersion !== release.eventSchemaVersion) {
@@ -400,7 +445,7 @@ function verifyV3ReleaseSelection(input) {
   if (content.behaviorRegistryVersion !== release.behaviorRegistryVersion || bindings.behaviorRegistryVersion !== release.behaviorRegistryVersion) {
     fail("BEHAVIOR_REGISTRY_BINDING_MISMATCH", "/behaviorRegistryVersion", "Release, simulation, and content behavior-registry versions differ");
   }
-  if (presentation.contentVersion !== release.contentVersion || content.contentVersion !== release.contentVersion) {
+  if (validatedPresentation.contentVersion !== release.contentVersion || content.contentVersion !== release.contentVersion) {
     fail("CONTENT_VERSION_BINDING_MISMATCH", "/contentVersion", "Release, simulation content, and presentation content versions differ");
   }
   if (input.manifestBytes !== undefined) {
@@ -423,7 +468,7 @@ function verifyV3ReleaseSelection(input) {
       fail("V3_RELEASE_MANIFEST_MISMATCH", "/manifest", "JSON manifest and classic release record fields differ");
     }
   }
-  return Object.freeze({ release: release, content: content, presentation: presentation, bindings: bindings });
+  return Object.freeze({ release: release, content: content, presentation: validatedPresentation, bindings: bindings });
 }
 
 module.exports = Object.freeze({

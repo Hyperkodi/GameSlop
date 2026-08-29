@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1280" viewBox="-18 -12 198.4 124" role="img" aria-labelledby="title desc">
+  <title id="title">m04 production art guide</title>
+  <desc id="desc">Fixed 16:10 camera guide. Green is the landmark-safe base outside overlaid clearances. Red is the ground-route calm corridor. Dashed cyan marks air clearance. Blue circles are neutral pad clear zones. Teal markers are joins. This image is not player-facing art.</desc>
+  <rect x="-18" y="-12" width="198.4" height="124" fill="#143f37"/>
+  <rect id="safe-landmark-zone-board" x="0" y="0" width="160" height="100" fill="#245f4f" stroke="#f7f0d7" stroke-width="0.8" data-guide-only="true"/>
+  <g id="quiet-corridors" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <polyline id="calm-lane.north.approach" points="-6,18 34,18 34,34 74,34 94,50" stroke="#ff4268" stroke-width="16" opacity="0.44" data-layer="surface"/>
+    <polyline id="tactical-lane.north.approach" points="-6,18 34,18 34,34 74,34 94,50" stroke="#ff9a3c" stroke-width="12" opacity="0.66"/>
+    <polyline id="visual-core-lane.north.approach" points="-6,18 34,18 34,34 74,34 94,50" stroke="#fff4a8" stroke-width="8" opacity="0.92"/>
+    <polyline id="calm-lane.shared.trunk" points="94,50 118,50 118,82 166,82" stroke="#ff4268" stroke-width="16" opacity="0.44" data-layer="surface"/>
+    <polyline id="tactical-lane.shared.trunk" points="94,50 118,50 118,82 166,82" stroke="#ff9a3c" stroke-width="12" opacity="0.66"/>
+    <polyline id="visual-core-lane.shared.trunk" points="94,50 118,50 118,82 166,82" stroke="#fff4a8" stroke-width="8" opacity="0.92"/>
+    <polyline id="calm-lane.south.approach" points="-6,82 34,82 34,66 74,66 94,50" stroke="#ff4268" stroke-width="16" opacity="0.44" data-layer="surface"/>
+    <polyline id="tactical-lane.south.approach" points="-6,82 34,82 34,66 74,66 94,50" stroke="#ff9a3c" stroke-width="12" opacity="0.66"/>
+    <polyline id="visual-core-lane.south.approach" points="-6,82 34,82 34,66 74,66 94,50" stroke="#fff4a8" stroke-width="8" opacity="0.92"/>
+  </g>
+  <g id="joins" fill="#5ef0c2" stroke="#05261e" stroke-width="0.8" font-family="system-ui,Segoe UI,sans-serif" font-size="2.2" font-weight="700" text-anchor="middle" data-guide-only="true">
+    <g id="join-join.harbor-merge" data-kind="merge" data-incoming="lane.north.approach lane.south.approach" data-outgoing="lane.shared.trunk">
+      <circle cx="94" cy="50" r="4"/>
+      <path d="M 91.7 50 H 96.3 M 94 47.7 V 52.3" fill="none" stroke="#ffffff" stroke-width="0.65"/>
+      <text x="94" y="44.4" fill="#ffffff" stroke="#071018" stroke-width="0.55" paint-order="stroke">join.harbor-merge</text>
+    </g>
+  </g>
+  <g id="pad-clear-zones" fill="#36c8ff" fill-opacity="0.34" stroke="#bceeff" stroke-width="0.65" font-family="system-ui,Segoe UI,sans-serif" font-size="2.4" text-anchor="middle" data-guide-only="true" data-semantic="neutral-clear-disk">
+    <circle id="pad-clear-p01" cx="14" cy="34" r="10"/>
+    <text x="14" y="34.7" fill="#06131a">p01</text>
+    <circle id="pad-clear-p02" cx="50" cy="18" r="10"/>
+    <text x="50" y="18.7" fill="#06131a">p02</text>
+    <circle id="pad-clear-p03" cx="54" cy="50" r="10"/>
+    <text x="54" y="50.7" fill="#06131a">p03</text>
+    <circle id="pad-clear-p04" cx="14" cy="66" r="10"/>
+    <text x="14" y="66.7" fill="#06131a">p04</text>
+    <circle id="pad-clear-p05" cx="70" cy="18" r="10"/>
+    <text x="70" y="18.7" fill="#06131a">p05</text>
+    <circle id="pad-clear-p06" cx="70" cy="82" r="10"/>
+    <text x="70" y="82.7" fill="#06131a">p06</text>
+    <circle id="pad-clear-p07" cx="102" cy="34" r="10"/>
+    <text x="102" y="34.7" fill="#06131a">p07</text>
+    <circle id="pad-clear-p08" cx="134" cy="58" r="10"/>
+    <text x="134" y="58.7" fill="#06131a">p08</text>
+    <circle id="pad-clear-p09" cx="102" cy="78" r="10"/>
+    <text x="102" y="78.7" fill="#06131a">p09</text>
+    <circle id="pad-clear-p10" cx="50" cy="82" r="10"/>
+    <text x="50" y="82.7" fill="#06131a">p10</text>
+  </g>
+  <g id="anchors" font-family="system-ui,Segoe UI,sans-serif" font-size="2.2" font-weight="700">
+    <g id="anchor-entry.north" data-kind="entry">
+      <circle cx="-6" cy="18" r="2.8" fill="#ffffff" stroke="#071018" stroke-width="0.8"/>
+      <text x="-6" y="13.7" fill="#ffffff" stroke="#071018" stroke-width="0.6" paint-order="stroke">entry.north</text>
+    </g>
+    <g id="anchor-entry.south" data-kind="entry">
+      <circle cx="-6" cy="82" r="2.8" fill="#ffffff" stroke="#071018" stroke-width="0.8"/>
+      <text x="-6" y="77.7" fill="#ffffff" stroke="#071018" stroke-width="0.6" paint-order="stroke">entry.south</text>
+    </g>
+    <g id="anchor-gate.east" data-kind="gate">
+      <circle cx="166" cy="82" r="2.8" fill="#ffffff" stroke="#071018" stroke-width="0.8"/>
+      <text x="166" y="77.7" fill="#ffffff" stroke="#071018" stroke-width="0.6" paint-order="stroke">gate.east</text>
+    </g>
+  </g>
+  <g transform="translate(-14.5 -5.5)" font-family="system-ui,Segoe UI,sans-serif" fill="#ffffff" font-size="2.5">
+    <rect x="0" y="-4.5" width="79" height="8" rx="1.5" fill="#071018" opacity="0.9"/>
+    <text x="2" y="0">GREEN landmark-safe / RED quiet / BLUE pads / TEAL joins / WHITE anchors</text>
+  </g>
+</svg>
