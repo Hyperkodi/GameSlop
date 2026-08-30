@@ -584,3 +584,15 @@ Shared files with one owner at a time: `content-v4/manifests/candidate-v4.json` 
 7. **B** balance witnesses, replay corpus, live CDP boot, release-gate checklist.
 
 Each step ends with a green full bare suite, syntax checks, `git diff --check`, an adversarial review of the lane, and one commit.
+
+## 21. Amendment C — narrative, legibility, and battle-screen repair (2026-08-30)
+
+Playtest feedback drives three parallel repairs. Specification section 18 is binding for the first two.
+
+| Lane | Write set | Work |
+|---|---|---|
+| N — narrative | `games/aegis/content-v4/acts/**`, act/mission/wave string entries, `tools/lib/aegis/v4-*` act contracts, `js/delivery/shell.js`, `js/presentation/shell-view.js`, their tests | Add the `acts` collection, author the four act records and their historical copy, rewrite briefing and wave-preview projection and rendering for legibility |
+| V — battle screen | `js/delivery/preview-controller.js`, `js/presentation/sprite-atlas.js`, `css/**`, their tests | Repair tower animation cadence, make the battlefield and tower menu fit the viewport, show range and covered road on site selection |
+| T — typography | every remaining file under `games/` | Remove every em dash |
+
+Exit gate for all three: full bare `node --test` green in `games/aegis`, both releases rebuilt and reproducible, both aliases booting through to a battle at 1280x800 and 390x844, and a measured Mission 1 wave-1 result showing that two Sentinels on the double-pass sites finish at full gate integrity.

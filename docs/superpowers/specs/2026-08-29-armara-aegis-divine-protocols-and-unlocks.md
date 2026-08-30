@@ -576,3 +576,38 @@ These rulings resolve ambiguities found by adversarial review. Each is the recom
 | R16 | The deterministic simulation bundle declares one module list for every content schema, containing the twenty modules the runtime actually loads. `management.js` and `kernel.js` are single files with static dependencies, so a schema-3 rebuild that omitted `abi-v2`, `commands-v2`, `protocols`, and `relics` would emit a bundle whose management seam references globals that were never installed. Changing any bundled simulation source changes the ruleset hash by design (ADR-003); the committed immutable artifacts stay on disk untouched, and pinned test goldens plus replay fixtures are regenerated as part of the change that caused them. | A rebuilt historical release must still be loadable and deterministic, and one list is the only arrangement that keeps both true. |
 | R17 | Two canonical v2 state shapes are confirmed as implemented. A tower's `disableSources` entries are `{ expiryTick, sourceId }` sorted by `sourceId`, because an expiry that lived in a second collection could desynchronize from its source. Canonical state also retains the replay-v2 header identity fields (`protocolLoadout`, `protocolSlotCap`, `protocolAuthority`, `missionProtocolLoan`, `relicIds`, `relicSlotCap`, `reinforcementId`, `specializationAccessIds`), exactly as v1 state retains `loadoutIds`, so `advanceTick` reconstructs its header from state and never consults a profile. | The kernel must be able to rebuild its own authenticated header; splitting a fact across two collections invites drift. |
 | R18 | `resetPlan` is the Blueprint Reset campaign action, not a per-bucket undo. It is legal only during the pre-Wave-1 planning phase of a mission whose run header carries the `blueprint-reset` grant; it atomically removes every current tower, restores the exact resolved starting Aether (difficulty, Relic, campaign modifier, and Assist staging included), and clears simulation selection. It never rewinds tick, command sequence, input history, or the next entity IDs, and it is unavailable once Wave 1 starts, when the universal 70% sell rule governs every removal. | Campaign-expansion §6.5 states the action exactly; a narrower current-bucket rollback would leave earlier planning purchases unrefunded and make the reward's promise untrue. |
+
+## 18. Campaign narrative and briefing legibility (2026-08-30)
+
+Ryan playtested the candidate build and reported that the briefing and wave preview were confusing, and asked for a per-act storyline grounded in real Greek history. This section is binding for narrative content and for the copy that surrounds it.
+
+### 18.1 Framing
+
+The Aegis is a defense network whose archive preserves how Greece was actually defended. Each act restores one campaign from that archive. The frame exists so the acts can run in escalating-difficulty order while each one still states its own real date; it is never used to fictionalize an outcome. Every historical statement shown to a player must be accurate, and every act names its era and year on screen.
+
+### 18.2 Act records
+
+Compiled content v4 gains an `acts` collection. Each record is `{ index, titleKey, eraKey, storyKey, premiseKey, missionIds }`, ASCII ordered by index, with `missionIds` exactly the missions whose `actIndex` matches. The four acts and their historical anchors are:
+
+| Act | Title | Era | Anchor |
+|---:|---|---|---|
+| 1 | Attican Boot Sequence | The plain of Marathon, 490 BC | The Persian landing, Miltiades' wings, the march back to Athens |
+| 2 | Shards of the Aegean | The Delian League, founded 478 BC | The treasury on Delos, the Naxos revolt, protection becoming control |
+| 3 | Oracle War | The Hot Gates and Delphi, 480 BC | Thermopylae, the Anopaia path, the wooden wall prophecy |
+| 4 | Titan Singularity | The Peloponnesian War, 431 to 404 BC | The alliance turning on itself, the plague, Sicily, the long walls |
+
+Act narrative is presentation copy. It never enters simulation state, a ruleset hash, a replay header, or a record key, and no combat value may be derived from it.
+
+### 18.3 Briefing and wave-preview legibility
+
+A briefing states, in this order and without repeating itself: the act era, the act premise, what this battlefield is, what the player must do, and what is new here. A wave preview describes each wave as a readable sentence, not a field dump.
+
+- Redundant qualifiers are omitted. Ground movement is the default and is named only when a group is airborne; a route is named only when the mission has more than one route.
+- Group size uses exact counts when the player's Recon tier reveals them and a plain quantity word otherwise.
+- Every recon tier explains in plain language what it does and does not reveal. "Baseline scouting names every route, enemy type, trait, and boss rule" is replaced by copy that tells the player they can see what is coming but not how many.
+- Each wave carries one short note naming the pressure it introduces.
+- Nothing in this surface may expose hidden pad quality, exposure figures, grid coordinates, tick counts, hashes, or runtime IDs.
+
+### 18.4 Typography
+
+No em dash appears anywhere in player-facing text, source, style, or content in this repository. Use a comma, a colon, a full stop, or a restructured sentence. Empty numeric readouts use a plain hyphen, never an em dash. This applies to every game under `games/`, not only Aegis.
