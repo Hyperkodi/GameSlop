@@ -339,7 +339,7 @@ In production content, every level is a complete immutable stat record, never a 
 | Defense | Costs L1/L2/L3 | Level 1 | Level 2 | Level 3 capstone |
 |---|---:|---|---|---|
 | Sentinel | 60 / 55 / 95 | 8 damage, 450 ms, range 22 | 12 damage, 410 ms, range 24 | 18 damage, 360 ms, range 26; after three consecutive hits on one target, Lock-On adds 15% damage until target switch |
-| Chronos | 75 / 70 / 115 | 2 damage, 900 ms; 32% slow for 1.2 s | 4 damage, 800 ms; 40% slow for 1.35 s | 6 damage, 720 ms; 48% slow for 1.5 s; every fifth attack echoes a weaker slow to at most two nearby enemies, never a hard stun |
+| Chronos | 75 / 70 / 115 | 2 damage, 900 ms; 32% slow for 1.2 s | 4 damage, 750 ms; 40% slow for 1.35 s | 6 damage, 720 ms; 48% slow for 1.5 s; every fifth attack echoes a weaker slow to at most two nearby enemies, never a hard stun |
 | Siege | 90 / 85 / 140 | 22 damage, 1.50 s, range 24, radius 4.5 | 34 damage, 1.35 s, range 26, radius 5.5 | 52 damage, 1.20 s, range 28, radius 6.5; targets inside the central 2.5 units take 35% extra |
 | Hoplite Node | 80 / 75 / 120 | One guard; 1.0 s block; 6.0 s replenish | Two guards; 1.1 s block; 5.5 s replenish | Three guards; 1.2 s block; 5.0 s replenish; first eligible contact bashes for 12 during the opening 0.25 s of that same block |
 | Oracle Relay | 70 / 70 / 110 | Continuous reveal; one mark grants +8% damage; range 26 | Continuous reveal; two simultaneous +11% marks; range 29 | Continuous reveal and two +11% marks; every fifth scan marks at most five targets for 2.0 s; range 32 |
