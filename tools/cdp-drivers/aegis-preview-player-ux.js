@@ -153,6 +153,7 @@ module.exports = async function (_cdp, evaluate) {
     const visual = await evaluate(`(() => ({
       frames: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-frame")),
       actions: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-action")),
+      transforms: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("transform")),
       effectCount: document.querySelectorAll(".preview-tower-effect").length
     }))()`);
     animationSamples.push(visual);
@@ -184,10 +185,12 @@ module.exports = async function (_cdp, evaluate) {
   }))()`);
   const sampledFrames = animationSamples.flatMap((sample) => sample.frames);
   const sampledActions = animationSamples.flatMap((sample) => sample.actions);
+  const sampledTransforms = animationSamples.flatMap((sample) => sample.transforms);
   if (active.phase !== "wave" || !active.paused || active.frames.length !== 2 ||
       !motionStart || !motionEnd || motionStart.id !== motionEnd.id ||
       motionEnd.distance <= motionStart.distance || motionEnd.transform === motionStart.transform ||
-      sampledFrames.some((frame) => frame !== "idleA") ||
+      sampledFrames.some((frame) => !["idleA", "active", "recover"].includes(frame)) ||
+      !sampledFrames.includes("active") || sampledTransforms.some((transform) => transform !== null) ||
       !sampledActions.some((action) => action === "active" || action === "recover") ||
       !animationSamples.some((sample) => sample.effectCount > 0) ||
       !active.hrefs.includes("art/v2/m01/towers/chronos-anim-v1.webp") ||
