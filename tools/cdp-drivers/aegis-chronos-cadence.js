@@ -63,6 +63,9 @@ module.exports = async function (_cdp, evaluate) {
     const card = document.querySelector("#previewStore .preview-card");
     const text = card ? card.textContent.replace(/\\s+/g, " ").trim() : "";
     if (!card) throw new Error("Built Chronos management card did not open");
+    if (document.getElementById("previewTowers") || document.getElementById("previewBattlefieldStatus")) {
+      throw new Error("Redundant battlefield inventory copy remains visible");
+    }
     document.getElementById("previewStorePanel").scrollIntoView({ block: "center" });
     return { text, hasRatePerSecond: /\\d+(?:\\.\\d+)?\\/sec/.test(text) };
   })()`);
