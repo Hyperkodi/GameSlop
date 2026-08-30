@@ -52,37 +52,34 @@ module.exports = async function (_cdp, evaluate) {
   }
 
   const boot = await evaluate(`(() => {
-    const siteButtons = Array.from(document.querySelectorAll("#previewSiteList .preview-site-button"));
     const mapPads = Array.from(document.querySelectorAll(".preview-map-pad"));
-    const first = siteButtons[0];
+    const first = mapPads[0];
+    const battlefield = document.getElementById("previewBattlefield");
+    const picker = document.querySelector(".preview-site-picker");
     if (document.body.dataset.ready !== "1") throw new Error("Aegis preview is not ready");
-    if (!first || siteButtons.length !== mapPads.length) {
-      throw new Error("Build-site companion controls do not match the physical map pads");
+    if (!first || mapPads.length === 0 || !picker || !picker.hidden) {
+      throw new Error("The physical map foundations must be the only visible build-site controls");
     }
-    const rect = first.getBoundingClientRect();
-    const style = getComputedStyle(first);
-    const labels = siteButtons.map((button) => button.textContent.trim());
-    if (rect.height < 48) {
-      throw new Error("Build-site controls do not meet the 48px touch target");
-    }
-    if (labels.some((label, index) => !label.startsWith("Site " + (index + 1)))) {
-      throw new Error("Build-site controls expose implementation labels instead of neutral site numbers");
+    const battlefieldRect = battlefield.getBoundingClientRect();
+    if (battlefieldRect.width < innerWidth * 0.9 || Math.abs(battlefieldRect.width / battlefieldRect.height - 1.6) > 0.02) {
+      throw new Error("The battlefield does not scale to the available window at its authored aspect ratio");
     }
     window.__aegisQaFocusNode = first;
     first.focus();
     return {
       missionId: window.__gameslop.state.missionId,
-      siteCount: siteButtons.length,
+      sitePickerHidden: picker.hidden,
       mapPadCount: mapPads.length,
-      minimumSiteHeight: parseFloat(style.minHeight) || 0,
-      renderedSiteHeight: rect.height,
+      battlefieldWidth: battlefieldRect.width,
+      battlefieldHeight: battlefieldRect.height,
+      viewportWidth: innerWidth,
       battlefieldRole: document.querySelector(".preview-battlefield-svg").getAttribute("role"),
     };
   })()`);
 
   await delay(350);
   const stableFocus = await evaluate(`(() => ({
-    sameNode: window.__aegisQaFocusNode === document.querySelector("#previewSiteList .preview-site-button"),
+    sameNode: window.__aegisQaFocusNode === document.querySelector(".preview-map-pad"),
     active: document.activeElement === window.__aegisQaFocusNode,
   }))()`);
   if (!stableFocus.sameNode || !stableFocus.active) {
@@ -90,7 +87,7 @@ module.exports = async function (_cdp, evaluate) {
   }
 
   const store = await evaluate(`(() => {
-    window.__aegisQaFocusNode.click();
+    window.__aegisQaFocusNode.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     const cards = Array.from(document.querySelectorAll("#previewStore .preview-card"));
     const thumbnails = Array.from(document.querySelectorAll("#previewStore .preview-tower-thumbnail-sprite"));
     return {
@@ -127,17 +124,17 @@ module.exports = async function (_cdp, evaluate) {
   }
   await delay(180);
   const returnedFocus = await evaluate(`(() => ({
-    activeSite: document.activeElement && document.activeElement.getAttribute("data-site-number"),
-    state: document.activeElement && document.activeElement.textContent.trim(),
+    activePad: document.activeElement && document.activeElement.getAttribute("data-pad-id"),
+    state: document.activeElement && document.activeElement.getAttribute("aria-label"),
   }))()`);
-  if (returnedFocus.activeSite !== "1" || !/Chronos/.test(returnedFocus.state || "")) {
+  if (returnedFocus.activePad !== "p01" || !/Chronos/.test(returnedFocus.state || "")) {
     throw new Error("Closing the tower menu did not return focus to the built site");
   }
 
   await evaluate(`(() => {
-    const second = document.querySelector('[data-site-number="2"]');
+    const second = document.querySelector('[data-pad-id="p02"]');
     if (!second) throw new Error("A second build site is unavailable");
-    second.click();
+    second.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     const sprite = document.querySelector('#previewStore [data-asset-href="art/v2/m01/towers/sentinel-anim-v1.webp"]');
     const card = sprite && sprite.closest(".preview-card");
     const build = card && card.querySelector("button");
@@ -159,6 +156,17 @@ module.exports = async function (_cdp, evaluate) {
     if (visual.effectCount > 0) break;
   }
   const firstFrames = animationSamples[0].frames;
+  const motionStart = await evaluate(`(() => {
+    const enemy = window.__gameslop.state.enemies[0];
+    const node = document.querySelector(".preview-map-enemy");
+    return enemy && node ? { id: enemy.id, distance: enemy.distance, transform: node.getAttribute("transform") } : null;
+  })()`);
+  await delay(360);
+  const motionEnd = await evaluate(`(() => {
+    const enemy = window.__gameslop.state.enemies[0];
+    const node = document.querySelector(".preview-map-enemy");
+    return enemy && node ? { id: enemy.id, distance: enemy.distance, transform: node.getAttribute("transform") } : null;
+  })()`);
   await evaluate(`document.getElementById("previewPause").click()`);
   await delay(220);
   const active = await evaluate(`(() => ({
@@ -174,6 +182,8 @@ module.exports = async function (_cdp, evaluate) {
   const sampledFrames = animationSamples.flatMap((sample) => sample.frames);
   const sampledActions = animationSamples.flatMap((sample) => sample.actions);
   if (active.phase !== "wave" || !active.paused || active.frames.length !== 2 ||
+      !motionStart || !motionEnd || motionStart.id !== motionEnd.id ||
+      motionEnd.distance <= motionStart.distance || motionEnd.transform === motionStart.transform ||
       sampledFrames.some((frame) => frame !== "idleA") ||
       !sampledActions.some((action) => action === "active" || action === "recover") ||
       !animationSamples.some((sample) => sample.effectCount > 0) ||
@@ -191,6 +201,8 @@ module.exports = async function (_cdp, evaluate) {
     returnedFocus,
     firstFrames,
     animationSamples,
+    motionStart,
+    motionEnd,
     active,
   });
 };
