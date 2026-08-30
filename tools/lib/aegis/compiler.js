@@ -6,11 +6,15 @@ const crypto = require("node:crypto");
 const { AegisContentError, diagnostic, fail } = require("./diagnostics.js");
 const { canonicalBytes, canonicalEncode } = require("./canonical.js");
 const { parseStrictJsonBytes } = require("./strict-json.js");
-const { loadSourceTree } = require("./source-loader.js");
+const SourceLoader = require("./source-loader.js");
+const { loadSourceTree } = SourceLoader;
 const { buildArtifacts } = require("./artifacts.js");
 const V3Compiler = require("./v3-compiler.js");
 const V3Artifacts = require("./v3-artifacts.js");
 const V3MapAdapter = require("./v3-map-adapter.js");
+const V4Compiler = require("./v4-compiler.js");
+const V4Artifacts = require("./v4-artifacts.js");
+const V4SourceLoader = require("./v4-source-loader.js");
 
 const ARTIFACT_NAME = /^(aegis-sim|aegis-content|aegis-presentation|aegis-release|manifest)\.([0-9a-f]{64})\.(js|json)$/;
 const RELEASE_ALIAS_NAME = /^release\.([a-z0-9][a-z0-9-]*)\.(js|json)$/;
@@ -28,7 +32,41 @@ function readSimulation(input) {
   catch (error) { fail("SIMULATION_READ", "/simulation", "Cannot read simulation artifact: " + String(error && error.code || error)); }
 }
 
+// The schema-4 branch cannot reuse the v1-v3 loader dispatcher: it authenticates a different
+// manifest field set. Peek at the declared version, then hand a schema-4 tree to its own loader.
+function declaredSourceSchemaVersion(input) {
+  if (typeof input.sourceRoot !== "string" || !input.sourceRoot) return null;
+  let root;
+  try {
+    root = fs.realpathSync(path.resolve(input.sourceRoot));
+    if (!fs.statSync(root).isDirectory()) return null;
+  } catch (error) { return null; }
+  let parsed;
+  try {
+    const selected = SourceLoader.selectManifest(root, input.manifestPath);
+    parsed = SourceLoader.readJson(selected.path, selected.source);
+  } catch (error) { return null; }
+  return parsed && parsed.schemaVersion === 4 ? 4 : null;
+}
+
 function compileSourceTree(input) {
+  const simulationBytesForV4 = declaredSourceSchemaVersion(input) === 4 ? readSimulation(input) : null;
+  if (simulationBytesForV4 !== null) {
+    const v4Source = V4SourceLoader.preflightV4SourceTree({
+      sourceRoot: input.sourceRoot,
+      repositoryRoot: input.repositoryRoot,
+      manifestSource: input.manifestPath === undefined
+        ? undefined
+        : path.relative(fs.realpathSync(path.resolve(input.sourceRoot)), path.resolve(input.manifestPath))
+          .split(path.sep).join("/"),
+    });
+    return V4Compiler.compileVerifiedV4Source(v4Source, {
+      assetRoot: path.join(v4Source.repositoryRoot, "games", "aegis"),
+      simulationBytes: simulationBytesForV4,
+      simulationLabel: input.simulationPath ? path.basename(input.simulationPath) : "explicit simulation bytes",
+      normalizeAndValidateMap: V3MapAdapter.normalizeAndValidateMap,
+    });
+  }
   const source = loadSourceTree(input.sourceRoot, {
     manifestPath: input.manifestPath,
     repositoryRoot: input.repositoryRoot,
@@ -62,7 +100,14 @@ function compileSourceTree(input) {
 }
 
 function outputDirectory(result, override) {
-  return path.resolve(override || path.join(result.source.sourceRoot, "generated"));
+  if (override) return path.resolve(override);
+  const schemaVersion = result && result.source && result.source.manifest && result.source.manifest.schemaVersion;
+  if (schemaVersion === 4) {
+    // Schema-4 artifacts join the one committed generated directory the release selector's
+    // artifact-root allow-list already covers; the alias name keeps them separate.
+    return path.resolve(path.join(result.source.repositoryRoot, "games", "aegis", "content", "generated"));
+  }
+  return path.resolve(path.join(result.source.sourceRoot, "generated"));
 }
 
 function artifactEntries(result) {
@@ -95,7 +140,7 @@ function artifactEntries(result) {
     entriesByKind.set(match[1], [name, bytes]);
   }
   const schemaVersion = result && result.source && result.source.manifest && result.source.manifest.schemaVersion;
-  const expectedKinds = schemaVersion === 3
+  const expectedKinds = (schemaVersion === 3 || schemaVersion === 4)
     ? ["aegis-content", "aegis-presentation", "aegis-release", "aegis-sim", "manifest"]
     : (schemaVersion === 1 || schemaVersion === 2
       ? ["aegis-content", "aegis-sim", "manifest"]
@@ -105,10 +150,29 @@ function artifactEntries(result) {
     fail(
       "ARTIFACT_SET",
       "/generated",
-      schemaVersion === 3
-        ? "Schema 3 artifact set must contain exactly one simulation, content, presentation, release, and manifest artifact"
+      (schemaVersion === 3 || schemaVersion === 4)
+        ? "Schema " + schemaVersion + " artifact set must contain exactly one simulation, content, presentation, release, and manifest artifact"
         : "Artifact set must contain exactly one simulation, content, and manifest artifact"
     );
+  }
+  if (schemaVersion === 4) {
+    const releaseEntry = entriesByKind.get("aegis-release");
+    const manifestEntry = entriesByKind.get("manifest");
+    const verified = V4Artifacts.verifyV4ReleaseSelection({
+      pinnedReleaseName: releaseEntry[0],
+      releaseName: releaseEntry[0],
+      releaseBytes: releaseEntry[1],
+      manifestBytes: manifestEntry[1],
+      artifacts: new Map(entries),
+    });
+    if (
+      result.artifacts.releaseName !== releaseEntry[0] ||
+      result.artifacts.manifestName !== manifestEntry[0] ||
+      result.artifacts.rulesetHash !== verified.release.rulesetHash ||
+      result.source.manifestHash !== verified.release.sourceManifestHash
+    ) {
+      fail("ARTIFACT_SET", "/generated", "Schema 4 artifact metadata must bind the exact verified release selection");
+    }
   }
   if (schemaVersion === 3) {
     const releaseEntry = entriesByKind.get("aegis-release");
@@ -161,16 +225,19 @@ function validateReleaseAliasRecord(alias, expectedId) {
 function releaseAliasEntries(result, verifiedArtifactEntries) {
   const schemaVersion = result && result.source && result.source.manifest &&
     result.source.manifest.schemaVersion;
-  if (schemaVersion !== 3) return [];
+  if (schemaVersion !== 3 && schemaVersion !== 4) return [];
   const entries = verifiedArtifactEntries || artifactEntries(result);
   const releaseEntry = entries.find(function (entry) {
     return entry[0].startsWith("aegis-release.");
   });
-  if (!releaseEntry) fail("RELEASE_ALIAS", "/generated", "Schema 3 alias requires an immutable release artifact");
+  if (!releaseEntry) {
+    fail("RELEASE_ALIAS", "/generated", "Schema " + schemaVersion + " alias requires an immutable release artifact");
+  }
   const release = V3Artifacts.readGeneratedData(
     releaseEntry[1], "AegisRelease", "RELEASE", releaseEntry[0]
   );
-  V3Artifacts.validateReleaseRecord(release);
+  if (schemaVersion === 4) V4Artifacts.validateV4ReleaseRecord(release);
+  else V3Artifacts.validateReleaseRecord(release);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(release.contentVersion)) {
     fail("RELEASE_ALIAS", "/generated/contentVersion", "Release alias contentVersion is not filename-safe");
   }

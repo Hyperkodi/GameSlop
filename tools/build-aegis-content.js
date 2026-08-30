@@ -9,6 +9,10 @@ const { buildSimulationBundle } = require("./lib/aegis/simulation-bundle.js");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_SOURCE = path.join(REPO_ROOT, "games", "aegis", "content");
+const V4_SOURCE = path.join(REPO_ROOT, "games", "aegis", "content-v4");
+// The declared authoring roots an alternate --manifest may name. A manifest selects its own tree,
+// so schema-4 sources compile through the same CLI without a second entry point.
+const CONTENT_ROOTS = Object.freeze([DEFAULT_SOURCE, V4_SOURCE]);
 const DEFAULT_SIMULATION = path.join(REPO_ROOT, "games", "aegis", "js", "sim", "abi.js");
 const DEFAULT_SIMULATION_ROOT = path.dirname(DEFAULT_SIMULATION);
 const FIXTURE_ROOT = path.join(REPO_ROOT, "games", "aegis", "tests", "fixtures", "compiler");
@@ -22,6 +26,7 @@ const USAGE = [
   "  node tools/build-aegis-content.js --write --manifest <repo-relative-file>",
   "  production defaults to the complete declared deterministic simulation module bundle",
   "  append --manifest <repo-relative-file> to compile an alternate contained source manifest",
+  "  an alternate manifest must live inside games/aegis/content or games/aegis/content-v4",
   "  append --simulation <repo-relative-file> only to override the explicit simulation seam",
   "Exit codes: 0 success, 1 source/build/I/O failure, 2 invalid CLI usage.",
 ].join("\n");
@@ -30,6 +35,14 @@ function usageError(message) {
   const error = new Error(message + "\n" + USAGE);
   error.code = "CLI_USAGE";
   return error;
+}
+
+function declaredContentRoot(manifestPath) {
+  for (const root of CONTENT_ROOTS) {
+    const relative = path.relative(root, manifestPath);
+    if (relative && !relative.startsWith("..") && !path.isAbsolute(relative)) return root;
+  }
+  throw usageError("--manifest must name a file inside games/aegis/content or games/aegis/content-v4");
 }
 
 function parseArgs(argv) {
@@ -88,8 +101,13 @@ function parseArgs(argv) {
   }
   if (!mode) throw usageError("Specify exactly one of --check or --write");
   if (fixture && manifest) throw usageError("--fixture and --manifest cannot be combined");
-  const sourceRoot = fixture ? path.join(FIXTURE_ROOT, fixture) : DEFAULT_SOURCE;
   const manifestPath = manifest ? path.resolve(REPO_ROOT, manifest) : undefined;
+  let sourceRoot = DEFAULT_SOURCE;
+  if (fixture) {
+    sourceRoot = path.join(FIXTURE_ROOT, fixture);
+  } else if (manifestPath) {
+    sourceRoot = declaredContentRoot(manifestPath);
+  }
   let simulationPath = simulation
     ? path.resolve(REPO_ROOT, simulation)
     : (fixture ? path.join(sourceRoot, "simulation.js") : DEFAULT_SIMULATION);
@@ -118,10 +136,25 @@ function parseArgs(argv) {
   };
 }
 
+// Ruling R16: one declared twenty-module simulation set serves every compiled-content schema,
+// because `management.js` and `kernel.js` are single files whose static ABI-v2 dependencies must
+// all be installed. Schema 4 still names its set explicitly so the binding stays legible at the
+// call site and a future divergence has an obvious seam.
+function declaredModuleSet(options) {
+  if (!options.manifestPath) return undefined;
+  let parsed;
+  try { parsed = JSON.parse(fs.readFileSync(options.manifestPath, "utf8")); }
+  catch (error) { return undefined; }
+  return parsed && parsed.schemaVersion === 4 ? "v4" : undefined;
+}
+
 function materializeBuildOptions(options) {
   if (!options.useDefaultSimulationBundle) return options;
   const buildOptions = Object.assign({}, options);
-  buildOptions.simulationBytes = buildSimulationBundle({ sourceRoot: DEFAULT_SIMULATION_ROOT });
+  buildOptions.simulationBytes = buildSimulationBundle({
+    sourceRoot: DEFAULT_SIMULATION_ROOT,
+    moduleSet: declaredModuleSet(options),
+  });
   return buildOptions;
 }
 

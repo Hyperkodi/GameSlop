@@ -6,71 +6,124 @@ const path = require("node:path");
 const { TextDecoder } = require("node:util");
 const { fail } = require("./diagnostics.js");
 
+
+function moduleSpec(id, relativePath, globalName, dependencies) {
+  return Object.freeze({
+    id: id,
+    relativePath: relativePath,
+    globalName: globalName,
+    dependencies: dependencies === null ? null : Object.freeze(dependencies.map(function (dependency) {
+      return Object.freeze({
+        id: dependency[0],
+        parameterName: dependency[1],
+        requirePath: "./" + dependency[2],
+      });
+    })),
+  });
+}
+
+/* The declared deterministic simulation module set (ruling R16). The order is the CommonJS
+   require order: every dependency precedes its dependents, so `abi-v2`, `commands-v2`,
+   `protocols`, and `relics` are installed before `management` and `kernel` consume them.
+   Parameter names are the exact factory parameter identifiers written in each module file.
+
+   One list serves every content schema. `management.js` and `kernel.js` are single files whose
+   static dependencies must all be installed, so a schema-3 bundle that omitted the four ABI-v2
+   modules would emit a management seam referencing globals that were never installed. Changing
+   any bundled source changes the ruleset hash by design (ADR-003); the committed immutable
+   artifacts on disk are never rewritten. */
 const MODULE_SPECS = Object.freeze([
-  Object.freeze({ id: "abi", relativePath: "abi.js", globalName: "AegisSim", dependencies: null }),
-  Object.freeze({ id: "geometry", relativePath: "geometry.js", globalName: "AegisGeometry", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "timers", relativePath: "timers.js", globalName: "AegisTimers", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "economy", relativePath: "economy.js", globalName: "AegisEconomy", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "movement", relativePath: "movement.js", globalName: "AegisMovement", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "effects", relativePath: "effects.js", globalName: "AegisEffects", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "targeting", relativePath: "targeting.js", globalName: "AegisTargeting", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
-  ]) }),
-  Object.freeze({ id: "behaviors", relativePath: "behaviors.js", globalName: "AegisBehaviors", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
-    Object.freeze({ id: "timers", parameterName: "Timers", requirePath: "./timers.js" }),
-    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
-    Object.freeze({ id: "effects", parameterName: "Effects", requirePath: "./effects.js" }),
-    Object.freeze({ id: "targeting", parameterName: "Targeting", requirePath: "./targeting.js" }),
-  ]) }),
-  Object.freeze({ id: "commands", relativePath: "commands.js", globalName: "AegisCommands", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "management", relativePath: "management.js", globalName: "AegisManagement", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "economy", parameterName: "Economy", requirePath: "./economy.js" }),
-    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
-    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
-  ]) }),
-  Object.freeze({ id: "objectives", relativePath: "objectives.js", globalName: "AegisObjectives", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-  ]) }),
-  Object.freeze({ id: "kernel", relativePath: "kernel.js", globalName: "AegisKernel", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "geometry", parameterName: "Geometry", requirePath: "./geometry.js" }),
-    Object.freeze({ id: "timers", parameterName: "Timers", requirePath: "./timers.js" }),
-    Object.freeze({ id: "economy", parameterName: "Economy", requirePath: "./economy.js" }),
-    Object.freeze({ id: "movement", parameterName: "Movement", requirePath: "./movement.js" }),
-    Object.freeze({ id: "effects", parameterName: "Effects", requirePath: "./effects.js" }),
-    Object.freeze({ id: "targeting", parameterName: "Targeting", requirePath: "./targeting.js" }),
-    Object.freeze({ id: "behaviors", parameterName: "Behaviors", requirePath: "./behaviors.js" }),
-    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
-    Object.freeze({ id: "management", parameterName: "Management", requirePath: "./management.js" }),
-    Object.freeze({ id: "objectives", parameterName: "Objectives", requirePath: "./objectives.js" }),
-  ]) }),
-  Object.freeze({ id: "replay-runner", relativePath: "replay-runner.js", globalName: "AegisReplayRunner", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
-    Object.freeze({ id: "kernel", parameterName: "Kernel", requirePath: "./kernel.js" }),
-  ]) }),
-  Object.freeze({ id: "replay", relativePath: "replay.js", globalName: "AegisReplay", dependencies: Object.freeze([
-    Object.freeze({ id: "abi", parameterName: "ABI", requirePath: "./abi.js" }),
-    Object.freeze({ id: "commands", parameterName: "Commands", requirePath: "./commands.js" }),
-    Object.freeze({ id: "replay-runner", parameterName: "ReplayRunner", requirePath: "./replay-runner.js" }),
-  ]) }),
+  moduleSpec("abi", "abi.js", "AegisSim", null),
+  moduleSpec("geometry", "geometry.js", "AegisGeometry", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("timers", "timers.js", "AegisTimers", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("economy", "economy.js", "AegisEconomy", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("movement", "movement.js", "AegisMovement", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("effects", "effects.js", "AegisEffects", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("targeting", "targeting.js", "AegisTargeting", [
+    ["abi", "ABI", "abi.js"],
+    ["geometry", "Geometry", "geometry.js"],
+  ]),
+  moduleSpec("behaviors", "behaviors.js", "AegisBehaviors", [
+    ["abi", "ABI", "abi.js"],
+    ["geometry", "Geometry", "geometry.js"],
+    ["timers", "Timers", "timers.js"],
+    ["movement", "Movement", "movement.js"],
+    ["effects", "Effects", "effects.js"],
+    ["targeting", "Targeting", "targeting.js"],
+  ]),
+  moduleSpec("commands", "commands.js", "AegisCommands", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("abi-v2", "abi-v2.js", "AegisSimV2", [["abi", "ABI_V1", "abi.js"]]),
+  moduleSpec("commands-v2", "commands-v2.js", "AegisCommandsV2", [
+    ["abi-v2", "ABI", "abi-v2.js"],
+    ["commands", "CommandsV1", "commands.js"],
+  ]),
+  moduleSpec("protocols", "protocols.js", "AegisProtocols", [
+    ["abi-v2", "ABI", "abi-v2.js"],
+    ["commands-v2", "CommandsV2", "commands-v2.js"],
+  ]),
+  moduleSpec("relics", "relics.js", "AegisRelics", [["abi-v2", "ABI", "abi-v2.js"]]),
+  moduleSpec("management", "management.js", "AegisManagement", [
+    ["abi", "ABI", "abi.js"],
+    ["economy", "Economy", "economy.js"],
+    ["movement", "Movement", "movement.js"],
+    ["commands", "Commands", "commands.js"],
+    ["commands-v2", "CommandsV2", "commands-v2.js"],
+    ["protocols", "Protocols", "protocols.js"],
+    ["relics", "Relics", "relics.js"],
+  ]),
+  moduleSpec("objectives", "objectives.js", "AegisObjectives", [["abi", "ABI", "abi.js"]]),
+  moduleSpec("kernel", "kernel.js", "AegisKernel", [
+    ["abi", "ABI", "abi.js"],
+    ["geometry", "Geometry", "geometry.js"],
+    ["timers", "Timers", "timers.js"],
+    ["economy", "Economy", "economy.js"],
+    ["movement", "Movement", "movement.js"],
+    ["effects", "Effects", "effects.js"],
+    ["targeting", "Targeting", "targeting.js"],
+    ["behaviors", "Behaviors", "behaviors.js"],
+    ["commands", "Commands", "commands.js"],
+    ["management", "Management", "management.js"],
+    ["objectives", "Objectives", "objectives.js"],
+    ["abi-v2", "ABIV2", "abi-v2.js"],
+    ["commands-v2", "CommandsV2", "commands-v2.js"],
+    ["protocols", "Protocols", "protocols.js"],
+    ["relics", "Relics", "relics.js"],
+  ]),
+  moduleSpec("replay-runner", "replay-runner.js", "AegisReplayRunner", [
+    ["abi", "ABI", "abi.js"],
+    ["commands", "Commands", "commands.js"],
+    ["kernel", "Kernel", "kernel.js"],
+  ]),
+  moduleSpec("replay", "replay.js", "AegisReplay", [
+    ["abi", "ABI", "abi.js"],
+    ["commands", "Commands", "commands.js"],
+    ["replay-runner", "ReplayRunner", "replay-runner.js"],
+  ]),
+  moduleSpec("replay-v2", "replay-v2.js", "AegisReplayV2", [
+    ["abi-v2", "ABI", "abi-v2.js"],
+    ["commands-v2", "CommandsV2", "commands-v2.js"],
+    ["replay", "ReplayV1", "replay.js"],
+  ]),
+  moduleSpec("replay-formats", "replay-formats.js", "AegisReplayFormats", [
+    ["replay", "ReplayV1", "replay.js"],
+    ["replay-v2", "ReplayV2", "replay-v2.js"],
+  ]),
 ]);
+
+const SPEC_SETS = Object.freeze({ v1: MODULE_SPECS, v4: MODULE_SPECS });
+
+function resolveSpecs(input) {
+  if (input === undefined || input === null) return MODULE_SPECS;
+  if (typeof input === "string") {
+    if (!Object.prototype.hasOwnProperty.call(SPEC_SETS, input)) {
+      fail("SIMULATION_BUNDLE_SPEC_SET", "/simulationBundle", "Unknown declared simulation module set " + input);
+    }
+    return SPEC_SETS[input];
+  }
+  if (input === MODULE_SPECS) return input;
+  fail("SIMULATION_BUNDLE_SPEC_SET", "/simulationBundle", "Simulation module sets are declared, never caller supplied");
+  return MODULE_SPECS;
+}
 
 const ABI_COMMON_JS_SEAM = [
   "  if (typeof module !== \"undefined\" && module.exports) {",
@@ -94,25 +147,26 @@ function replaceExactly(source, needle, replacement, code, diagnosticPath, messa
   return source.slice(0, first) + replacement + source.slice(first + needle.length);
 }
 
-function declaredDependencies(spec) {
+function declaredDependencies(spec, specs) {
+  specs = specs || MODULE_SPECS;
   if (spec.dependencies === null) return [];
   if (!Array.isArray(spec.dependencies) || spec.dependencies.length === 0) {
     fail("SIMULATION_BUNDLE_DEPENDENCY", "/simulationBundle/" + spec.id, spec.relativePath + " must declare its CommonJS dependencies");
   }
-  const specIndex = MODULE_SPECS.indexOf(spec);
+  const specIndex = specs.indexOf(spec);
   const ids = new Set();
   return spec.dependencies.map(function (dependency) {
     if (!dependency || typeof dependency !== "object" || Array.isArray(dependency) || ids.has(dependency.id)) {
       fail("SIMULATION_BUNDLE_DEPENDENCY", "/simulationBundle/" + spec.id, spec.relativePath + " has an invalid CommonJS dependency");
     }
-    const dependencyIndex = MODULE_SPECS.findIndex(function (candidate) { return candidate.id === dependency.id; });
-    const dependencySpec = MODULE_SPECS[dependencyIndex];
+    const dependencyIndex = specs.findIndex(function (candidate) { return candidate.id === dependency.id; });
+    const dependencySpec = specs[dependencyIndex];
     if (
       dependencyIndex < 0 ||
       dependencyIndex >= specIndex ||
       dependency.requirePath !== "./" + dependencySpec.relativePath ||
       typeof dependency.parameterName !== "string" ||
-      !/^[A-Z][A-Za-z0-9]*$/.test(dependency.parameterName)
+      !/^[A-Z][A-Za-z0-9_]*$/.test(dependency.parameterName)
     ) {
       fail("SIMULATION_BUNDLE_DEPENDENCY", "/simulationBundle/" + spec.id, spec.relativePath + " has an invalid or forward CommonJS dependency");
     }
@@ -211,8 +265,8 @@ function decodeSource(bytes, spec) {
   return { bytes: buffer, source: source };
 }
 
-function transformSource(source, spec) {
-  const dependencies = declaredDependencies(spec);
+function transformSource(source, spec, specs) {
+  const dependencies = declaredDependencies(spec, specs);
   const wrapper = "(function (root, factory) {";
   if (source.indexOf(wrapper) === -1 || source.indexOf(wrapper, source.indexOf(wrapper) + wrapper.length) !== -1) {
     fail("SIMULATION_BUNDLE_SEAM", "/simulationBundle/" + spec.id, spec.relativePath + " wrapper seam drifted");
@@ -281,7 +335,8 @@ function transformSource(source, spec) {
   return transformed;
 }
 
-function validateSources(sources) {
+function validateSources(sources, specs) {
+  specs = specs || MODULE_SPECS;
   if (!Array.isArray(sources)) {
     fail("SIMULATION_BUNDLE_SOURCE", "/simulationBundle", "Simulation module sources must be an array");
   }
@@ -295,15 +350,15 @@ function validateSources(sources) {
     }
     ids.add(entry.id);
   }
-  if (sources.length !== MODULE_SPECS.length) {
+  if (sources.length !== specs.length) {
     fail(
       "SIMULATION_BUNDLE_MISSING",
       "/simulationBundle",
-      "Expected exactly " + MODULE_SPECS.length + " declared simulation modules"
+      "Expected exactly " + specs.length + " declared simulation modules"
     );
   }
 
-  return MODULE_SPECS.map(function (spec, index) {
+  return specs.map(function (spec, index) {
     const entry = sources[index];
     const relativePath = portableRelativePath(entry.relativePath);
     if (entry.id !== spec.id || relativePath !== spec.relativePath) {
@@ -327,8 +382,9 @@ function validateSources(sources) {
   });
 }
 
-function assembleSimulationBundle(sources) {
-  const modules = validateSources(sources);
+function assembleSimulationBundle(sources, specSetInput) {
+  const specs = resolveSpecs(specSetInput);
+  const modules = validateSources(sources, specs);
   const lines = [
     "/* Generated Armara Aegis deterministic simulation bundle.",
     "   Exact source hashes bind ABI and named deterministic modules in declared order. */",
@@ -345,7 +401,7 @@ function assembleSimulationBundle(sources) {
         " bytes=" + module.bytes.length +
         " sha256=" + sha256Hex(module.bytes) + " */"
     );
-    lines.push(transformSource(module.source, module.spec).replace(/\n$/, ""));
+    lines.push(transformSource(module.source, module.spec, specs).replace(/\n$/, ""));
     lines.push("");
   });
 
@@ -354,8 +410,8 @@ function assembleSimulationBundle(sources) {
     "  if (",
     "    !game ||"
   );
-  MODULE_SPECS.forEach(function (spec, index) {
-    lines.push("    !game." + spec.globalName + (index + 1 === MODULE_SPECS.length ? "" : " ||"));
+  specs.forEach(function (spec, index) {
+    lines.push("    !game." + spec.globalName + (index + 1 === specs.length ? "" : " ||"));
   });
   lines.push(
     "  ) {",
@@ -365,7 +421,7 @@ function assembleSimulationBundle(sources) {
     "    const commonJsApi = {};",
     "    Object.keys(game.AegisSim).forEach(function (key) { commonJsApi[key] = game.AegisSim[key]; });"
   );
-  MODULE_SPECS.forEach(function (spec) {
+  specs.forEach(function (spec) {
     lines.push("    commonJsApi." + spec.globalName + " = game." + spec.globalName + ";");
   });
   lines.push(
@@ -377,7 +433,8 @@ function assembleSimulationBundle(sources) {
   return Buffer.from(lines.join("\n"), "utf8");
 }
 
-function readSimulationSources(sourceRoot) {
+function readSimulationSources(sourceRoot, specSetInput) {
+  const specs = resolveSpecs(specSetInput);
   if (typeof sourceRoot !== "string" || !sourceRoot) {
     fail("SIMULATION_BUNDLE_PATH", "/simulationBundle", "Simulation source root is required");
   }
@@ -389,7 +446,7 @@ function readSimulationSources(sourceRoot) {
     fail("SIMULATION_BUNDLE_READ", "/simulationBundle", "Simulation source root must be an existing directory");
   }
 
-  return MODULE_SPECS.map(function (spec) {
+  return specs.map(function (spec) {
     const requested = path.resolve(root, spec.relativePath);
     let resolved;
     try {
@@ -416,8 +473,10 @@ function buildSimulationBundle(input) {
   if (input.sources !== undefined && input.sourceRoot !== undefined) {
     fail("SIMULATION_BUNDLE_SOURCE", "/simulationBundle", "Provide sources or sourceRoot, not both");
   }
-  const sources = input.sources !== undefined ? input.sources : readSimulationSources(input.sourceRoot);
-  return assembleSimulationBundle(sources);
+  const sources = input.sources !== undefined
+    ? input.sources
+    : readSimulationSources(input.sourceRoot, input.moduleSet);
+  return assembleSimulationBundle(sources, input.moduleSet);
 }
 
 module.exports = Object.freeze({
