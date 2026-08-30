@@ -155,6 +155,12 @@ module.exports = async function (_cdp, evaluate) {
       actions: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-action")),
       transforms: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("transform")),
       effectCount: document.querySelectorAll(".preview-tower-effect").length,
+      towerBlendCount: document.querySelectorAll(".preview-tower-sprite-blend").length,
+      towerMixes: Array.from(document.querySelectorAll(".preview-tower-motion"), node =>
+        Number(node.getAttribute("data-blend-bp"))),
+      towerMotion: Array.from(document.querySelectorAll(".preview-tower-motion"), node =>
+        node.getAttribute("transform")),
+      enemyBlendCount: document.querySelectorAll(".preview-enemy-sprite-blend").length,
       projectiles: Array.from(document.querySelectorAll(".preview-projectile"), node => ({
         id: node.getAttribute("data-projectile-id"),
         towerId: node.getAttribute("data-tower-id"),
@@ -198,6 +204,8 @@ module.exports = async function (_cdp, evaluate) {
   const sampledFrames = animationSamples.flatMap((sample) => sample.frames);
   const sampledActions = animationSamples.flatMap((sample) => sample.actions);
   const sampledTransforms = animationSamples.flatMap((sample) => sample.transforms);
+  const sampledTowerMixes = animationSamples.flatMap((sample) => sample.towerMixes);
+  const sampledTowerMotion = animationSamples.flatMap((sample) => sample.towerMotion);
   const sampledProjectiles = animationSamples.flatMap((sample) => sample.projectiles);
   const projectileIds = new Set(sampledProjectiles.map((projectile) => projectile.id));
   const projectileTraveled = Array.from(projectileIds).some((id) => {
@@ -215,6 +223,10 @@ module.exports = async function (_cdp, evaluate) {
       !sampledFrames.includes("active") || sampledTransforms.some((transform) => transform !== null) ||
       !sampledActions.some((action) => action === "active" || action === "recover") ||
       !animationSamples.some((sample) => sample.effectCount > 0) ||
+      !animationSamples.some((sample) => sample.towerBlendCount > 0) ||
+      !sampledTowerMixes.some((mix) => mix > 0 && mix < 10000) ||
+      !sampledTowerMotion.some((transform) => !/translate\(0 0\)/.test(transform || "")) ||
+      !animationSamples.some((sample) => sample.enemyBlendCount > 0) ||
       !projectileTraveled || !projectileLinked ||
       !sampledProjectiles.some((projectile) => projectile.hasBody) ||
       !sampledProjectiles.some((projectile) => projectile.hasImpact) ||
