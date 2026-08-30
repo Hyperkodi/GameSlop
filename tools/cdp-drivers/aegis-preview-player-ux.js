@@ -148,16 +148,28 @@ module.exports = async function (_cdp, evaluate) {
     return true;
   })()`);
   const animationSamples = [];
-  for (let sample = 0; sample < 50; sample += 1) {
+  for (let sample = 0; sample < 200; sample += 1) {
     await delay(40);
     const visual = await evaluate(`(() => ({
       frames: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-frame")),
       actions: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-action")),
       transforms: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("transform")),
-      effectCount: document.querySelectorAll(".preview-tower-effect").length
+      effectCount: document.querySelectorAll(".preview-tower-effect").length,
+      projectiles: Array.from(document.querySelectorAll(".preview-projectile"), node => ({
+        id: node.getAttribute("data-projectile-id"),
+        towerId: node.getAttribute("data-tower-id"),
+        targetId: node.getAttribute("data-target-id"),
+        progressBp: Number(node.getAttribute("data-progress-bp")),
+        hasBody: Boolean(node.querySelector(".preview-projectile-core")),
+        hasImpact: Boolean(node.querySelector(".preview-projectile-impact")),
+      }))
     }))()`);
     animationSamples.push(visual);
-    if (visual.effectCount > 0) break;
+    const projectileFrames = animationSamples.flatMap((entry) => entry.projectiles);
+    const witnessedTravel = projectileFrames.some((entry, index) => projectileFrames.some((candidate, otherIndex) =>
+      otherIndex !== index && candidate.id === entry.id && candidate.progressBp !== entry.progressBp));
+    const witnessedImpact = projectileFrames.some((entry) => entry.hasImpact);
+    if (visual.effectCount > 0 && witnessedTravel && witnessedImpact) break;
   }
   const firstFrames = animationSamples[0].frames;
   const motionStart = await evaluate(`(() => {
@@ -186,6 +198,16 @@ module.exports = async function (_cdp, evaluate) {
   const sampledFrames = animationSamples.flatMap((sample) => sample.frames);
   const sampledActions = animationSamples.flatMap((sample) => sample.actions);
   const sampledTransforms = animationSamples.flatMap((sample) => sample.transforms);
+  const sampledProjectiles = animationSamples.flatMap((sample) => sample.projectiles);
+  const projectileIds = new Set(sampledProjectiles.map((projectile) => projectile.id));
+  const projectileTraveled = Array.from(projectileIds).some((id) => {
+    const positions = new Set(sampledProjectiles
+      .filter((projectile) => projectile.id === id)
+      .map((projectile) => projectile.progressBp));
+    return positions.size > 1;
+  });
+  const projectileLinked = sampledProjectiles.some((projectile) =>
+    Number(projectile.towerId) > 0 && Number(projectile.targetId) > 0);
   if (active.phase !== "wave" || !active.paused || active.frames.length !== 2 ||
       !motionStart || !motionEnd || motionStart.id !== motionEnd.id ||
       motionEnd.distance <= motionStart.distance || motionEnd.transform === motionStart.transform ||
@@ -193,11 +215,21 @@ module.exports = async function (_cdp, evaluate) {
       !sampledFrames.includes("active") || sampledTransforms.some((transform) => transform !== null) ||
       !sampledActions.some((action) => action === "active" || action === "recover") ||
       !animationSamples.some((sample) => sample.effectCount > 0) ||
+      !projectileTraveled || !projectileLinked ||
+      !sampledProjectiles.some((projectile) => projectile.hasBody) ||
+      !sampledProjectiles.some((projectile) => projectile.hasImpact) ||
       !active.hrefs.includes("art/v2/m01/towers/chronos-anim-v1.webp") ||
       !active.hrefs.includes("art/v2/m01/towers/sentinel-anim-v1.webp") ||
       active.states.some((state) => state !== "loaded") || active.errorCount !== 0 ||
       active.visibleFallbackCount !== 0) {
-    throw new Error("Animated tower delivery failed live QA: " + JSON.stringify({ firstFrames, active }));
+    throw new Error("Animated tower delivery failed live QA: " + JSON.stringify({
+      firstFrames,
+      active,
+      sampledActions: Array.from(new Set(sampledActions)),
+      projectileCount: sampledProjectiles.length,
+      projectileTraveled,
+      projectileLinked,
+    }));
   }
 
   await evaluate(`document.getElementById("previewBattlefield").scrollIntoView({ block: "center" })`);
@@ -207,6 +239,8 @@ module.exports = async function (_cdp, evaluate) {
     returnedFocus,
     firstFrames,
     animationSamples,
+    projectileTraveled,
+    projectileLinked,
     motionStart,
     motionEnd,
     active,
