@@ -61,8 +61,10 @@ module.exports = async function (_cdp, evaluate) {
       throw new Error("The physical map foundations must be the only visible build-site controls");
     }
     const battlefieldRect = battlefield.getBoundingClientRect();
-    if (battlefieldRect.width < innerWidth * 0.9 || Math.abs(battlefieldRect.width / battlefieldRect.height - 1.6) > 0.02) {
-      throw new Error("The battlefield does not scale to the available window at its authored aspect ratio");
+    const sideRoom = Math.min(battlefieldRect.left, innerWidth - battlefieldRect.right);
+    if (battlefieldRect.width > innerWidth - 48 || battlefieldRect.height > innerHeight - 96 ||
+        sideRoom < 24 || Math.abs(battlefieldRect.width / battlefieldRect.height - 1.6) > 0.02) {
+      throw new Error("The battlefield must fit inside the window with a visible border at its authored aspect ratio");
     }
     window.__aegisQaFocusNode = first;
     first.focus();
@@ -72,6 +74,7 @@ module.exports = async function (_cdp, evaluate) {
       mapPadCount: mapPads.length,
       battlefieldWidth: battlefieldRect.width,
       battlefieldHeight: battlefieldRect.height,
+      battlefieldSideRoom: sideRoom,
       viewportWidth: innerWidth,
       battlefieldRole: document.querySelector(".preview-battlefield-svg").getAttribute("role"),
     };
