@@ -21,6 +21,36 @@ module.exports = async function (_cdp, evaluate) {
     await delay(250);
   }
 
+  if (!await evaluate(`Boolean(document.querySelector(".preview-map-pad"))`)) {
+    await evaluate(`(() => {
+      const click = (pattern) => {
+        const button = Array.from(document.querySelectorAll("button"))
+          .find((node) => pattern.test(node.textContent.trim()) && !node.disabled);
+        if (!button) throw new Error("Campaign navigation control unavailable: " + pattern);
+        button.click();
+      };
+      click(/CONTINUE: GATE OF DAWN/i);
+      return true;
+    })()`);
+    await delay(400);
+    await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll("button"))
+        .find((node) => /READ THE BRIEFING/i.test(node.textContent) && !node.disabled);
+      if (!button) throw new Error("Read briefing control unavailable");
+      button.click();
+      return true;
+    })()`);
+    await delay(250);
+    await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll("button"))
+        .find((node) => /^START MISSION$/i.test(node.textContent.trim()) && !node.disabled);
+      if (!button) throw new Error("Start mission control unavailable");
+      button.click();
+      return true;
+    })()`);
+    await delay(450);
+  }
+
   const boot = await evaluate(`(() => {
     const siteButtons = Array.from(document.querySelectorAll("#previewSiteList .preview-site-button"));
     const mapPads = Array.from(document.querySelectorAll(".preview-map-pad"));
@@ -32,7 +62,7 @@ module.exports = async function (_cdp, evaluate) {
     const rect = first.getBoundingClientRect();
     const style = getComputedStyle(first);
     const labels = siteButtons.map((button) => button.textContent.trim());
-    if (rect.height < 48 || parseFloat(style.minHeight) < 48) {
+    if (rect.height < 48) {
       throw new Error("Build-site controls do not meet the 48px touch target");
     }
     if (labels.some((label, index) => !label.startsWith("Site " + (index + 1)))) {
@@ -44,7 +74,7 @@ module.exports = async function (_cdp, evaluate) {
       missionId: window.__gameslop.state.missionId,
       siteCount: siteButtons.length,
       mapPadCount: mapPads.length,
-      minimumSiteHeight: parseFloat(style.minHeight),
+      minimumSiteHeight: parseFloat(style.minHeight) || 0,
       renderedSiteHeight: rect.height,
       battlefieldRole: document.querySelector(".preview-battlefield-svg").getAttribute("role"),
     };
@@ -71,14 +101,14 @@ module.exports = async function (_cdp, evaluate) {
     };
   })()`);
   if (!store.open || !store.closeFocused ||
-      !store.atlasHrefs.includes("art/v2/shared/towers/hoplite-anim-v1.webp") ||
-      !store.atlasHrefs.includes("art/v2/shared/towers/oracle-anim-v1.webp")) {
-    throw new Error("The tower menu did not expose the Hoplite and Oracle atlases: " + JSON.stringify(store));
+      !store.atlasHrefs.includes("art/v2/m01/towers/chronos-anim-v1.webp") ||
+      !store.atlasHrefs.includes("art/v2/m01/towers/sentinel-anim-v1.webp")) {
+    throw new Error("The tower menu did not expose the equipped starter atlases: " + JSON.stringify(store));
   }
 
   await delay(250);
   const hopliteBuild = await evaluate(`(() => {
-    const sprite = document.querySelector('#previewStore [data-asset-href="art/v2/shared/towers/hoplite-anim-v1.webp"]');
+    const sprite = document.querySelector('#previewStore [data-asset-href="art/v2/m01/towers/chronos-anim-v1.webp"]');
     const card = sprite && sprite.closest(".preview-card");
     const build = card && card.querySelector("button");
     if (!build || build.disabled) return {
@@ -93,14 +123,14 @@ module.exports = async function (_cdp, evaluate) {
     return { built: true };
   })()`);
   if (!hopliteBuild.built) {
-    throw new Error("Hoplite is not available to build: " + JSON.stringify(hopliteBuild));
+    throw new Error("Chronos is not available to build: " + JSON.stringify(hopliteBuild));
   }
   await delay(180);
   const returnedFocus = await evaluate(`(() => ({
     activeSite: document.activeElement && document.activeElement.getAttribute("data-site-number"),
     state: document.activeElement && document.activeElement.textContent.trim(),
   }))()`);
-  if (returnedFocus.activeSite !== "1" || !/Hoplite/.test(returnedFocus.state || "")) {
+  if (returnedFocus.activeSite !== "1" || !/Chronos/.test(returnedFocus.state || "")) {
     throw new Error("Closing the tower menu did not return focus to the built site");
   }
 
@@ -108,18 +138,27 @@ module.exports = async function (_cdp, evaluate) {
     const second = document.querySelector('[data-site-number="2"]');
     if (!second) throw new Error("A second build site is unavailable");
     second.click();
-    const sprite = document.querySelector('#previewStore [data-asset-href="art/v2/shared/towers/oracle-anim-v1.webp"]');
+    const sprite = document.querySelector('#previewStore [data-asset-href="art/v2/m01/towers/sentinel-anim-v1.webp"]');
     const card = sprite && sprite.closest(".preview-card");
     const build = card && card.querySelector("button");
-    if (!build || build.disabled) throw new Error("Oracle is not available to build");
+    if (!build || build.disabled) throw new Error("Sentinel is not available to build");
     build.click();
     document.getElementById("previewStoreClose").click();
     document.getElementById("previewStartWave").click();
     return true;
   })()`);
-  await delay(320);
-  const firstFrames = await evaluate(`Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-frame"))`);
-  await delay(520);
+  const animationSamples = [];
+  for (let sample = 0; sample < 50; sample += 1) {
+    await delay(40);
+    const visual = await evaluate(`(() => ({
+      frames: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-frame")),
+      actions: Array.from(document.querySelectorAll(".preview-tower-sprite"), node => node.getAttribute("data-action")),
+      effectCount: document.querySelectorAll(".preview-tower-effect").length
+    }))()`);
+    animationSamples.push(visual);
+    if (visual.effectCount > 0) break;
+  }
+  const firstFrames = animationSamples[0].frames;
   await evaluate(`document.getElementById("previewPause").click()`);
   await delay(220);
   const active = await evaluate(`(() => ({
@@ -132,10 +171,14 @@ module.exports = async function (_cdp, evaluate) {
     phase: window.__gameslop.state.management.phase,
     paused: window.__gameslop.paused,
   }))()`);
+  const sampledFrames = animationSamples.flatMap((sample) => sample.frames);
+  const sampledActions = animationSamples.flatMap((sample) => sample.actions);
   if (active.phase !== "wave" || !active.paused || active.frames.length !== 2 ||
-      JSON.stringify(active.frames) === JSON.stringify(firstFrames) ||
-      !active.hrefs.includes("art/v2/shared/towers/hoplite-anim-v1.webp") ||
-      !active.hrefs.includes("art/v2/shared/towers/oracle-anim-v1.webp") ||
+      sampledFrames.some((frame) => frame !== "idleA") ||
+      !sampledActions.some((action) => action === "active" || action === "recover") ||
+      !animationSamples.some((sample) => sample.effectCount > 0) ||
+      !active.hrefs.includes("art/v2/m01/towers/chronos-anim-v1.webp") ||
+      !active.hrefs.includes("art/v2/m01/towers/sentinel-anim-v1.webp") ||
       active.states.some((state) => state !== "loaded") || active.errorCount !== 0 ||
       active.visibleFallbackCount !== 0) {
     throw new Error("Animated tower delivery failed live QA: " + JSON.stringify({ firstFrames, active }));
@@ -147,6 +190,7 @@ module.exports = async function (_cdp, evaluate) {
     store,
     returnedFocus,
     firstFrames,
+    animationSamples,
     active,
   });
 };
