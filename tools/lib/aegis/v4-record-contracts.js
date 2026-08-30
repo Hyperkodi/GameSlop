@@ -764,6 +764,10 @@ function validateV4EventCatalog(value) {
 /* ---- missions ----------------------------------------------------------------------- */
 
 const V4_MISSION_EXTENSION_FIELDS = ["protocolLoan", "mechanism", "reinforcementMarkers"];
+/* Spec 18.3 narrative additions. They are authored inside the retained v3 briefing and wave
+   records, so they are lifted out of the v3 projection and validated here instead. */
+const V4_BRIEFING_EXTENSION_FIELDS = ["storyKey"];
+const V4_WAVE_EXTENSION_FIELDS = ["noteKey"];
 
 function validateV4MissionCore(value, path, context) {
   requireObject(value, path);
@@ -779,8 +783,39 @@ function validateV4MissionCore(value, path, context) {
   // Retained v3 mission body: validate through the reviewed v3 contract verbatim.
   const projection = deepOrdinaryClone(value);
   V4_MISSION_EXTENSION_FIELDS.forEach(function (field) { delete projection[field]; });
+  if (isPlainRecord(projection.briefing)) {
+    V4_BRIEFING_EXTENSION_FIELDS.forEach(function (field) { delete projection.briefing[field]; });
+  }
+  if (Array.isArray(projection.waves)) {
+    projection.waves.forEach(function (wave) {
+      if (!isPlainRecord(wave)) return;
+      V4_WAVE_EXTENSION_FIELDS.forEach(function (field) { delete wave[field]; });
+    });
+  }
   projection.schemaVersion = 1;
   V3Records.validateMissionSource(projection);
+
+  const briefingPath = pointerJoin(path, "briefing");
+  requireObject(value.briefing, briefingPath);
+  V4_BRIEFING_EXTENSION_FIELDS.forEach(function (field) {
+    if (!Object.prototype.hasOwnProperty.call(value.briefing, field)) {
+      fail("SCHEMA_REQUIRED", pointerJoin(briefingPath, field), "Missing required key " + JSON.stringify(field));
+    }
+    requireStringKey(value.briefing[field], pointerJoin(briefingPath, field));
+  });
+
+  const wavesPath = pointerJoin(path, "waves");
+  requireArray(value.waves, wavesPath, 1, LIMITS.maxCatalogRecords);
+  value.waves.forEach(function (wave, index) {
+    const wavePath = pointerJoin(wavesPath, index);
+    requireObject(wave, wavePath);
+    V4_WAVE_EXTENSION_FIELDS.forEach(function (field) {
+      if (!Object.prototype.hasOwnProperty.call(wave, field)) {
+        fail("SCHEMA_REQUIRED", pointerJoin(wavePath, field), "Missing required key " + JSON.stringify(field));
+      }
+      requireStringKey(wave[field], pointerJoin(wavePath, field));
+    });
+  });
 
   const loanPath = pointerJoin(path, "protocolLoan");
   if (value.protocolLoan !== null) {
@@ -831,11 +866,85 @@ function validateV4MissionSource(value) {
   return deepFrozenClone(value);
 }
 
+/* ---- acts ---------------------------------------------------------------------------- */
+
+/* Spec 18.2. Act records are presentation copy: four contiguous acts, each naming its own
+   localized title, era, story, and premise, plus the missions that belong to it. The recon
+   briefing lines live in the same authored file because campaign `reconRules` is a closed
+   three-field simulation record and recon copy is briefing prose, not a simulation value. */
+const ACT_SOURCE_SCHEMA_VERSION = 1;
+const ACT_COUNT = 4;
+const ACT_RECORD_FIELDS = ["index", "titleKey", "eraKey", "storyKey", "premiseKey", "missionIds"];
+const ACT_STRING_KEY_FIELDS = ["titleKey", "eraKey", "storyKey", "premiseKey"];
+const RECON_TIER_COUNT = 4;
+const ACT_MISSION_ID = /^m(?:0[1-9]|1[0-9]|20)$/;
+
+function validateV4ActSourceCore(value, path) {
+  exactFields(value, ["schemaVersion", "id", "records", "reconRecords"], path);
+  requireInteger(
+    value.schemaVersion,
+    pointerJoin(path, "schemaVersion"),
+    ACT_SOURCE_SCHEMA_VERSION,
+    ACT_SOURCE_SCHEMA_VERSION
+  );
+  requireId(value.id, pointerJoin(path, "id"));
+
+  const recordsPath = pointerJoin(path, "records");
+  requireArray(value.records, recordsPath, ACT_COUNT, ACT_COUNT);
+  const claimedMissionIds = new Set();
+  value.records.forEach(function (record, index) {
+    const recordPath = pointerJoin(recordsPath, index);
+    exactFields(record, ACT_RECORD_FIELDS, recordPath);
+    requireInteger(record.index, pointerJoin(recordPath, "index"), index + 1, index + 1);
+    ACT_STRING_KEY_FIELDS.forEach(function (field) {
+      requireStringKey(record[field], pointerJoin(recordPath, field));
+    });
+    const missionIdsPath = pointerJoin(recordPath, "missionIds");
+    requireArray(record.missionIds, missionIdsPath, 0, 20);
+    let priorMissionId = null;
+    record.missionIds.forEach(function (missionId, missionIndex) {
+      const missionPath = pointerJoin(missionIdsPath, missionIndex);
+      if (typeof missionId !== "string" || !ACT_MISSION_ID.test(missionId)) {
+        fail("SCHEMA_STRING", missionPath, "Act mission IDs must be m01 through m20");
+      }
+      if (priorMissionId !== null && priorMissionId >= missionId) {
+        fail("SCHEMA_UNSTABLE_ORDER", missionPath, "Act mission IDs must be strictly ASCII sorted");
+      }
+      if (claimedMissionIds.has(missionId)) {
+        fail("SCHEMA_DUPLICATE_ID", missionPath, "A mission belongs to exactly one act");
+      }
+      claimedMissionIds.add(missionId);
+      priorMissionId = missionId;
+    });
+  });
+
+  const reconPath = pointerJoin(path, "reconRecords");
+  requireArray(value.reconRecords, reconPath, RECON_TIER_COUNT, RECON_TIER_COUNT);
+  value.reconRecords.forEach(function (record, index) {
+    const recordPath = pointerJoin(reconPath, index);
+    exactFields(record, ["tier", "detailKey"], recordPath);
+    requireInteger(record.tier, pointerJoin(recordPath, "tier"), index, index);
+    requireStringKey(record.detailKey, pointerJoin(recordPath, "detailKey"));
+  });
+}
+
+function validateV4ActSource(value) {
+  preflight(value, "/");
+  validateV4ActSourceCore(value, "/");
+  return deepFrozenClone(value);
+}
+
 module.exports = Object.freeze({
+  ACT_COUNT: ACT_COUNT,
+  ACT_RECORD_FIELDS: ACT_RECORD_FIELDS,
+  ACT_SOURCE_SCHEMA_VERSION: ACT_SOURCE_SCHEMA_VERSION,
   LIMITS: LIMITS,
+  RECON_TIER_COUNT: RECON_TIER_COUNT,
+  V4_BRIEFING_EXTENSION_FIELDS: V4_BRIEFING_EXTENSION_FIELDS,
   V4_CAMPAIGN_FIELDS: V4_CAMPAIGN_FIELDS,
   V4_CAMPAIGN_EXTENSION_FIELDS: V4_CAMPAIGN_EXTENSION_FIELDS,
   V4_MISSION_EXTENSION_FIELDS: V4_MISSION_EXTENSION_FIELDS,
+  V4_WAVE_EXTENSION_FIELDS: V4_WAVE_EXTENSION_FIELDS,
   createReferenceContext: createReferenceContext,
   deepFrozenClone: deepFrozenClone,
   deepOrdinaryClone: deepOrdinaryClone,
@@ -848,6 +957,8 @@ module.exports = Object.freeze({
   requireRecordOrder: requireRecordOrder,
   requireSortedUniqueIds: requireSortedUniqueIds,
   requireStringKey: requireStringKey,
+  validateV4ActSource: validateV4ActSource,
+  validateV4ActSourceCore: validateV4ActSourceCore,
   validateV4CampaignRules: validateV4CampaignRules,
   validateV4CampaignRulesCore: validateV4CampaignRulesCore,
   validateV4DefenseSource: validateV4DefenseSource,

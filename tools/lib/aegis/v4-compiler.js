@@ -153,6 +153,10 @@ function buildSimulationContent(preflight, resolved, abiHash) {
        constructed against, so the content declares every versioned contract it binds. */
     profileSchemaVersion: resolved.profileSchemaVersion,
     behaviorContracts: resolved.behaviorContracts,
+    /* Presentation copy carried in compiled content so a briefing can name its act without a
+       second fetch. It is outside the simulation lock tree, no combat value derives from it,
+       and it reaches no run header, replay header, or record key (spec 18.2). */
+    acts: resolved.acts,
     campaignRules: tree.campaignRules,
     defenses: tree.defenses,
     specializations: tree.specializations,

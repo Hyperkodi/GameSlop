@@ -385,6 +385,8 @@ function resolveV4Graph(preflight, options) {
   Records.preflight(source.eventCatalog, "/eventCatalog");
   Records.validateV4EventCatalogCore(source.eventCatalog, "/eventCatalog");
   const stringCatalog = V3Records.validateStringCatalog(source.stringCatalog);
+  Records.preflight(source.acts, "/acts");
+  Records.validateV4ActSourceCore(source.acts, "/acts");
 
   const missions = source.missions.map(function (record) { return record.definition; });
   missions.forEach(function (mission, index) {
@@ -509,12 +511,17 @@ function resolveV4Graph(preflight, options) {
 
   const stringKeys = new Set(stringCatalog.entries.map(function (entry) { return entry.key; }));
   const stringReferences = context.stringReferences.slice();
+  /* Spec 18.3 narrative keys join the existing singular localization references so an act era,
+     act premise, act or mission story, wave note, and recon detail all resolve and are all
+     required to be used by exactly the same STRING_UNUSED sweep below. */
   const stringSingular = new Set([
-    "benefitKey", "briefingKey", "descriptionKey", "drawbackKey", "nameKey", "objectiveKey",
-    "progressKey", "roleKey", "summaryKey", "titleKey", "weaknessKey",
+    "benefitKey", "briefingKey", "descriptionKey", "detailKey", "drawbackKey", "eraKey",
+    "nameKey", "noteKey", "objectiveKey", "premiseKey", "progressKey", "roleKey", "storyKey",
+    "summaryKey", "titleKey", "weaknessKey",
   ]);
   const stringArrays = new Set(["mechanicNoticeKeys", "routeNoticeKeys"]);
   [
+    [source.acts, "/acts"],
     [source.enemies, "/enemies"],
     [source.bosses, "/bosses"],
     [missions, "/missions"],
@@ -668,6 +675,52 @@ function resolveV4Graph(preflight, options) {
     compiledMaps.push(compileValue(compiledMap, null, "/maps/" + compiledMap.id, new WeakSet(), false));
   });
 
+  /* --- act narrative (spec 18.2), presentation copy that never enters the lock tree --- */
+  const missionIdsByAct = new Map();
+  missions.forEach(function (mission) {
+    if (!missionIdsByAct.has(mission.actIndex)) missionIdsByAct.set(mission.actIndex, []);
+    missionIdsByAct.get(mission.actIndex).push(mission.id);
+  });
+  const authoredActIndexes = new Set(source.acts.records.map(function (record) { return record.index; }));
+  missions.forEach(function (mission, missionIndex) {
+    if (!authoredActIndexes.has(mission.actIndex)) {
+      fail(
+        "V4_ACT_BINDING",
+        pointerJoin(pointerJoin("/missions", missionIndex), "actIndex"),
+        "Mission act index is absent from the authored act catalog"
+      );
+    }
+  });
+  source.acts.records.forEach(function (act, index) {
+    const actPath = pointerJoin("/acts/records", index);
+    const expected = missionIdsByAct.get(act.index) || [];
+    if (expected.length !== act.missionIds.length ||
+        expected.some(function (missionId, position) { return missionId !== act.missionIds[position]; })) {
+      fail(
+        "V4_ACT_BINDING",
+        pointerJoin(actPath, "missionIds"),
+        "Act missionIds must be exactly the missions whose actIndex matches, in mission order"
+      );
+    }
+  });
+  const acts = {
+    schemaVersion: source.acts.schemaVersion,
+    records: source.acts.records.map(function (record) {
+      return {
+        index: record.index,
+        titleKey: record.titleKey,
+        eraKey: record.eraKey,
+        storyKey: record.storyKey,
+        premiseKey: record.premiseKey,
+        missionIds: record.missionIds.slice(),
+      };
+    }),
+    reconRecords: source.acts.reconRecords.map(function (record) {
+      return { tier: record.tier, detailKey: record.detailKey };
+    }),
+  };
+  canonicalBytes(acts);
+
   /* --- normalized v4 lock tree --- */
   const specializationRecords = context.specializationRecords.map(function (entry) { return entry.record; });
   const defenseLockRecords = source.defenses.records.map(function (record) {
@@ -715,6 +768,7 @@ function resolveV4Graph(preflight, options) {
 
   return frozenClone({
     approvalState: approvalState,
+    acts: acts,
     eventSchemaVersion: Catalog.EVENT_SCHEMA_VERSION,
     behaviorRegistryVersion: Catalog.BEHAVIOR_REGISTRY_VERSION,
     commandSchemaVersion: Catalog.COMMAND_SCHEMA_VERSION,

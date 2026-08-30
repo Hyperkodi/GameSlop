@@ -21,6 +21,7 @@ const SHA256_REFERENCE = /^sha256:[0-9a-f]{64}$/;
 
 const STANDARD_REFERENCE_KEYS = Object.freeze([
   "abiDescriptor",
+  "acts",
   "behaviorContracts",
   "campaignRules",
   "defenses",
@@ -43,6 +44,7 @@ const MANIFEST_KEYS = Object.freeze([
   "sourceKind",
   "approvalState",
   "abiDescriptor",
+  "acts",
   "behaviorContracts",
   "annex",
   "campaignRules",
@@ -392,6 +394,7 @@ function preflightV4SourceTree(options) {
   }
 
   const abiDescriptor = loadJsonReference(manifest.abiDescriptor, "/abiDescriptor", "abiDescriptor", "abiDescriptor");
+  const acts = loadJsonReference(manifest.acts, "/acts", "acts", "acts");
   const behaviorContracts = loadJsonReference(
     manifest.behaviorContracts, "/behaviorContracts", "behaviorContracts", "behaviorContracts"
   );
@@ -468,6 +471,7 @@ function preflightV4SourceTree(options) {
     annex: annex,
     normalizedSource: {
       abiDescriptor: abiDescriptor,
+      acts: acts,
       behaviorContracts: behaviorContracts,
       campaignRules: campaignRules,
       defenses: defenses,
