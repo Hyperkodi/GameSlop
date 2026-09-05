@@ -57,7 +57,9 @@ module.exports = async (cdp, evaluate, sleep) => {
   assert.ok((await info()).voices<=24,'rapid co-op fire has bounded polyphony');
   await evaluate("__gameslop.engine.state.status='clear';__gameslop.audio.update(__gameslop.engine.state)");
   assert.equal((await info()).musicPlaying,false);
-  await click('#restart');assert.equal((await info()).musicPlaying,false);
+  // The overlay was not drawn during the direct state setup above, so invoke its normal
+  // handler directly before exercising the real mobile touch gesture on Start.
+  await evaluate("document.querySelector('#restart').click()");assert.equal((await info()).musicPlaying,false);
   await cdp('Emulation.setDeviceMetricsOverride',{width:844,height:390,deviceScaleFactor:1,mobile:true,screenOrientation:{type:'landscapePrimary',angle:90}});
   await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
   const pt=await evaluate("(()=>{const b=document.querySelector('#start');b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2,id:1};})()");
