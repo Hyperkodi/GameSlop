@@ -36,13 +36,12 @@ module.exports = async (cdp, evaluate, sleep) => {
   await click('#sound');assert.equal((await info()).muted,true);assert.equal((await info()).musicPlaying,false);assert.equal((await info()).voices,0);
   await click('#sound');await until(s=>s.musicPlaying,'unmute resumes music');
   console.log('PASS pause/resume and mute stop both music and effect tails');
-  const tracks=['Jungle.mp3','Bunker.mp3',null,'Reactor.mp3','Snow.mp3','Foundry.mp3','Cave.mp3','Alien.mp3'];
+  const tracks=['Jungle.mp3','Bunker.mp3','Foundry.mp3','Reactor.mp3','Snow.mp3','Foundry.mp3','Cave.mp3','Alien.mp3'];
   for(let stage=1;stage<8;stage++) {
     await evaluate(`(()=>{const e=__gameslop.engine;e.state.status='clear';e.advance();e.state.players[0].invincible=999;__gameslop.audio.update(e.state,e.drainEvents());})()`);
-    if(tracks[stage]) await until(s=>s.track===tracks[stage] && s.musicPlaying && s.musicTime>0,'stage '+(stage+1)+' music');
-    else {const s=await info();assert.equal(s.track,null);assert.equal(s.musicPlaying,false);assert.equal(s.musicFailed,false);}
+    await until(s=>s.track===tracks[stage] && s.musicPlaying && s.musicTime>0,'stage '+(stage+1)+' music');
   }
-  console.log('PASS every available level track streams; Spillway makes no missing-file request');
+  console.log('PASS every level track streams, including Foundry reused for Spillway');
   await evaluate(`__gameslop.audio.update(__gameslop.engine.state,[{type:'explosion',kind:'boss'}])`);
   assert.equal((await info()).lastSample,'bossExplosion');
   await evaluate(`(()=>{const e=__gameslop.engine;for(let n=0;n<80;n++)__gameslop.audio.update(e.state,[{type:'shot',weapon:'M'},{type:'shot',weapon:'F'}]);})()`);
