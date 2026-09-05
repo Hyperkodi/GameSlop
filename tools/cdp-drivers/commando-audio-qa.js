@@ -14,22 +14,31 @@ module.exports = async (cdp, evaluate, sleep) => {
   }
   assert.equal((await info()).unlocked,false,'no autoplay on the title screen');
   await click('#start');
-  await until(s=>s.loaded.length===11 && s.musicPlaying && s.musicTime>0,'initial music and samples');
+  await until(s=>s.loaded.length===16 && s.musicPlaying && s.musicTime>0,'initial music and samples');
   assert.deepEqual((await info()).failed,[]);
-  console.log('PASS real user gesture starts streamed music and decodes all eleven recordings');
+  console.log('PASS real user gesture starts streamed music and decodes all sixteen recordings');
   await evaluate(`(()=>{const e=__gameslop.engine;e.state.level.spawns=[];e.state.level.supplies=[];e.state.enemies=[];e.state.waveTime=-999;e.state.players[0].invincible=999;})()`);
   for(const weapon of ['M','S','L','F','G','H','W']) {
     await evaluate(`(()=>{const e=__gameslop.engine,p=e.state.players[0];p.weapon='${weapon}';p.cooldown=0;e.input(0,'fire',true);e.tick();e.input(0,'fire',false);__gameslop.audio.update(e.state,e.drainEvents());})()`);
     const s=await info(); assert.equal(s.lastSample,'shot:'+weapon);assert.ok(s.voices>0);
   }
   console.log('PASS recorded effects play for every supplied gun');
+  for(const weapon of ['T','I','A']) {
+    await evaluate(`(()=>{const e=__gameslop.engine,p=e.state.players[0];p.weapon='${weapon}';p.cooldown=0;e.input(0,'fire',true);e.tick();e.input(0,'fire',false);__gameslop.audio.update(e.state,e.drainEvents());})()`);
+    assert.equal((await info()).lastSample,'shot:'+weapon);
+  }
+  console.log('PASS recorded Tesla, cryo, and plasma weapon effects');
   for(const weapon of ['G','H']) {
     await evaluate(`(()=>{const e=__gameslop.engine;e.state.bullets=[];const p=e.state.players[0];p.weapon='${weapon}';p.cooldown=0;e.input(0,'fire',true);e.tick();e.input(0,'fire',false);e.drainEvents();e.state.bullets[0].ttl=0;e.tick();__gameslop.audio.update(e.state,e.drainEvents());})()`);
     assert.equal((await info()).lastSample,'impact:'+weapon);
   }
   await evaluate(`(()=>{const e=__gameslop.engine,p=e.state.players[0];e.state.pickups.push({type:'B',x:p.x,y:p.y,w:24,h:24,ttl:10});e.tick();__gameslop.audio.update(e.state,e.drainEvents());})()`);
   assert.equal((await info()).lastSample,'barrier');
-  console.log('PASS barrier and separate grenade/rocket detonation recordings');
+  await evaluate(`(()=>{const e=__gameslop.engine,p=e.state.players[0];e.state.pickups.push({type:'C',x:p.x,y:p.y,w:24,h:24,ttl:10});e.tick();__gameslop.audio.update(e.state,e.drainEvents());})()`);
+  assert.equal((await info()).lastSample,'cloak');
+  const nukeVisual=await evaluate(`(()=>{const {engine:e,renderer:r,audio}=__gameslop,p=e.state.players[0];e.state.pickups.push({type:'N',x:p.x,y:p.y,w:24,h:24,ttl:10});e.tick();audio.update(e.state,e.drainEvents());r.draw(e.state,{time:3});const data=document.querySelector('#game').getContext('2d').getImageData(480,270,1,1).data;return {flash:e.state.nukeFlash,white:data[0]>245&&data[1]>245&&data[2]>245};})()`);
+  assert.equal((await info()).lastSample,'nuke');assert.deepEqual(nukeVisual,{flash:1.2,white:true});
+  console.log('PASS barrier, cloak, nuke flash, and separate grenade/rocket detonation recordings');
   await click('#pause');const paused=await info();await sleep(250);
   assert.equal((await info()).musicPlaying,false);assert.equal((await info()).musicTime,paused.musicTime);assert.equal((await info()).voices,0);
   await click('#overlay-action');await until(s=>s.musicPlaying && s.musicTime>paused.musicTime,'music resumes from pause');
@@ -61,7 +70,9 @@ module.exports = async (cdp, evaluate, sleep) => {
     const a=SlopCommando.createAudio({env});await a.unlock();
     a.update({stage:2,status:'playing'},[{type:'shot',weapon:'M'}]);const result=a.inspect();a.toggle();return result;
   })()`);
-  assert.equal(fallback.failed.length,11);assert.equal(fallback.lastSample,null);assert.ok(fallback.voices>0);
+  assert.equal(fallback.failed.length,16);assert.equal(fallback.lastSample,null);assert.ok(fallback.voices>0);
   assert.deepEqual(await evaluate('__audioErrors'),[]);
   console.log('PASS boss recording, bounded effect voices, mobile restart, background pause, missing-file fallback, no runtime errors');
+  // Leave the captured artifact on the peak nuke frame for visual release review.
+  await evaluate("(()=>{const {engine:e,renderer:r}=__gameslop;e.state.status='playing';e.state.nukeFlash=1.2;r.draw(e.state,{time:3});})()");
 };
