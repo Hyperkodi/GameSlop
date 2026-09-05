@@ -27,7 +27,7 @@ module.exports = async (cdp, evaluate, sleep) => {
     await waitFor("__gameslop.engine.state.status==='playing'&&document.querySelector('#title-screen').hidden&&document.querySelector('#overlay').hidden",'active controls');await frames();
   };
   const layout = async label => {
-    const boxes=await evaluate(`(()=>{const selectors=['.dpad','#auto-fire','[data-action=jump]','[data-action=fire]','[data-action=swap]','[data-action=drop]'];return selectors.map(selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {selector,x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom};});})()`);
+    const boxes=await evaluate(`(()=>{const selectors=['.dpad','#auto-fire','[data-action=jump]','[data-action=swap]','[data-action=drop]'];return selectors.map(selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {selector,x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom};});})()`);
     assert.ok(boxes.every(b=>b.w>=44&&b.h>=44),label+' targets at least 44px '+JSON.stringify(boxes));
     assert.ok(boxes.every(b=>b.x>=0&&b.right<=viewportSize.width+1&&b.y>=0&&b.bottom<=viewportSize.height+1),label+' controls fit onscreen '+JSON.stringify(boxes));
     assert.ok(boxes.every((a,i)=>boxes.every((b,j)=>i===j||a.right<=b.x||b.right<=a.x||a.bottom<=b.y||b.bottom<=a.y)),label+' controls do not overlap');
@@ -38,6 +38,7 @@ module.exports = async (cdp, evaluate, sleep) => {
   await cdp('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});await viewport(844,390);
   await evaluate("window.__touchErrors=[];addEventListener('error',e=>__touchErrors.push(e.message));addEventListener('unhandledrejection',e=>__touchErrors.push(String(e.reason)));document.querySelector('#crt').checked=false;document.querySelector('#crt').dispatchEvent(new Event('change'));window.scrollTo(0,0)");
   await check("document.querySelector('#auto-fire').getAttribute('aria-pressed')==='true'&&!__gameslop.touch.inspect().usingTouch",'automatic fire defaults on but waits for touch intent');
+  await check("!document.querySelector('.touch-controls [data-action=fire]')",'mobile controls have no manual Fire button');
   await check("getComputedStyle(document.querySelector('.touch-controls')).display==='none'",'title has no obstructing touch controls');
   await tap('#start');await waitFor("__gameslop.engine.state.status==='playing'&&__gameslop.touch.inspect().usingTouch",'real touch Start activates mobile firing');await quiet();
   await waitFor("__gameslop.engine.state.bullets.some(b=>b.team==='player')",'automatic fire produces actual bullets');
@@ -71,8 +72,8 @@ module.exports = async (cdp, evaluate, sleep) => {
   await check("__gameslop.touch.inspect().autoFire&&__gameslop.engine.state.players[0].held.right&&__gameslop.engine.state.players[0].held.fire",'second finger can restore automatic fire without releasing movement');await touch('touchEnd',[]);
 
   await tap('#auto-fire');await check("document.querySelector('#auto-fire').getAttribute('aria-pressed')==='false'&&localStorage.getItem('gameslop:commando:auto-fire')==='0'",'auto-fire can be switched off and saved');
+  await check("document.querySelector('.touch-hint').textContent==='TAP AUTO FIRE TO SHOOT'",'disabled auto-fire hint explains how to resume shooting');
   await quiet();await sleep(150);await check("!__gameslop.engine.state.players[0].held.fire&&!__gameslop.engine.state.bullets.length",'disabled automatic fire stays quiet');
-  const fire=await rect('[data-action=fire]');await touch('touchStart',[{x:fire.x,y:fire.y,id:1}]);await waitFor('__gameslop.engine.state.bullets.length>0','manual fire creates bullets');await touch('touchEnd',[]);await frames();await check('!__gameslop.engine.state.players[0].held.fire','manual fire releases cleanly');
   await tap('#auto-fire');await cdp('Input.dispatchKeyEvent',{type:'keyDown',code:'ArrowRight',key:'ArrowRight'});await frames();await check("!__gameslop.touch.inspect().usingTouch&&!__gameslop.engine.state.players[0].held.fire",'keyboard movement turns off touch auto-fire without changing preference');await cdp('Input.dispatchKeyEvent',{type:'keyUp',code:'ArrowRight',key:'ArrowRight'});
   await tap('[data-action=jump]');await waitFor('__gameslop.touch.inspect().usingTouch&&__gameslop.engine.state.players[0].held.fire','touch reactivates automatic fire');
   await evaluate("window.__originalGetGamepads=navigator.getGamepads;Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>[{axes:[1,0],buttons:Array.from({length:16},()=>({pressed:false}))}]})");await frames();
