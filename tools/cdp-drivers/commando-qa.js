@@ -43,7 +43,7 @@ module.exports = async (cdp, evaluate, sleep) => {
   await evaluate("document.querySelector('.guide-weapons').scrollIntoView({block:'center'});");await sleep(80);await screenshot('mobile-guide');await evaluate('window.scrollTo(0,0)');await sleep(40);
   await screenshot('mobile-title');
   await click('#start');await sleep(150);
-  await check("getComputedStyle(document.querySelector('.touch-controls')).display==='flex'",'mobile touch controls visible');
+  await check("(()=>{const el=document.querySelector('.touch-controls'),style=getComputedStyle(el),rect=el.getBoundingClientRect();return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0;})()",'mobile touch controls visible');
   const points=await evaluate("['right','fire','jump'].map(a=>{const r=document.querySelector('[data-action='+a+']').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})");
   const x=await evaluate('window.__gameslop.engine.state.players[0].x');
   await cdp('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:points.map((p,i)=>({...p,id:i+1}))});await sleep(500);
