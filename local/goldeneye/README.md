@@ -117,6 +117,10 @@ The final branding build replaces Bond's save-folder and mission-dossier
 portraits with the mascot in his tux. Other character portraits and dialogue
 names retain the original GoldenEye characters.
 
+Alec Trevelyan now uses Vlad Tenev's likeness in both the friendly 006 and
+enemy Janus outfits. Natalya uses Celina Tenev's likeness in both her skirt
+and jungle outfits. The new textures are exclusive to those four models.
+
 ## GoldenEye 64 / SLOP branding
 
 The default launcher now loads `data/goldeneye-slop64.z64`, which adds the native

@@ -45,7 +45,13 @@ for a,b in sorted(allowed):
 assert base[last:]==rom[last:]
 assert {c['texture'] for c in report['heads'].values()}==set(range(20))
 assert {c['head'] for c in report['scientists']['UsetuparkZ']}=={74,75,76,77}
-assert len(report['bosses'])==10
+assert len(report['bosses'])==13
 assert {'CsnowguardZ','CpilotZ'}<=report['bosses'].keys()
-print('PASS: 20 likenesses, 36 head slots, 10 integrated enemy models, all four Facility scientists.')
+for name in ['CtrevelyanZ','CboilertrevZ']:
+    assert report['bosses'][name]['character']=='Vlad Tenev'
+for name in ['CnatalyaZ','CspicebondZ']:
+    assert report['bosses'][name]['character']=='Celina Tenev'
+assert {c['texture'] for c in report['heads'].values()}|{c['texture'] for c in report['bosses'].values()}==set(range(22))
+print('PASS: 22 likenesses, 36 head slots, 13 integrated models, all four Facility scientists.')
+print('PASS: Vlad covers friendly 006 and Janus; Celina covers skirt and jungle outfits.')
 print('PASS: mission logic, health, placements, mascot, maps and all other ROM bytes preserved.')

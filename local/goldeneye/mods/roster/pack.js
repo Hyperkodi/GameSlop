@@ -1,5 +1,5 @@
 // Format conversion: generated artwork -> N64 CI4 (16-colour indexed) textures.
-const names=['Donald Trump','Melania Trump','Donald Trump Jr.','Eric Trump','Ivanka Trump','Tiffany Trump','Barron Trump','JD Vance','Benjamin Netanyahu','Anthony Fauci','Osama bin Laden','Barack Obama','Michelle Obama','Bill Clinton','Hillary Clinton','Bill Gates','Pepe','Shiba Inu','Brett','Squirrel'];
+const names=['Donald Trump','Melania Trump','Donald Trump Jr.','Eric Trump','Ivanka Trump','Tiffany Trump','Barron Trump','JD Vance','Benjamin Netanyahu','Anthony Fauci','Osama bin Laden','Barack Obama','Michelle Obama','Bill Clinton','Hillary Clinton','Bill Gates','Pepe','Shiba Inu','Brett','Squirrel','Vlad Tenev','Celina Tenev'];
 window.packedTextures=[];
 function quantize(pixels){
  let boxes=[pixels.slice()];
@@ -11,7 +11,7 @@ function quantize(pixels){
  }
  return boxes.map(box=>[0,1,2].map(c=>Math.round(box.reduce((s,p)=>s+p[c],0)/box.length)));
 }
-for(const [file,grid,start] of [['public-figures.png',4,0],['scientists.png',2,16]]){
+for(const [file,grid,start] of [['public-figures.png',4,0],['scientists.png',2,16],['vlad-tenev.png',1,20],['celina-tenev.png',1,21]]){
  const image=new Image();image.src='art/'+file;await image.decode();
  for(let cell=0;cell<grid*grid;cell++){
   const canvas=document.createElement('canvas');canvas.width=canvas.height=32;
@@ -23,7 +23,7 @@ for(const [file,grid,start] of [['public-figures.png',4,0],['scientists.png',2,1
     [.19,.20,.66,.79],[.16,.17,.69,.82],[.09,.13,.83,.86],[.09,.13,.83,.86],
     [.08,.10,.84,.89],[.08,.10,.84,.89],[.10,.08,.80,.91],[.08,.10,.84,.89],
     [.16,.17,.71,.82],[.08,.08,.84,.91],[.16,.17,.71,.82],[.08,.10,.84,.89]];
-  const crop=start===0?crops[cell]:[0,0,1,1];
+  const crop=start===0?crops[cell]:start===20?[.05,.02,.9,.98]:start===21?[.13,.02,.78,.92]:[0,0,1,1];
   ctx.drawImage(image,originX+crop[0]*size,originY+crop[1]*size,crop[2]*size,crop[3]*size,0,0,32,32);
   const rgba=ctx.getImageData(0,0,32,32),pixels=Array.from({length:1024},(_,i)=>Array.from(rgba.data.slice(i*4,i*4+3)));
   const palette=quantize(pixels),indices=pixels.map(p=>{let best=0,d=Infinity;palette.forEach((c,i)=>{const v=c.reduce((s,n,j)=>s+(n-p[j])**2,0);if(v<d){d=v;best=i;}});return best;});

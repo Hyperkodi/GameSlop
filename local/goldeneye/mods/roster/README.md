@@ -16,7 +16,10 @@ Dr. Doak uses Pepe and retains his original mission script.
 | --- | --- |
 | Boris | Bill Gates |
 | Ourumov | Benjamin Netanyahu |
-| Trevelyan (enemy outfit) | Donald Trump |
+| Trevelyan (enemy outfit) | Vlad Tenev |
+| Trevelyan (friendly 006 outfit) | Vlad Tenev |
+| Natalya (skirt outfit) | Celina Tenev |
+| Natalya (jungle fatigues) | Celina Tenev |
 | Xenia | Hillary Clinton |
 | Baron Samedi | Osama bin Laden |
 | Jaws | JD Vance |
@@ -25,7 +28,7 @@ Dr. Doak uses Pepe and retains his original mission script.
 | Snow soldier | Anthony Fauci |
 | Pilot | Donald Trump Jr. |
 
-Friendly 006, Natalya and Valentin retain their story roles and models. Original
+Friendly 006, Natalya and Valentin retain their story roles. Original
 menu portraits and dialogue names are unchanged. Shared generic head slots also
 affect civilian/multiplayer appearances that use those slots.
 
@@ -35,8 +38,8 @@ First build `mods/mascot-tux/build.py`, then run `python mods/roster/build.py`
 from `local/goldeneye`. Zopfli 0.4.3 is needed when a compressed asset exceeds its
 original slot using zlib. Run `python mods/roster/verify.py` afterwards.
 
-`pack.html` converts the two generated atlases into CI4 textures and displays
-the 20 reduced images. `textures.json` contains the checked-in conversion.
+`pack.html` converts the two generated atlases and two Tenev portraits into CI4
+textures and displays the 22 reduced images. `textures.json` contains the conversion.
 The native builder embeds palettes, image data and rounded head geometry.
 Public-figure portraits use individual tighter atlas crops so the eyes, nose and
 mouth occupy more of the 32-pixel texture. Their visible heads are 22% wider and
@@ -77,3 +80,18 @@ The enlarged-face revision passed a fresh Dam mission with movement and firing
 and no iframe emulator errors. All 36 replacement head slots retain full
 32-pixel texture width (none needed the reduced-width fallback). Review images:
 `../../art/roster/enlarged-face-textures.png` and `enlarged-faces-dam.png`.
+
+The Tenev update covers all four integrated models: `CtrevelyanZ`,
+`CboilertrevZ`, `CnatalyaZ`, and `CspicebondZ` (Natalya's jungle outfit).
+The new likenesses are exclusive to those story characters. Regular guard
+head assignments remain unchanged, including Donald Trump. The update changes
+only these four compressed model slots relative to the preceding published
+build; every other game byte is preserved. See `TENEV-ARTWORK.md` for references
+and the two generation prompts.
+
+Native browser QA rendered Vlad's 006 outfit and Celina's jungle outfit in the
+unmodified cast sequence, and their Janus/skirt outfits in separate single-NPC
+Dam fixtures. Both fixtures reached gameplay with no emulator JavaScript errors.
+The four-NPC stress fixture also stalled with the preceding character build;
+it is not part of the game. Review captures are in `../../art/roster/` under
+`vlad-native-*`, `celina-native-*`, and `tenev-textures.png`.

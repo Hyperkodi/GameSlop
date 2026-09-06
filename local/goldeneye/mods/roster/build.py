@@ -7,6 +7,9 @@ import build as mascot
 ROOT=HERE.parents[1]
 LAYOUT=json.loads((HERE/'layout.json').read_text())
 TEXTURES=json.loads((HERE/'textures.json').read_text())
+INTEGRATED={'CborisZ':15,'CorumovZ':8,'CtrevelyanZ':20,'CboilertrevZ':20,
+            'CnatalyaZ':21,'CspicebondZ':21,'CxeniaZ':14,'CbaronsamediZ':10,
+            'CjawsZ':7,'CmaydayZ':12,'CoddjobZ':13,'CsnowguardZ':9,'CpilotZ':2}
 cmd=mascot.cmd;u32=mascot.u32;put=mascot.put;SEG=mascot.SEG
 
 def texture_commands(tex,pal,width=32):
@@ -70,7 +73,7 @@ def head_blob(original,entry,texture,width=32):
 def build():
     source=(ROOT/'data/goldeneye-mascot-tux.z64').read_bytes()
     assert hashlib.sha256(source).hexdigest()==json.loads((ROOT/'data/mascot-tux-build.json').read_text())['sha256'],'Unexpected mascot source build'
-    assert len(TEXTURES)==20 and all(len(t['indices'])==1024 and len(t['palette'])==16 for t in TEXTURES)
+    assert len(TEXTURES)==22 and all(len(t['indices'])==1024 and len(t['palette'])==16 for t in TEXTURES)
     rom=bytearray(source);report={'source_sha256':hashlib.sha256(source).hexdigest(),'heads':{}}
     headnames=[n for n,e in LAYOUT['models'].items() if 42<=e['id']<74]
     scientist_names=['CheadbrosnanboilerZ','CheadbrosnansuitZ','CheadbrosnantimberZ','CheadbrosnansnowZ']
@@ -85,13 +88,13 @@ def build():
         off=entry['offset'];rom[off:off+entry['capacity']]=packed+bytes(entry['capacity']-len(packed))
         report['heads'][name]={'character':TEXTURES[index]['name'],'texture':index,'head_id':entry['id'],'width':width,'packed':len(packed)}
     report['bosses']={}
-    for name,index in {'CborisZ':15,'CorumovZ':8,'CtrevelyanZ':0,'CxeniaZ':14,'CbaronsamediZ':10,'CjawsZ':7,'CmaydayZ':12,'CoddjobZ':13,'CsnowguardZ':9,'CpilotZ':2}.items():
+    for name,index in INTEGRATED.items():
         entry=LAYOUT['models'][name]
         data=integrated_head(mascot.inflate(source,entry),entry,TEXTURES[index])
         packed=mascot.compress(data,entry['capacity'])
         assert len(packed)<=entry['capacity'],name
         off=entry['offset'];rom[off:off+entry['capacity']]=packed+bytes(entry['capacity']-len(packed))
-        report['bosses'][name]={'character':TEXTURES[index]['name'],'packed':len(packed)}
+        report['bosses'][name]={'character':TEXTURES[index]['name'],'texture':index,'packed':len(packed)}
     report['scientists']={}
     for name,entry in LAYOUT['setups'].items():
         data=mascot.inflate(source,entry);changes=[];counter=0
@@ -109,7 +112,7 @@ def build():
     (ROOT/'data/goldeneye-roster.z64').write_bytes(rom)
     report['sha256']=hashlib.sha256(rom).hexdigest()
     (ROOT/'data/roster-build.json').write_text(json.dumps(report,indent=2))
-    print('Built',len(report['heads']),'heads,',len(report['bosses']),'named enemies and',sum(map(len,report['scientists'].values())),'scientist assignments.')
+    print('Built',len(report['heads']),'heads,',len(report['bosses']),'integrated characters and',sum(map(len,report['scientists'].values())),'scientist assignments.')
 PROP_WORDS=[1,64,2,32,33,32,59,33,34,7,64,149,32,54,3,1,1,32,3,4,45,34,4,4,1,2,2,2,2,2,4,1,4,5,1,4,32,10,4,44,45,1,32,32,5,56,7,37]
 
 def guards(data):
