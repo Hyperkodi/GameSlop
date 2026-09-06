@@ -1,0 +1,46 @@
+{
+  "version": "4.2.3",
+  "base_url": "https://cdn.emulatorjs.org/4.2.3/data/",
+  "files": {
+    "emulator.min.css": {
+      "bytes": 25630,
+      "sha256": "16406c60b2dc3b04ae9b115e308613e6f567a0cc7068e21d9d0c1e5030fb395e"
+    },
+    "emulator.min.js": {
+      "bytes": 426343,
+      "sha256": "6aec3fd7bb2721255801b0a6af02e47e78b05e28a1822b1f213aacbd348abaee"
+    },
+    "loader.js": {
+      "bytes": 7594,
+      "sha256": "69e0903bf1e2f62ced78895e7e511fa26e11316f7eb734925c35e919ba1287b2"
+    },
+    "version.json": {
+      "bytes": 126,
+      "sha256": "d8991427000a96fb97daefdb62178071e9bbff911760706148e584ae8d69f9e7"
+    },
+    "compression/extract7z.js": {
+      "bytes": 280155,
+      "sha256": "4ac9933b995a516cb6b3ca4027db860278372a20c21c405d93ceb1998498853a"
+    },
+    "cores/mupen64plus_next-wasm.data": {
+      "bytes": 1451795,
+      "sha256": "2da1cbce9fda395e3ae83ca5787353baa159142d45ef3ea90f108b92524f76cc"
+    },
+    "cores/parallel_n64-wasm.data": {
+      "bytes": 1028134,
+      "sha256": "873755608d41a604f3eee11b631f1cbe7e4d8c4d10c92859c27941299c8ef6a6"
+    },
+    "localization/en-US.json": {
+      "bytes": 9825,
+      "sha256": "b0c9a9bb92ecd2d03614ee2b0eeda160e883ee79ea94d9e8131addb92c5803f9"
+    },
+    "cores/reports/mupen64plus_next.json": {
+      "bytes": 153,
+      "sha256": "270105553cec57fd1058c50e0541b8b89dbd30b2323fd70682036f6919b805cc"
+    },
+    "cores/reports/parallel_n64.json": {
+      "bytes": 126,
+      "sha256": "fc72e6320ba1225b041dfedf3e62406c0dc954696cc91a13b7d71303de349f24"
+    }
+  }
+}

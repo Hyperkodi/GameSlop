@@ -1,0 +1,149 @@
+{
+  "UsetuparchZ": {
+    "offset": 9089552,
+    "capacity": 17936,
+    "cuffs": [
+      81616
+    ]
+  },
+  "UsetuparkZ": {
+    "offset": 9107488,
+    "capacity": 15248,
+    "cuffs": [
+      79596
+    ]
+  },
+  "UsetupaztZ": {
+    "offset": 9122736,
+    "capacity": 10496,
+    "cuffs": [
+      64380
+    ]
+  },
+  "UsetupcaveZ": {
+    "offset": 9133232,
+    "capacity": 15968,
+    "cuffs": [
+      78232
+    ]
+  },
+  "UsetupcontrolZ": {
+    "offset": 9149200,
+    "capacity": 15104,
+    "cuffs": [
+      57220
+    ]
+  },
+  "UsetupcradZ": {
+    "offset": 9164304,
+    "capacity": 7216,
+    "cuffs": [
+      10832
+    ]
+  },
+  "UsetupcrypZ": {
+    "offset": 9171520,
+    "capacity": 7824,
+    "cuffs": [
+      26656
+    ]
+  },
+  "UsetupdamZ": {
+    "offset": 9179344,
+    "capacity": 17104,
+    "cuffs": [
+      61824
+    ]
+  },
+  "UsetupdepoZ": {
+    "offset": 9196448,
+    "capacity": 12176,
+    "cuffs": [
+      42560
+    ]
+  },
+  "UsetupdestZ": {
+    "offset": 9208624,
+    "capacity": 9040,
+    "cuffs": [
+      48232
+    ]
+  },
+  "UsetupjunZ": {
+    "offset": 9217664,
+    "capacity": 14080,
+    "cuffs": [
+      89660
+    ]
+  },
+  "UsetuplenZ": {
+    "offset": 9231744,
+    "capacity": 1488,
+    "cuffs": [
+      8516
+    ]
+  },
+  "UsetuppeteZ": {
+    "offset": 9233232,
+    "capacity": 12160,
+    "cuffs": [
+      38540
+    ]
+  },
+  "UsetuprunZ": {
+    "offset": 9245392,
+    "capacity": 6240,
+    "cuffs": [
+      23376
+    ]
+  },
+  "UsetupsevbZ": {
+    "offset": 9251632,
+    "capacity": 9824,
+    "cuffs": [
+      55664
+    ]
+  },
+  "UsetupsevbunkerZ": {
+    "offset": 9261456,
+    "capacity": 6704,
+    "cuffs": [
+      34796
+    ]
+  },
+  "UsetupsevxZ": {
+    "offset": 9268160,
+    "capacity": 17168,
+    "cuffs": [
+      53748
+    ]
+  },
+  "UsetupsevxbZ": {
+    "offset": 9285328,
+    "capacity": 16624,
+    "cuffs": [
+      43172
+    ]
+  },
+  "UsetupsiloZ": {
+    "offset": 9301952,
+    "capacity": 10832,
+    "cuffs": [
+      65216
+    ]
+  },
+  "UsetupstatueZ": {
+    "offset": 9312784,
+    "capacity": 10192,
+    "cuffs": [
+      14332
+    ]
+  },
+  "UsetuptraZ": {
+    "offset": 9322976,
+    "capacity": 12848,
+    "cuffs": [
+      70040
+    ]
+  }
+}

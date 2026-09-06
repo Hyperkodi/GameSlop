@@ -1,0 +1,629 @@
+{
+  "source": "https://github.com/n64decomp/007",
+  "models": {
+    "CboilerbondZ": {
+      "offset": 7310016,
+      "capacity": 11280,
+      "switches": 7,
+      "textures": 13
+    },
+    "CdjbondZ": {
+      "offset": 7382992,
+      "capacity": 11920,
+      "switches": 7,
+      "textures": 13
+    },
+    "CheadbrosnanZ": {
+      "offset": 7445856,
+      "capacity": 3408,
+      "switches": 2,
+      "textures": 5
+    },
+    "CheadbrosnanboilerZ": {
+      "offset": 7449264,
+      "capacity": 2976,
+      "switches": 2,
+      "textures": 4
+    },
+    "CheadbrosnansnowZ": {
+      "offset": 7452240,
+      "capacity": 3712,
+      "switches": 2,
+      "textures": 6
+    },
+    "CheadbrosnansuitZ": {
+      "offset": 7455952,
+      "capacity": 3456,
+      "switches": 2,
+      "textures": 5
+    },
+    "CheadbrosnantimberZ": {
+      "offset": 7459408,
+      "capacity": 3008,
+      "switches": 2,
+      "textures": 4
+    },
+    "CsnowbondZ": {
+      "offset": 7637984,
+      "capacity": 13104,
+      "switches": 7,
+      "textures": 14
+    },
+    "CspicebondZ": {
+      "offset": 7662480,
+      "capacity": 14624,
+      "switches": 7,
+      "textures": 17
+    },
+    "Csuit_lf_handZ": {
+      "offset": 7677104,
+      "capacity": 12832,
+      "switches": 10,
+      "textures": 22
+    },
+    "CsuitbondZ": {
+      "offset": 7689936,
+      "capacity": 11664,
+      "switches": 7,
+      "textures": 14
+    },
+    "CtimberbondZ": {
+      "offset": 7719680,
+      "capacity": 11568,
+      "switches": 7,
+      "textures": 16
+    },
+    "Gak47Z": {
+      "offset": 7782256,
+      "capacity": 2576,
+      "switches": 36,
+      "textures": 18
+    },
+    "GaudiotapeZ": {
+      "offset": 7784832,
+      "capacity": 912,
+      "switches": 28,
+      "textures": 9
+    },
+    "GautoshotZ": {
+      "offset": 7785744,
+      "capacity": 6160,
+      "switches": 36,
+      "textures": 16
+    },
+    "GblackboxZ": {
+      "offset": 7791904,
+      "capacity": 1536,
+      "switches": 28,
+      "textures": 5
+    },
+    "GblueprintsZ": {
+      "offset": 7793440,
+      "capacity": 256,
+      "switches": 28,
+      "textures": 4
+    },
+    "GbombcaseZ": {
+      "offset": 7793696,
+      "capacity": 1936,
+      "switches": 28,
+      "textures": 6
+    },
+    "GbombdefuserZ": {
+      "offset": 7795632,
+      "capacity": 1520,
+      "switches": 28,
+      "textures": 12
+    },
+    "GbriefcaseZ": {
+      "offset": 7797152,
+      "capacity": 1936,
+      "switches": 28,
+      "textures": 6
+    },
+    "GbugZ": {
+      "offset": 7799088,
+      "capacity": 2416,
+      "switches": 28,
+      "textures": 6
+    },
+    "GbugdetectorZ": {
+      "offset": 7801504,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GbungeeZ": {
+      "offset": 7802352,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GcameraZ": {
+      "offset": 7803200,
+      "capacity": 1152,
+      "switches": 28,
+      "textures": 11
+    },
+    "GcartblueZ": {
+      "offset": 7804352,
+      "capacity": 608,
+      "switches": 0,
+      "textures": 2
+    },
+    "GcartridgeZ": {
+      "offset": 7804960,
+      "capacity": 304,
+      "switches": 0,
+      "textures": 2
+    },
+    "GcartrifleZ": {
+      "offset": 7805264,
+      "capacity": 528,
+      "switches": 0,
+      "textures": 2
+    },
+    "GcartshellZ": {
+      "offset": 7805792,
+      "capacity": 512,
+      "switches": 0,
+      "textures": 2
+    },
+    "GcircuitboardZ": {
+      "offset": 7806304,
+      "capacity": 320,
+      "switches": 28,
+      "textures": 3
+    },
+    "GclipboardZ": {
+      "offset": 7806624,
+      "capacity": 496,
+      "switches": 35,
+      "textures": 3
+    },
+    "GcreditcardZ": {
+      "offset": 7807120,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GdarkglassesZ": {
+      "offset": 7807968,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GdatathiefZ": {
+      "offset": 7808816,
+      "capacity": 320,
+      "switches": 28,
+      "textures": 3
+    },
+    "GdattapeZ": {
+      "offset": 7809136,
+      "capacity": 368,
+      "switches": 28,
+      "textures": 4
+    },
+    "GdoordecoderZ": {
+      "offset": 7809504,
+      "capacity": 1408,
+      "switches": 28,
+      "textures": 16
+    },
+    "GdoorexploderZ": {
+      "offset": 7810912,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GdossierredZ": {
+      "offset": 7811760,
+      "capacity": 864,
+      "switches": 35,
+      "textures": 4
+    },
+    "GdynamiteZ": {
+      "offset": 7812624,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GexplosivefloppyZ": {
+      "offset": 7813472,
+      "capacity": 592,
+      "switches": 28,
+      "textures": 5
+    },
+    "GexplosivepenZ": {
+      "offset": 7814064,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GextinguisherZ": {
+      "offset": 7814912,
+      "capacity": 2032,
+      "switches": 28,
+      "textures": 4
+    },
+    "GfingergunZ": {
+      "offset": 7816944,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GfistZ": {
+      "offset": 7817792,
+      "capacity": 5888,
+      "switches": 36,
+      "textures": 14
+    },
+    "GflarepistolZ": {
+      "offset": 7823680,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "Gfnp90Z": {
+      "offset": 7824528,
+      "capacity": 3232,
+      "switches": 36,
+      "textures": 10
+    },
+    "GgaskeyringZ": {
+      "offset": 7827760,
+      "capacity": 2608,
+      "switches": 28,
+      "textures": 9
+    },
+    "GgoldbarZ": {
+      "offset": 7830368,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GgoldeneyekeyZ": {
+      "offset": 7831216,
+      "capacity": 2480,
+      "switches": 28,
+      "textures": 5
+    },
+    "GgoldengunZ": {
+      "offset": 7833696,
+      "capacity": 6112,
+      "switches": 36,
+      "textures": 11
+    },
+    "GgoldwppkZ": {
+      "offset": 7839808,
+      "capacity": 6496,
+      "switches": 36,
+      "textures": 11
+    },
+    "GgrenadeZ": {
+      "offset": 7846304,
+      "capacity": 2608,
+      "switches": 36,
+      "textures": 5
+    },
+    "GgrenadelaunchZ": {
+      "offset": 7848912,
+      "capacity": 4224,
+      "switches": 36,
+      "textures": 15
+    },
+    "GheroinZ": {
+      "offset": 7853136,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GjoypadZ": {
+      "offset": 7853984,
+      "capacity": 7856,
+      "switches": 14,
+      "textures": 4
+    },
+    "GkeyanalysercaseZ": {
+      "offset": 7861840,
+      "capacity": 1936,
+      "switches": 28,
+      "textures": 6
+    },
+    "GkeyboltZ": {
+      "offset": 7863776,
+      "capacity": 2544,
+      "switches": 28,
+      "textures": 1
+    },
+    "GkeycardZ": {
+      "offset": 7866320,
+      "capacity": 304,
+      "switches": 28,
+      "textures": 2
+    },
+    "GkeyyaleZ": {
+      "offset": 7866624,
+      "capacity": 3408,
+      "switches": 28,
+      "textures": 1
+    },
+    "GknifeZ": {
+      "offset": 7870032,
+      "capacity": 6864,
+      "switches": 36,
+      "textures": 9
+    },
+    "GlaserZ": {
+      "offset": 7876896,
+      "capacity": 3568,
+      "switches": 36,
+      "textures": 13
+    },
+    "GlectreZ": {
+      "offset": 7880464,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GlockexploderZ": {
+      "offset": 7881312,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "Gm16Z": {
+      "offset": 7882160,
+      "capacity": 2592,
+      "switches": 36,
+      "textures": 8
+    },
+    "GmapZ": {
+      "offset": 7884752,
+      "capacity": 240,
+      "switches": 35,
+      "textures": 4
+    },
+    "GmicrocameraZ": {
+      "offset": 7884992,
+      "capacity": 1600,
+      "switches": 35,
+      "textures": 7
+    },
+    "GmicrocodeZ": {
+      "offset": 7886592,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GmicrofilmZ": {
+      "offset": 7887440,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GmoneyZ": {
+      "offset": 7888288,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "Gmp5kZ": {
+      "offset": 7889136,
+      "capacity": 3040,
+      "switches": 36,
+      "textures": 9
+    },
+    "Gmp5ksilZ": {
+      "offset": 7892176,
+      "capacity": 3328,
+      "switches": 36,
+      "textures": 9
+    },
+    "GpitongunZ": {
+      "offset": 7895504,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GplansZ": {
+      "offset": 7896352,
+      "capacity": 464,
+      "switches": 28,
+      "textures": 5
+    },
+    "GplastiqueZ": {
+      "offset": 7896816,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 3
+    },
+    "GpolarizedglassesZ": {
+      "offset": 7897664,
+      "capacity": 1376,
+      "switches": 28,
+      "textures": 2
+    },
+    "GproximitymineZ": {
+      "offset": 7899040,
+      "capacity": 2032,
+      "switches": 28,
+      "textures": 3
+    },
+    "GremotemineZ": {
+      "offset": 7901072,
+      "capacity": 2496,
+      "switches": 35,
+      "textures": 3
+    },
+    "GrocketlaunchZ": {
+      "offset": 7903568,
+      "capacity": 4640,
+      "switches": 36,
+      "textures": 10
+    },
+    "GrugerZ": {
+      "offset": 7908208,
+      "capacity": 7568,
+      "switches": 36,
+      "textures": 14
+    },
+    "GsafecrackercaseZ": {
+      "offset": 7915776,
+      "capacity": 1936,
+      "switches": 28,
+      "textures": 6
+    },
+    "GshotgunZ": {
+      "offset": 7917712,
+      "capacity": 3808,
+      "switches": 28,
+      "textures": 13
+    },
+    "GsilverwppkZ": {
+      "offset": 7921520,
+      "capacity": 6496,
+      "switches": 36,
+      "textures": 11
+    },
+    "GskorpionZ": {
+      "offset": 7928016,
+      "capacity": 4608,
+      "switches": 36,
+      "textures": 12
+    },
+    "GsniperrifleZ": {
+      "offset": 7932624,
+      "capacity": 4208,
+      "switches": 36,
+      "textures": 7
+    },
+    "GspectreZ": {
+      "offset": 7936832,
+      "capacity": 3200,
+      "switches": 36,
+      "textures": 11
+    },
+    "GspooltapeZ": {
+      "offset": 7940032,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GspyfileZ": {
+      "offset": 7940880,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    },
+    "GstafflistZ": {
+      "offset": 7941728,
+      "capacity": 416,
+      "switches": 35,
+      "textures": 4
+    },
+    "GtaserZ": {
+      "offset": 7942144,
+      "capacity": 7776,
+      "switches": 35,
+      "textures": 17
+    },
+    "GthrowknifeZ": {
+      "offset": 7949920,
+      "capacity": 6896,
+      "switches": 36,
+      "textures": 9
+    },
+    "GtimedmineZ": {
+      "offset": 7956816,
+      "capacity": 2752,
+      "switches": 28,
+      "textures": 4
+    },
+    "GtriggerZ": {
+      "offset": 7959568,
+      "capacity": 13312,
+      "switches": 36,
+      "textures": 22
+    },
+    "Gtt33Z": {
+      "offset": 7972880,
+      "capacity": 6944,
+      "switches": 36,
+      "textures": 15
+    },
+    "GuziZ": {
+      "offset": 7979824,
+      "capacity": 2320,
+      "switches": 36,
+      "textures": 12
+    },
+    "GvideotapeZ": {
+      "offset": 7982144,
+      "capacity": 528,
+      "switches": 28,
+      "textures": 9
+    },
+    "GwatchcommunicatorZ": {
+      "offset": 7982672,
+      "capacity": 5216,
+      "switches": 35,
+      "textures": 9
+    },
+    "GwatchgeigercounterZ": {
+      "offset": 7987888,
+      "capacity": 5216,
+      "switches": 35,
+      "textures": 9
+    },
+    "GwatchidentifierZ": {
+      "offset": 7993104,
+      "capacity": 5216,
+      "switches": 35,
+      "textures": 9
+    },
+    "GwatchlaserZ": {
+      "offset": 7998320,
+      "capacity": 13312,
+      "switches": 36,
+      "textures": 22
+    },
+    "GwatchmagnetattractZ": {
+      "offset": 8011632,
+      "capacity": 5200,
+      "switches": 29,
+      "textures": 9
+    },
+    "GwatchmagnetrepelZ": {
+      "offset": 8016832,
+      "capacity": 5216,
+      "switches": 35,
+      "textures": 9
+    },
+    "GweaponcaseZ": {
+      "offset": 8022048,
+      "capacity": 1936,
+      "switches": 28,
+      "textures": 6
+    },
+    "GwppkZ": {
+      "offset": 8023984,
+      "capacity": 7312,
+      "switches": 36,
+      "textures": 12
+    },
+    "GwppksilZ": {
+      "offset": 8031296,
+      "capacity": 7488,
+      "switches": 36,
+      "textures": 12
+    },
+    "GwristdartZ": {
+      "offset": 8038784,
+      "capacity": 848,
+      "switches": 28,
+      "textures": 2
+    }
+  }
+}

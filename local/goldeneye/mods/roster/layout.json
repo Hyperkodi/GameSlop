@@ -1,0 +1,730 @@
+{
+  "models": {
+    "CcamguardZ": {
+      "id": 0,
+      "offset": 7347824,
+      "capacity": 9952,
+      "switches": 7,
+      "textures": 14,
+      "has_head": 0
+    },
+    "CgreyguardZ": {
+      "id": 1,
+      "offset": 7422752,
+      "capacity": 9936,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "ColiveguardZ": {
+      "id": 2,
+      "offset": 7585152,
+      "capacity": 9808,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 0
+    },
+    "CrusguardZ": {
+      "id": 3,
+      "offset": 7630768,
+      "capacity": 7216,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "CtrevguardZ": {
+      "id": 4,
+      "offset": 7745536,
+      "capacity": 9744,
+      "switches": 7,
+      "textures": 18,
+      "has_head": 0
+    },
+    "CdjbondZ": {
+      "id": 5,
+      "offset": 7382992,
+      "capacity": 11920,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "CborisZ": {
+      "id": 6,
+      "offset": 7335248,
+      "capacity": 12576,
+      "switches": 7,
+      "textures": 21,
+      "has_head": 1
+    },
+    "CorumovZ": {
+      "id": 7,
+      "offset": 7594960,
+      "capacity": 13360,
+      "switches": 7,
+      "textures": 21,
+      "has_head": 1
+    },
+    "CtrevelyanZ": {
+      "id": 8,
+      "offset": 7731248,
+      "capacity": 14288,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 1
+    },
+    "CboilertrevZ": {
+      "id": 9,
+      "offset": 7321296,
+      "capacity": 13952,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 1
+    },
+    "CvalentinZ": {
+      "id": 10,
+      "offset": 7755280,
+      "capacity": 12144,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 1
+    },
+    "CxeniaZ": {
+      "id": 11,
+      "offset": 7767424,
+      "capacity": 14832,
+      "switches": 7,
+      "textures": 19,
+      "has_head": 1
+    },
+    "CbaronsamediZ": {
+      "id": 12,
+      "offset": 7270416,
+      "capacity": 14064,
+      "switches": 7,
+      "textures": 25,
+      "has_head": 1
+    },
+    "CjawsZ": {
+      "id": 13,
+      "offset": 7499136,
+      "capacity": 11328,
+      "switches": 7,
+      "textures": 20,
+      "has_head": 1
+    },
+    "CmaydayZ": {
+      "id": 14,
+      "offset": 7518672,
+      "capacity": 11168,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 1
+    },
+    "CoddjobZ": {
+      "id": 15,
+      "offset": 7572560,
+      "capacity": 12592,
+      "switches": 7,
+      "textures": 18,
+      "has_head": 1
+    },
+    "CnatalyaZ": {
+      "id": 16,
+      "offset": 7548080,
+      "capacity": 14528,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 1
+    },
+    "CarmourguardZ": {
+      "id": 17,
+      "offset": 7261072,
+      "capacity": 9344,
+      "switches": 7,
+      "textures": 17,
+      "has_head": 0
+    },
+    "CcommguardZ": {
+      "id": 18,
+      "offset": 7373264,
+      "capacity": 9728,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CgreatguardZ": {
+      "id": 19,
+      "offset": 7412896,
+      "capacity": 9856,
+      "switches": 7,
+      "textures": 11,
+      "has_head": 0
+    },
+    "CnavyguardZ": {
+      "id": 20,
+      "offset": 7562608,
+      "capacity": 9952,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CsnowguardZ": {
+      "id": 21,
+      "offset": 7651088,
+      "capacity": 11392,
+      "switches": 7,
+      "textures": 17,
+      "has_head": 1
+    },
+    "CboilerbondZ": {
+      "id": 22,
+      "offset": 7310016,
+      "capacity": 11280,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "CsuitbondZ": {
+      "id": 23,
+      "offset": 7689936,
+      "capacity": 11664,
+      "switches": 7,
+      "textures": 14,
+      "has_head": 0
+    },
+    "CtimberbondZ": {
+      "id": 24,
+      "offset": 7719680,
+      "capacity": 11568,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 0
+    },
+    "CsnowbondZ": {
+      "id": 25,
+      "offset": 7637984,
+      "capacity": 13104,
+      "switches": 7,
+      "textures": 14,
+      "has_head": 0
+    },
+    "CbluewomanZ": {
+      "id": 26,
+      "offset": 7302144,
+      "capacity": 7872,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "CfattechwomanZ": {
+      "id": 27,
+      "offset": 7394912,
+      "capacity": 7968,
+      "switches": 7,
+      "textures": 12,
+      "has_head": 0
+    },
+    "CtechwomanZ": {
+      "id": 28,
+      "offset": 7711504,
+      "capacity": 8176,
+      "switches": 7,
+      "textures": 12,
+      "has_head": 0
+    },
+    "CjeanwomanZ": {
+      "id": 29,
+      "offset": 7510464,
+      "capacity": 8208,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CgreymanZ": {
+      "id": 30,
+      "offset": 7432688,
+      "capacity": 7616,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CbluemanZ": {
+      "id": 31,
+      "offset": 7294448,
+      "capacity": 7696,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CredmanZ": {
+      "id": 32,
+      "offset": 7620736,
+      "capacity": 10032,
+      "switches": 7,
+      "textures": 15,
+      "has_head": 0
+    },
+    "CcardimanZ": {
+      "id": 33,
+      "offset": 7357776,
+      "capacity": 7680,
+      "switches": 7,
+      "textures": 14,
+      "has_head": 0
+    },
+    "CcheckmanZ": {
+      "id": 34,
+      "offset": 7365456,
+      "capacity": 7808,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 0
+    },
+    "CtechmanZ": {
+      "id": 35,
+      "offset": 7701600,
+      "capacity": 9904,
+      "switches": 7,
+      "textures": 12,
+      "has_head": 0
+    },
+    "CpilotZ": {
+      "id": 36,
+      "offset": 7608320,
+      "capacity": 12416,
+      "switches": 7,
+      "textures": 24,
+      "has_head": 1
+    },
+    "Cgreatguard2Z": {
+      "id": 37,
+      "offset": 7402880,
+      "capacity": 10016,
+      "switches": 7,
+      "textures": 16,
+      "has_head": 0
+    },
+    "CbluecamguardZ": {
+      "id": 38,
+      "offset": 7284480,
+      "capacity": 9968,
+      "switches": 7,
+      "textures": 14,
+      "has_head": 0
+    },
+    "CmoonguardZ": {
+      "id": 39,
+      "offset": 7538368,
+      "capacity": 9712,
+      "switches": 7,
+      "textures": 13,
+      "has_head": 0
+    },
+    "CmoonfemaleZ": {
+      "id": 40,
+      "offset": 7529840,
+      "capacity": 8528,
+      "switches": 7,
+      "textures": 11,
+      "has_head": 0
+    },
+    "Csuit_lf_handZ": {
+      "id": 41,
+      "offset": 7677104,
+      "capacity": 12832,
+      "switches": 10,
+      "textures": 22,
+      "has_head": 0
+    },
+    "CheadkarlZ": {
+      "id": 42,
+      "offset": 7477008,
+      "capacity": 1376,
+      "switches": 2,
+      "textures": 6,
+      "has_head": 1
+    },
+    "CheadalanZ": {
+      "id": 43,
+      "offset": 7440304,
+      "capacity": 1488,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadpeteZ": {
+      "id": 44,
+      "offset": 7488592,
+      "capacity": 1424,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadmartinZ": {
+      "id": 45,
+      "offset": 7484528,
+      "capacity": 1376,
+      "switches": 2,
+      "textures": 6,
+      "has_head": 1
+    },
+    "CheadmarkZ": {
+      "id": 46,
+      "offset": 7483200,
+      "capacity": 1328,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadduncanZ": {
+      "id": 47,
+      "offset": 7466496,
+      "capacity": 1312,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadshaunZ": {
+      "id": 48,
+      "offset": 7493744,
+      "capacity": 1504,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheaddwayneZ": {
+      "id": 49,
+      "offset": 7467808,
+      "capacity": 1408,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadbZ": {
+      "id": 50,
+      "offset": 7441792,
+      "capacity": 1392,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheaddaveZ": {
+      "id": 51,
+      "offset": 7463760,
+      "capacity": 1408,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadgrantZ": {
+      "id": 52,
+      "offset": 7470608,
+      "capacity": 1328,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheaddesZ": {
+      "id": 53,
+      "offset": 7465168,
+      "capacity": 1328,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadchrisZ": {
+      "id": 54,
+      "offset": 7462416,
+      "capacity": 1344,
+      "switches": 2,
+      "textures": 6,
+      "has_head": 1
+    },
+    "CheadleeZ": {
+      "id": 55,
+      "offset": 7479744,
+      "capacity": 1408,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadneilZ": {
+      "id": 56,
+      "offset": 7487280,
+      "capacity": 1312,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadjimZ": {
+      "id": 57,
+      "offset": 7471936,
+      "capacity": 1328,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadrobinZ": {
+      "id": 58,
+      "offset": 7490016,
+      "capacity": 1296,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadstevehZ": {
+      "id": 59,
+      "offset": 7496608,
+      "capacity": 1360,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadbalaclavaZ": {
+      "id": 60,
+      "offset": 7443184,
+      "capacity": 976,
+      "switches": 2,
+      "textures": 2,
+      "has_head": 1
+    },
+    "CheadbikeZ": {
+      "id": 61,
+      "offset": 7444160,
+      "capacity": 1696,
+      "switches": 2,
+      "textures": 6,
+      "has_head": 1
+    },
+    "CheadgrahamZ": {
+      "id": 62,
+      "offset": 7469216,
+      "capacity": 1392,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadsteveeZ": {
+      "id": 63,
+      "offset": 7495248,
+      "capacity": 1360,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadjoelZ": {
+      "id": 64,
+      "offset": 7475712,
+      "capacity": 1296,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadscottZ": {
+      "id": 65,
+      "offset": 7492336,
+      "capacity": 1408,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadjoeZ": {
+      "id": 66,
+      "offset": 7474320,
+      "capacity": 1392,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadkenZ": {
+      "id": 67,
+      "offset": 7478384,
+      "capacity": 1360,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "Cheadjoe2Z": {
+      "id": 68,
+      "offset": 7473264,
+      "capacity": 1056,
+      "switches": 2,
+      "textures": 3,
+      "has_head": 1
+    },
+    "CheadmishkinZ": {
+      "id": 69,
+      "offset": 7485904,
+      "capacity": 1376,
+      "switches": 2,
+      "textures": 3,
+      "has_head": 1
+    },
+    "CheadsallyZ": {
+      "id": 70,
+      "offset": 7491312,
+      "capacity": 1024,
+      "switches": 2,
+      "textures": 3,
+      "has_head": 1
+    },
+    "CheadmarionZ": {
+      "id": 71,
+      "offset": 7482160,
+      "capacity": 1040,
+      "switches": 2,
+      "textures": 3,
+      "has_head": 1
+    },
+    "CheadmandyZ": {
+      "id": 72,
+      "offset": 7481152,
+      "capacity": 1008,
+      "switches": 2,
+      "textures": 3,
+      "has_head": 1
+    },
+    "CheadvivienZ": {
+      "id": 73,
+      "offset": 7497968,
+      "capacity": 1168,
+      "switches": 2,
+      "textures": 1,
+      "has_head": 1
+    },
+    "CheadbrosnanboilerZ": {
+      "id": 74,
+      "offset": 7449264,
+      "capacity": 2976,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadbrosnansuitZ": {
+      "id": 75,
+      "offset": 7455952,
+      "capacity": 3456,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CheadbrosnantimberZ": {
+      "id": 76,
+      "offset": 7459408,
+      "capacity": 3008,
+      "switches": 2,
+      "textures": 4,
+      "has_head": 1
+    },
+    "CheadbrosnansnowZ": {
+      "id": 77,
+      "offset": 7452240,
+      "capacity": 3712,
+      "switches": 2,
+      "textures": 6,
+      "has_head": 1
+    },
+    "CheadbrosnanZ": {
+      "id": 78,
+      "offset": 7445856,
+      "capacity": 3408,
+      "switches": 2,
+      "textures": 5,
+      "has_head": 1
+    },
+    "CspicebondZ": {
+      "id": 79,
+      "offset": 7662480,
+      "capacity": 14624,
+      "switches": 7,
+      "textures": 17,
+      "has_head": 1
+    }
+  },
+  "setups": {
+    "UsetuparchZ": {
+      "offset": 9089552,
+      "capacity": 17936
+    },
+    "UsetuparkZ": {
+      "offset": 9107488,
+      "capacity": 15248
+    },
+    "UsetupaztZ": {
+      "offset": 9122736,
+      "capacity": 10496
+    },
+    "UsetupcaveZ": {
+      "offset": 9133232,
+      "capacity": 15968
+    },
+    "UsetupcontrolZ": {
+      "offset": 9149200,
+      "capacity": 15104
+    },
+    "UsetupcradZ": {
+      "offset": 9164304,
+      "capacity": 7216
+    },
+    "UsetupcrypZ": {
+      "offset": 9171520,
+      "capacity": 7824
+    },
+    "UsetupdamZ": {
+      "offset": 9179344,
+      "capacity": 17104
+    },
+    "UsetupdepoZ": {
+      "offset": 9196448,
+      "capacity": 12176
+    },
+    "UsetupdestZ": {
+      "offset": 9208624,
+      "capacity": 9040
+    },
+    "UsetupjunZ": {
+      "offset": 9217664,
+      "capacity": 14080
+    },
+    "UsetuplenZ": {
+      "offset": 9231744,
+      "capacity": 1488
+    },
+    "UsetuppeteZ": {
+      "offset": 9233232,
+      "capacity": 12160
+    },
+    "UsetuprunZ": {
+      "offset": 9245392,
+      "capacity": 6240
+    },
+    "UsetupsevbZ": {
+      "offset": 9251632,
+      "capacity": 9824
+    },
+    "UsetupsevbunkerZ": {
+      "offset": 9261456,
+      "capacity": 6704
+    },
+    "UsetupsevxZ": {
+      "offset": 9268160,
+      "capacity": 17168
+    },
+    "UsetupsevxbZ": {
+      "offset": 9285328,
+      "capacity": 16624
+    },
+    "UsetupsiloZ": {
+      "offset": 9301952,
+      "capacity": 10832
+    },
+    "UsetupstatueZ": {
+      "offset": 9312784,
+      "capacity": 10192
+    },
+    "UsetuptraZ": {
+      "offset": 9322976,
+      "capacity": 12848
+    }
+  }
+}

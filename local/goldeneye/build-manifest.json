@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "roster": {
+    "file": "data/goldeneye-slop64.z64",
+    "sha256": "0de60f46d9c4f1303f47b291b4f91cbd2988f702362b800fe0158e347e0f8a53"
+  },
+  "original": {
+    "file": "data/goldeneye.z64",
+    "sha256": "2cdcec8a9f0cb6e36337f3ee39d8ad105dc8afa6ba1c02d466e8f5b771f9a162"
+  }
+}
