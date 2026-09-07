@@ -38,7 +38,11 @@ The browser title screen animates a matte red hand from the upper right. Its
 rubber plate faces the title plane, presses inward and retreats. At contact,
 the Slopper's imprint covers Conker's. Replay includes a short synthesized thud;
 the automatic first animation is silent. Reduced-motion users get the final
-title immediately. Original story dialogue and cinematic credits are retained.
+title immediately. The native opening cinematic uses the same hand and imprint,
+aligned to its own logo. A sparse color signature recognizes the rendered title;
+it is not tied to elapsed time. The overlay clears when that logo disappears.
+Readback restores the renderer's framebuffer and pixel-pack bindings. Original
+story dialogue and cinematic credits are retained.
 
 Keyboard: WASD move, Space jump/A/confirm, J attack/B, Shift crouch/Z, E R,
 Q L, arrows C-buttons/camera, Enter Start. Gamepad and emulator touch controls
