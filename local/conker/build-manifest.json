@@ -1,0 +1,40 @@
+{
+  "sha256": "17cfcec3ac287073997035782bfcc414ef55288a88c6cd9485e020f14a80b855",
+  "changes": [
+    {
+      "model": 0,
+      "originalBytes": 24184,
+      "modifiedBytes": 23504,
+      "compressedBytes": 4772
+    },
+    {
+      "model": 1,
+      "originalBytes": 21608,
+      "modifiedBytes": 15192,
+      "compressedBytes": 3234
+    },
+    {
+      "model": 2,
+      "originalBytes": 14264,
+      "modifiedBytes": 12464,
+      "compressedBytes": 2659
+    },
+    {
+      "model": 3,
+      "originalBytes": 12200,
+      "modifiedBytes": 8944,
+      "compressedBytes": 2168
+    },
+    {
+      "model": 4,
+      "originalBytes": 9592,
+      "modifiedBytes": 7016,
+      "compressedBytes": 1621
+    }
+  ],
+  "handModels": [
+    143,
+    144
+  ],
+  "archiveBytes": 756088
+}
