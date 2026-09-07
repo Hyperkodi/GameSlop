@@ -41,7 +41,9 @@ the automatic first animation is silent. Reduced-motion users get the final
 title immediately. The native opening cinematic uses the same hand and imprint,
 aligned to its own logo. A sparse color signature recognizes the rendered title;
 it is not tied to elapsed time. The overlay clears when that logo disappears.
-Readback restores the renderer's framebuffer and pixel-pack bindings. Original
+The separate opening credit reads "STARRING SLOPPER & BERRI" with purple-and-gold
+SVG lettering, aligned to the original name and following the card's fade.
+Readback restores the renderer's framebuffer and pixel-pack bindings. Other
 story dialogue and cinematic credits are retained.
 
 Keyboard: WASD move, Space jump/A/confirm, J attack/B, Shift crouch/Z, E R,

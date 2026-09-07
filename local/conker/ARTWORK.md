@@ -10,3 +10,6 @@ Final prompt:
 
 The in-game character is original procedural 3D geometry in `build.py`, not a
 generated sprite placed over the game. Title lettering uses native browser text.
+
+The separate opening credit uses `art/starring-slopper.svg`: original polygon
+lettering drawn in SVG, with purple faces and gold edges to match that card.
