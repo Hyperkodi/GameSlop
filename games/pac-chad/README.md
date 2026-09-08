@@ -23,8 +23,8 @@ Arrow keys/WASD or left gamepad stick/D-pad steer. Space/gamepad A activates the
 - Seven-second power pellets allow ghost capture chains worth 200, 400, 800, then 1,600. Stage clears award 1,000 times the completed stage number.
 - Dash grants 0.8 seconds of faster, protected movement; decoy attracts ghosts for four seconds. Both recharge in ten seconds. Abilities are selected before a run.
 - Three shortcuts per maze, where available, open at 15-second intervals with three-second warnings. They only open and never close around an actor.
-- Original transparent generated character PNGs. Hair silhouettes, large jewelry and glasses remain visible during frightened mode. Faces stay upright when moving vertically. Mobile camera uses at least 38-pixel tiles, with characters approximately 49 to 51 pixels tall and a full-maze minimap. The cast guide supplies larger portraits.
-- Pac-Chad now uses a registered four-pose mouth atlas: closed, opening, wide chomp, then closing. One cycle follows each corridor tile, accelerates with dash, freezes when paused, and closes against a wall. His eyes and hair remain aligned while the bearded jaw moves. The decoy shares this animation. The original portrait remains on the title page.
+- Original transparent generated character PNGs. Hair silhouettes, large jewelry and glasses remain visible during frightened mode. Faces stay upright when moving vertically. The closer follow camera uses 48?56-pixel tiles in taller views and at least 44 pixels in short landscape views, with a full-maze minimap. The cast guide supplies larger portraits.
+- Pac-Chad now uses a registered four-pose mouth atlas: closed, opening, wide chomp, then closing. The largest open mouth is exaggerated and held longer. One cycle follows each corridor tile, accelerates with dash, freezes when paused, and closes against a wall. His eyes and hair remain aligned while the bearded jaw moves. The decoy shares this animation. The original portrait remains on the title page.
 - Local personal scores and downloadable input evidence. No fabricated global scores or local X identities.
 
 The larger proposal also included bonus rooms, bosses, equipped phase abilities and personal-best ghost races. Those are subsequent features, not present in this first build.
@@ -50,4 +50,4 @@ Unit tests need Node 22+ only. Browser QA uses `playwright-core` installed in th
 
 Character prompts and provenance: [art/PROMPTS.md](art/PROMPTS.md). No game ROM or original Pac-Man map/art assets are used.
 
-Mouth-animation preview: [art/chomp-preview.png](art/chomp-preview.png). Additional imagegen prompts: [art/CHOMP-PROMPTS.md](art/CHOMP-PROMPTS.md). Focused browser check: `node games/pac-chad/tests/chomp-browser.mjs`.
+Mouth-animation preview: [art/chomp-preview.png](art/chomp-preview.png). Additional imagegen prompts: [art/CHOMP-PROMPTS.md](art/CHOMP-PROMPTS.md) and [latest bigger-chomp edit](art/BIGGER-CHOMP.md). Focused browser check: `node games/pac-chad/tests/chomp-browser.mjs`.

@@ -23,8 +23,8 @@ try{
     const sheet=document.createElement('section');sheet.style.cssText='position:fixed;inset:0;z-index:1000;background:#10110e';sheet.innerHTML='<main style="padding:32px;background:#10110e;color:#fff1d0;min-height:100vh"><p style="font:12px monospace;letter-spacing:2px">GAMESLOP / MOUTH ANIMATION</p><h1 style="font:50px Impact;margin:12px 0">PAC-CHAD CHOMPS.</h1><canvas id="jaw-sheet" style="width:1000px;height:410px"></canvas></main>';document.body.append(sheet);
     const c=document.getElementById('jaw-sheet');c.width=1000;c.height=410;const r=new Renderer(c,images);r.metrics={tile:1};r.reduced=true;const g=c.getContext('2d');g.fillStyle='#10110e';g.fillRect(0,0,1000,410);
     const order=[0,3,1,2,1,3],labels=['CLOSED','OPENING','OPEN','BIG CHOMP','CLOSING','CLOSING'];
-    for(let i=0;i<order.length;i++){const x=83+i*166;g.strokeStyle='#39442c';g.strokeRect(x-77,8,154,220);r.sprite('chad',x-.5,124-.5,142,0,1,false,undefined,order[i]);g.fillStyle='#bdff6b';g.font='11px monospace';g.textAlign='center';g.fillText(labels[i],x,215);r.sprite('chad',x-.5,301-.5,38,0,1,false,undefined,order[i]);}
-    g.textAlign='left';g.fillStyle='#b4c39f';g.font='12px monospace';g.fillText('MOBILE SIZE / 38 PX TILES / SAME IN-GAME RENDERER',8,369);
+    for(let i=0;i<order.length;i++){const x=83+i*166;g.strokeStyle='#39442c';g.strokeRect(x-77,8,154,220);r.sprite('chad',x-.5,124-.5,142,0,1,false,undefined,order[i]);g.fillStyle='#bdff6b';g.font='11px monospace';g.textAlign='center';g.fillText(labels[i],x,215);r.sprite('chad',x-.5,301-.5,48,0,1,false,undefined,order[i]);}
+    g.textAlign='left';g.fillStyle='#b4c39f';g.font='12px monospace';g.fillText('MOBILE SIZE / 48 PX TILES / SAME IN-GAME RENDERER',8,369);
   });
   await page.screenshot({path:new URL('../art/chomp-preview.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1'),clip:{x:0,y:0,width:1100,height:620}});
   await ctx.close();
