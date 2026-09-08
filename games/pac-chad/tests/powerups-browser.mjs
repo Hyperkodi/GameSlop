@@ -39,7 +39,7 @@ try{
    await page.evaluate(()=>{const q=window.__powerQA;for(let i=0;i<300;i++)q.step(q.state,4);q.updateHUD();});
    assert.equal(await page.locator('#special-time').textContent(),'USED');report[mobile?'mobile':'desktop'].push(pickup);
   }
-  if(mobile){await page.setViewportSize({width:844,height:390});await page.locator('#fullscreen').tap();await page.waitForFunction(()=>!!document.fullscreenElement||document.getElementById('cabinet').classList.contains('full-window'));assert.ok(await page.locator('#game').evaluate(e=>e.clientHeight>=170));await page.locator('#cabinet').screenshot({path:output('powerup-landscape')});}
+  if(mobile){await page.setViewportSize({width:844,height:390});await page.locator('[data-dir="3"]').tap();await page.waitForFunction(()=>!!document.fullscreenElement||document.getElementById('cabinet').classList.contains('full-window'));assert.ok(await page.locator('#game').evaluate(e=>e.clientHeight>=170));await page.locator('#cabinet').screenshot({path:output('powerup-landscape')});}
   await ctx.close();
  }
  assert.deepEqual(report.errors,[]);await writeFile(new URL('../art/qa-powerups.json',import.meta.url),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

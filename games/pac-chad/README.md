@@ -12,7 +12,7 @@ npm.cmd --prefix games/pac-chad start
 
 Open <http://127.0.0.1:8782/games/pac-chad/>. Stop with Ctrl+C. The local preview binds only to this computer and serves only Pac-Chad files. No runtime packages are needed. The static `games/pac-chad` directory also works under a normal HTTP server.
 
-Arrow keys/WASD or left gamepad stick/D-pad steer. Space/gamepad A activates the chosen ability. P pauses. On a phone, use the direction pad or swipe on the maze and tap the ability button. Movement continues in the selected direction until a wall; the next turn can be buffered. Fullscreen uses the browser API, with a full-window fallback where unsupported. Landscape orientation locking is optional.
+Arrow keys/WASD or left gamepad stick/D-pad steer. Space/gamepad A activates the chosen ability. P pauses. On a phone, use the direction pad or swipe on the maze and tap the ability button. Movement continues in the selected direction until a wall; the next turn can be buffered. Fullscreen uses the browser API, with a full-window fallback where unsupported. On touch screens, rotating during a run automatically fills the browser window. Landscape puts the D-pad on the left, the maze in the full-height center, and the ability and special status on the right. Buttons are 54-58 CSS pixels (52 on unusually short viewports). The minimap is roughly 61 by 52 pixels or smaller. The next game-control tap requests native fullscreen where supported; if denied, window-filling play remains available. Rotating back restores portrait layout, and exiting fullscreen is respected until the next rotation.
 
 ## Current build
 
