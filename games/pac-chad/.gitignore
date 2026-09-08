@@ -1,0 +1,7 @@
+art/qa-*.png
+art/qa-report.json
+art/qa-*.json
+art/*-before-*.png
+art/*-original.png
+art/website-preview.png
+*.log

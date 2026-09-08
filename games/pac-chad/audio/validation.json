@@ -1,0 +1,20 @@
+{
+  "decoded": {
+    "count": 20,
+    "failed": []
+  },
+  "mix": {
+    "peak": 0.7171856164932251,
+    "rms": 0.10360934707784912
+  },
+  "playback": {
+    "starts": 20,
+    "voices": 8,
+    "stopped": 0,
+    "silent": true,
+    "restarted": true
+  },
+  "transitions": "recharge, power expiry, pause and resume cues passed",
+  "mobile": "sound picker loads, plays and stops with touch",
+  "errors": []
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "pellet",
+    "label": "Chomp",
+    "at": 0,
+    "duration": 0.11501133786848072
+  },
+  {
+    "id": "power",
+    "label": "Power pellet",
+    "at": 0.43501133786848073,
+    "duration": 1.1000226757369616
+  },
+  {
+    "id": "ghost",
+    "label": "Ghost capture",
+    "at": 1.8550340136054424,
+    "duration": 0.52
+  },
+  {
+    "id": "dash",
+    "label": "Dash",
+    "at": 2.6950340136054423,
+    "duration": 0.4
+  },
+  {
+    "id": "decoy",
+    "label": "Decoy",
+    "at": 3.415034013605442,
+    "duration": 0.76
+  },
+  {
+    "id": "hit",
+    "label": "Lose a life",
+    "at": 4.4950340136054425,
+    "duration": 0.65
+  },
+  {
+    "id": "warning",
+    "label": "Enemy charge warning",
+    "at": 5.465034013605443,
+    "duration": 0.27
+  },
+  {
+    "id": "gate-warning",
+    "label": "Shortcut warning",
+    "at": 6.055034013605443,
+    "duration": 0.49
+  },
+  {
+    "id": "gate",
+    "label": "Shortcut opens",
+    "at": 6.8650340136054435,
+    "duration": 0.6800226757369614
+  },
+  {
+    "id": "combo",
+    "label": "Combo increase",
+    "at": 7.865056689342405,
+    "duration": 0.48
+  },
+  {
+    "id": "stage",
+    "label": "Maze clear",
+    "at": 8.665056689342405,
+    "duration": 1.48
+  },
+  {
+    "id": "start",
+    "label": "Go!",
+    "at": 10.465056689342406,
+    "duration": 0.64
+  },
+  {
+    "id": "end",
+    "label": "Run complete",
+    "at": 11.425056689342407,
+    "duration": 1.1200226757369613
+  },
+  {
+    "id": "select",
+    "label": "Menu select",
+    "at": 12.865079365079369,
+    "duration": 0.17002267573696145
+  },
+  {
+    "id": "countdown",
+    "label": "Countdown tick",
+    "at": 13.35510204081633,
+    "duration": 0.19
+  },
+  {
+    "id": "pause",
+    "label": "Pause",
+    "at": 13.86510204081633,
+    "duration": 0.28002267573696143
+  },
+  {
+    "id": "resume",
+    "label": "Resume",
+    "at": 14.465124716553293,
+    "duration": 0.28002267573696143
+  },
+  {
+    "id": "ready",
+    "label": "Ability recharged",
+    "at": 15.065147392290255,
+    "duration": 0.46
+  },
+  {
+    "id": "power-end",
+    "label": "Power wears off",
+    "at": 15.845147392290256,
+    "duration": 0.48
+  },
+  {
+    "id": "best",
+    "label": "New personal best",
+    "at": 16.645147392290255,
+    "duration": 1.62
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "pac-chad",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "audio:plan": "node audio/generate.mjs --dry-run",
+    "audio:generate": "node audio/generate.mjs",
+    "audio:build": "node audio/synthesize.mjs"
+  }
+}

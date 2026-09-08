@@ -1,0 +1,148 @@
+{
+  "provider": "Original local synthesis",
+  "sampleRate": 44100,
+  "channels": 1,
+  "encoding": "PCM 16-bit WAV",
+  "effects": {
+    "pellet": {
+      "rms": 0.17690232329536293,
+      "peak": 0.72,
+      "duration": 0.11501133786848072,
+      "bytes": 10188,
+      "sha256": "0705800359280d1044d5c740f175e3ae481501fd9577d284c458b5b53b1b3d97"
+    },
+    "power": {
+      "rms": 0.16169035272101542,
+      "peak": 0.72,
+      "duration": 1.1000226757369616,
+      "bytes": 97066,
+      "sha256": "d814a2b4aaebc9fc5c0817675e236457554e3e011fe14e2b48ac9d2df829685d"
+    },
+    "ghost": {
+      "rms": 0.14700614519973998,
+      "peak": 0.72,
+      "duration": 0.52,
+      "bytes": 45908,
+      "sha256": "fbc54268df6d5dcb8c8e1dbc2988e1951a1a5fd246ad4f18832623817d91988b"
+    },
+    "dash": {
+      "rms": 0.16734179243117916,
+      "peak": 0.72,
+      "duration": 0.4,
+      "bytes": 35324,
+      "sha256": "195f53b5d81c19a7744f22d07592a24e41feaae11087db04192116443fae8592"
+    },
+    "decoy": {
+      "rms": 0.1902316999639612,
+      "peak": 0.72,
+      "duration": 0.76,
+      "bytes": 67076,
+      "sha256": "c1d1464cca094662dd79d358f2601c7e546d7f0b64c40a8e68faaa964795ab81"
+    },
+    "hit": {
+      "rms": 0.0977490990516522,
+      "peak": 0.72,
+      "duration": 0.65,
+      "bytes": 57374,
+      "sha256": "aa846c4e3bbe70dc9c1afa0b26edf22b1d8524397553e6b8cddcf6e6b2912e1a"
+    },
+    "warning": {
+      "rms": 0.16729792510677116,
+      "peak": 0.72,
+      "duration": 0.27,
+      "bytes": 23858,
+      "sha256": "b6883864bc2cff95a02345f112c4a866ab4a569fb15cacf41ee14289525661ed"
+    },
+    "gate-warning": {
+      "rms": 0.1911469756750039,
+      "peak": 0.72,
+      "duration": 0.49,
+      "bytes": 43262,
+      "sha256": "5cd402a7e0e10348f3d0fbac10ae34b4d8054ddf60776c42f6155fc914f3e207"
+    },
+    "gate": {
+      "rms": 0.12808992976922148,
+      "peak": 0.72,
+      "duration": 0.6800226757369614,
+      "bytes": 60022,
+      "sha256": "4c54b9c83fda2f16815c9566dc5191af8029955ebe7012d2667c4a4ec55bcc9e"
+    },
+    "combo": {
+      "rms": 0.1722679883554067,
+      "peak": 0.72,
+      "duration": 0.48,
+      "bytes": 42380,
+      "sha256": "1c7859fa8ad646afa95c386b4a2431cd65a3e5c8a168d95a02789d885c8b13dc"
+    },
+    "stage": {
+      "rms": 0.12647475068946112,
+      "peak": 0.72,
+      "duration": 1.48,
+      "bytes": 130580,
+      "sha256": "08238c1e4049e3fa10ed475643279c6996c81cbf8b3dc72ac860502ec8665b9b"
+    },
+    "start": {
+      "rms": 0.14948194322656042,
+      "peak": 0.72,
+      "duration": 0.64,
+      "bytes": 56492,
+      "sha256": "b657cafa96039f3540ace0bf7de182b55b40cddaa38d2a033779882df8d25487"
+    },
+    "end": {
+      "rms": 0.17728943890639168,
+      "peak": 0.72,
+      "duration": 1.1200226757369613,
+      "bytes": 98830,
+      "sha256": "49ded3e8d035559cc07a38b3c740d695543f359094c3be87b36a2efc1d1a58cd"
+    },
+    "select": {
+      "rms": 0.17619666278616916,
+      "peak": 0.72,
+      "duration": 0.17002267573696145,
+      "bytes": 15040,
+      "sha256": "973ed1c27f81dcc88c1d601042ba4708c9b11bdc28bb47b11ac9a25d7b6b71d1"
+    },
+    "countdown": {
+      "rms": 0.1240511453208728,
+      "peak": 0.72,
+      "duration": 0.19,
+      "bytes": 16802,
+      "sha256": "8a09be39768683a9fe042a7c25fe1d67c15b823f482f12234fb58f36c301c0d5"
+    },
+    "pause": {
+      "rms": 0.19726747133626993,
+      "peak": 0.72,
+      "duration": 0.28002267573696143,
+      "bytes": 24742,
+      "sha256": "0ff43a0721c3d5b03620024d6504bff4357eb6208a7fc5a884547b6ade5e2dba"
+    },
+    "resume": {
+      "rms": 0.18358292818670444,
+      "peak": 0.72,
+      "duration": 0.28002267573696143,
+      "bytes": 24742,
+      "sha256": "2b6fe3f41627b5ae1aed5dbfee1313ae23dd1927dc604eab19227684e67412d3"
+    },
+    "ready": {
+      "rms": 0.16659250568306094,
+      "peak": 0.72,
+      "duration": 0.46,
+      "bytes": 40616,
+      "sha256": "98ab05c32c31bf38d8a9bf8bcf22f916d57522df6e9e2dd162ac0029b4329d1b"
+    },
+    "power-end": {
+      "rms": 0.19405241545372764,
+      "peak": 0.72,
+      "duration": 0.48,
+      "bytes": 42380,
+      "sha256": "bff9e699c2eba74cab2bfc7237b9f14c2e2b9094cc5630911d3f58eca3b15e26"
+    },
+    "best": {
+      "rms": 0.129549392728795,
+      "peak": 0.72,
+      "duration": 1.62,
+      "bytes": 142928,
+      "sha256": "1e303c95b7fb1ac242346d95bbc8ec1c3d3d85e7fcdbb6b3d6b20dfc05612ae7"
+    }
+  }
+}
