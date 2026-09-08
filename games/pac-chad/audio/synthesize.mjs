@@ -90,7 +90,7 @@ for(const e of pack){
   report.effects[e.id]={...stats,bytes:wav.length,sha256:createHash('sha256').update(wav).digest('hex')};
   previews.push({id:e.id,label:e.label,at:previews.reduce((sum,p)=>sum+p.duration+.32,0),duration:stats.duration,pcm,volume:e.volume});
 }
-await writeFile(new URL('js/sound-bank.mjs',root),'// Original locally synthesized sound pack. Rebuild: npm run audio:build\nexport const SOUND_BANK = '+JSON.stringify(bank,null,2)+';\n');
+await writeFile(new URL('js/sound-bank.mjs',root),"// Synthesized arcade cues plus user-provided character recordings.\nimport {CHARACTER_SOUNDS} from './character-sounds.mjs';\nexport const SOUND_BANK = {..."+JSON.stringify(bank,null,2)+', ...CHARACTER_SOUNDS};\n');
 await writeFile(new URL('audio/local-generated.json',root),JSON.stringify(report,null,2)+'\n');
 // A paced audition reel at the in-game relative mix, kept outside production assets.
 const reel=new Clip(previews.reduce((sum,p)=>sum+p.duration+.32,0));

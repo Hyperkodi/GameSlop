@@ -12,7 +12,7 @@ export function createServer(){return http.createServer(async(req,res)=>{
     const prefix='/games/pac-chad/';
     if(!pathname.startsWith(prefix)){res.writeHead(404);res.end('Not found');return;}
     const relative=pathname.slice(prefix.length)||'index.html';
-    if(relative.split(/[\\/]/).some(v=>v==='..'||v.startsWith('.'))||!/^(index\.html|sound-lab\.html|style\.css|js\/[a-z-]+\.mjs|assets\/[a-z-]+\.(svg|png|webp|mp3|wav)|integration\/gameslop-sdk\.js)$/.test(relative)){res.writeHead(404);res.end('Not found');return;}
+    if(relative.split(/[\\/]/).some(v=>v==='..'||v.startsWith('.'))||!/^(index\.html|sound-lab\.html|style\.css|js\/[a-z-]+\.mjs|assets\/[A-Za-z-]+\.(svg|png|webp|mp3|wav)|integration\/gameslop-sdk\.js)$/.test(relative)){res.writeHead(404);res.end('Not found');return;}
     const file=path.join(root,relative);const info=await stat(file);if(!info.isFile())throw Error();
     res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Content-Length':info.size,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:await readFile(file));
   }catch{res.writeHead(404);res.end('Not found');}

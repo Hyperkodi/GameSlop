@@ -1,14 +1,36 @@
 {
   "decoded": {
-    "count": 20,
+    "count": 24,
     "failed": []
   },
+  "recordings": {
+    "hit": {
+      "duration": 1,
+      "channels": 2
+    },
+    "ghost-rook": {
+      "duration": 2,
+      "channels": 2
+    },
+    "ghost-hex": {
+      "duration": 2.68,
+      "channels": 2
+    },
+    "ghost-ivy": {
+      "duration": 2.68,
+      "channels": 2
+    },
+    "ghost-riot": {
+      "duration": 2.68,
+      "channels": 2
+    }
+  },
   "mix": {
-    "peak": 0.7171856164932251,
-    "rms": 0.10360934707784912
+    "peak": 0.8776752352714539,
+    "rms": 0.22718985553782875
   },
   "playback": {
-    "starts": 20,
+    "starts": 24,
     "voices": 8,
     "stopped": 0,
     "silent": true,

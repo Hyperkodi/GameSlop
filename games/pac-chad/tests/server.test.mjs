@@ -5,9 +5,13 @@ test('local preview serves the game, modules and artwork but no workspace files'
   const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const base=`http://127.0.0.1:${server.address().port}`;
   try{
-    const index=await fetch(base+'/games/pac-chad/');assert.equal(index.status,200);assert.match(await index.text(),/PAC<span>-CHAD/);
+    const index=await fetch(base+'/games/pac-chad/');assert.equal(index.status,200);assert.match(await index.text(),/<h1>PAC-CHAD<\/h1>/);
     assert.match((await fetch(base+'/games/pac-chad/js/model.mjs')).headers.get('content-type'),/javascript/);
     assert.equal((await fetch(base+'/games/pac-chad/assets/chad.png')).status,200);
+    for(const color of ['Blue','Purple','Green','Rainbow','Chad']){
+      const sound=await fetch(base+`/games/pac-chad/assets/${color}.mp3`);
+      assert.equal(sound.status,200);assert.match(sound.headers.get('content-type'),/audio\/mpeg/);
+    }
     for(const url of ['/games/goldeneye/data/gameslop.z64','/games/pac-chad/server.mjs','/games/pac-chad/../../.git/config','/games/pac-chad/%2e%2e%5cpackage.json'])assert.equal((await fetch(base+url)).status,404);
   }finally{await new Promise(resolve=>server.close(resolve));}
 });
