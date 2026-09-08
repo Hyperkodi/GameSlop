@@ -12,6 +12,10 @@
       "duration": 2,
       "channels": 2
     },
+    "ghost-riot": {
+      "duration": 2.68,
+      "channels": 2
+    },
     "ghost-hex": {
       "duration": 2.68,
       "channels": 2
@@ -19,15 +23,11 @@
     "ghost-ivy": {
       "duration": 2.68,
       "channels": 2
-    },
-    "ghost-riot": {
-      "duration": 2.68,
-      "channels": 2
     }
   },
   "mix": {
-    "peak": 0.8776752352714539,
-    "rms": 0.22718985553782875
+    "peak": 0.8776751756668091,
+    "rms": 0.22718985663287342
   },
   "playback": {
     "starts": 24,

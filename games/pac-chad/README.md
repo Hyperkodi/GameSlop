@@ -52,7 +52,15 @@ Campaign scoring and personal records now use `pac-chad-campaign-v3`, separate f
 
 ## Sound effects
 
-The complete pack contains 20 original locally synthesized WAV effects, including chomps, power pellets, ghost captures, dash, decoy, damage, warnings, shortcuts, combos, stage clear, countdown, menu selection, pause/resume, ability recharge, power expiry and run results. It needs no API or account. [Preview every sound](sound-lab.html). See [audio build and validation notes](audio/README.md). Playback uses preloaded samples, quiet repeated chomps, escalating capture pitch, limited overlapping voices and a compressor. Mute and backgrounding stop active sounds; manual pause adds a short confirmation cue.
+The sound bank combines the original 20 synthesized arcade cues with five user-provided character recordings (four ghost captures and Chad losing a life), including chomps, power pellets, ghost captures, dash, decoy, damage, warnings, shortcuts, combos, stage clear, countdown, menu selection, pause/resume, ability recharge, power expiry and run results. It needs no API or account. [Preview every sound](sound-lab.html). See [audio build and validation notes](audio/README.md). Playback uses preloaded samples, quiet repeated chomps, escalating capture pitch, limited overlapping voices and a compressor. Mute and backgrounding stop active sounds; manual pause adds a short confirmation cue.
+
+## Level music
+
+Each of the ten levels has a looping track by Eric Matyas (soundimage.org). Credits and the license link appear in the game, with a full track list below the cabinet. The sound check page previews each loop. See [music sources and hashes](audio/music-sources.json).
+
+Original Ogg loops are loaded during the level countdown or on entering a new stage; MP3 versions are fallback files for browsers without Ogg decoding. Only two decoded tracks are retained. Music shares the sound toggle, pauses at its current position, stops at stage clear/results/title, and restarts for a new run. Character defeat cues temporarily lower the music. It uses a separate voice from the capped sound effects.
+
+Run `node games/pac-chad/tests/music-browser.mjs` to verify both formats, real browser looping, level transitions, lifecycle controls, and simulated mobile MP3 fallback. Files are imported from the composer's official site with `python games/pac-chad/audio/import-music.py`; no API keys are involved.
 
 ## Leaderboard integration
 

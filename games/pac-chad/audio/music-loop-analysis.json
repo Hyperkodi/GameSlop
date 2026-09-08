@@ -1,0 +1,72 @@
+[
+  {
+    "id": "afterhours",
+    "duration": 92.16,
+    "mp3Duration": 92.21224489795918,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9996649100580759
+  },
+  {
+    "id": "acid-works",
+    "duration": 60.630362811791386,
+    "mp3Duration": 60.70857142857143,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.999794892500217
+  },
+  {
+    "id": "violet-vault",
+    "duration": 64.31301587301587,
+    "mp3Duration": 64.36571428571429,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9993849960684819
+  },
+  {
+    "id": "sunset-strip",
+    "duration": 40.0034693877551,
+    "mp3Duration": 40.04571428571428,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9996117592198542
+  },
+  {
+    "id": "frost-byte",
+    "duration": 73.98496598639456,
+    "mp3Duration": 74.03102040816327,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9998051207109295
+  },
+  {
+    "id": "redline",
+    "duration": 61.02521541950114,
+    "mp3Duration": 61.074285714285715,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9995632795751541
+  },
+  {
+    "id": "gold-rush",
+    "duration": 75.0048299319728,
+    "mp3Duration": 75.04798185941043,
+    "fallbackStart": 0.025011337868480726,
+    "correlation": 0.9979198977589087
+  },
+  {
+    "id": "deep-signal",
+    "duration": 47.21240362811791,
+    "mp3Duration": 47.28163265306122,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9958621357970857
+  },
+  {
+    "id": "hot-pink-panic",
+    "duration": 92.90321995464852,
+    "mp3Duration": 92.90321995464852,
+    "fallbackStart": 0,
+    "correlation": 0.9990968378962335
+  },
+  {
+    "id": "chad-citadel",
+    "duration": 74.44419501133787,
+    "mp3Duration": 74.47510204081632,
+    "fallbackStart": 0.02723356009070295,
+    "correlation": 0.9983291987265939
+  }
+]

@@ -37,3 +37,11 @@ Optional ElevenLabs files use `assets/sfx-<id>.mp3` and replace only generated e
 For optional MP3 replacements, listen and balance before publishing. Run `audio:build` to rebuild the original arcade cues while retaining the user-provided character recordings.
 
 API checked against [ElevenLabs Create sound effect](https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert), using `eleven_text_to_sound_v2`, `mp3_44100_128`, and explicit 0.5–1.8 second durations.
+
+## Level soundtrack
+
+The ten selected Eric Matyas tracks are mapped in `js/music-bank.mjs`. Original Ogg loops and MP3 fallback files are kept unchanged; download URLs, license, sizes and hashes are in `music-sources.json`. The game credits Eric Matyas and links to the Soundimage International Public License and the original track pages. This music is third-party licensed material, separate from the synthesized sound effects.
+
+Playback gains target an approximately 0.025 RMS before the shared master bus. MP3 loop points skip encoder padding where the browser exposes it, using waveform alignment against the original Ogg master (`music-loop-analysis.json`). Both formats were decoded and rendered across their loop boundaries in Chrome; runtime MP3 fallback was tested by simulating an unsupported Ogg decoder. `music-validation.json` records the signal and lifecycle checks. These checks do not replace listening on physical phone speakers.
+
+Music loads per level, keeps at most two decoded tracks, and has its own voice outside the sound-effect cap. Pause/mute resume from the previous music position. Run restart begins the music again. Level clear, results, returning to the title and backgrounding stop playback. Defeat and special cues briefly reduce music volume.
