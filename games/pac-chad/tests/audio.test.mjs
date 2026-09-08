@@ -41,3 +41,12 @@ test('missing audio falls back immediately; loading failure cannot break play',a
     audio.stop();
   }finally{globalThis.fetch=fetchBefore;for(const id of Object.keys(SOUND_BANK))delete SOUND_BANK[id];Object.assign(SOUND_BANK,saved);}
 });
+
+test('special pickup, shield impact and expiry route to real sound samples',()=>{
+  const audio=new Audio();audio.ctx=context();
+  for(const id of ['power','gate','power-end'])audio.buffers.set(id,{buffer:{id},offset:0});
+  for(const [type,id] of [['special','power'],['repel','gate'],['special-end','power-end']]){
+    audio.event({type});assert.equal(audio.ctx.sources.at(-1).buffer.id,id);
+  }
+  audio.stop();
+});

@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createRun,step,makeMaze,key,WIDTH,HEIGHT,neighbors,position,VERSION,RUN_TICKS} from '../js/model.mjs';
-import {Recorder,validateReplay} from '../js/replay.mjs';
-function freezeGhosts(s){for(const g of s.ghosts)g.wait=RUN_TICKS+1;}
+import {createRun,step,makeMaze,key,WIDTH,HEIGHT,neighbors,position,VERSION,LEVEL_COUNT,THEMES} from '../js/model.mjs';
+import {Recorder,validateReplay,MAX_REPLAY_TICKS,MAX_EVIDENCE_CHARACTERS} from '../js/replay.mjs';
+function freezeGhosts(s){for(const g of s.ghosts)g.wait=Number.MAX_SAFE_INTEGER;}
 function place(a,x,y,dir=1){Object.assign(a,{x,y,tx:x,ty:y,dir,moving:false,progress:0});}
 
 test('all themed mazes have connected pellets, safe spawns, loops and reachable shortcuts',()=>{
-  for(const seed of [0,1,0x504143,0xffffffff])for(let stage=0;stage<9;stage++){
+  assert.equal(LEVEL_COUNT,10);assert.equal(new Set(THEMES.map(t=>t.name)).size,10);
+  assert.equal(new Set(THEMES.map(t=>t.wall)).size,10);
+  assert.equal(new Set(THEMES.map((t,i)=>String(makeMaze(9,i).tiles))).size,10);
+  for(const seed of [0,1,0x504143,0xffffffff])for(let stage=0;stage<LEVEL_COUNT;stage++){
     const s=createRun({seed});s.maze=makeMaze(seed,stage);
     const seen=new Set([key(11,17)]),queue=[[11,17]];
     for(let h=0;h<queue.length;h++)for(const n of neighbors(s,...queue[h]))if(!seen.has(key(n.x,n.y))){seen.add(key(n.x,n.y));queue.push([n.x,n.y]);}
@@ -53,11 +56,27 @@ test('gates warn then only open, without adding inaccessible collectibles',()=>{
 });
 test('last pellet advances to a distinct maze and preserves score, lives and charge',()=>{
   const s=createRun();freezeGhosts(s);s.maze.pellets.fill(0);s.maze.pellets[key(12,17)]=1;s.maze.remaining=1;s.energy=100;
-  const first=[...s.maze.tiles];for(let i=0;i<13;i++)step(s,1);assert.equal(s.stage,1);assert.equal(s.transition,150);assert.equal(s.score,1010);
-  for(let i=0;i<150;i++)step(s,4);assert.notDeepEqual([...s.maze.tiles],first);assert.equal(s.lives,3);assert.equal(s.score,1010);assert.equal(s.energy,263);
+  const first=[...s.maze.tiles];for(let i=0;i<13;i++)step(s,1);assert.equal(s.stage,0);assert.equal(s.clearedStages,1);assert.equal(s.transition,150);assert.equal(s.score,1010);
+  for(let i=0;i<150;i++)step(s,4);assert.equal(s.stage,1);assert.notDeepEqual([...s.maze.tiles],first);assert.equal(s.lives,3);assert.equal(s.score,1010);assert.equal(s.energy,263);
 });
-test('five-minute limit and death stop the simulation permanently',()=>{
-  const s=createRun();s.tick=RUN_TICKS-1;step(s,4);assert.equal(s.done,true);assert.equal(s.reason,'time_up');const snapshot=JSON.stringify(s);step(s,1);assert.equal(JSON.stringify(s),snapshot);
+test('campaign continues past five minutes and death stops it permanently',()=>{
+  const s=createRun();freezeGhosts(s);s.tick=18000-1;step(s,4);assert.equal(s.done,false);
+  s.lives=1;s.invulnerable=0;place(s.player,11,17);place(s.ghosts[0],11,17);s.ghosts[0].wait=0;step(s,4);
+  assert.equal(s.done,true);assert.equal(s.reason,'out_of_lives');const snapshot=JSON.stringify(s);step(s,1);assert.equal(JSON.stringify(s),snapshot);
+});
+test('all ten clears award bonuses once and finish without an eleventh level or last-pellet damage',()=>{
+  const s=createRun();
+  for(let stage=0;stage<LEVEL_COUNT;stage++){
+    assert.equal(s.stage,stage);assert.deepEqual(s.maze.tiles,makeMaze(s.seed,stage).tiles);
+    freezeGhosts(s);place(s.player,11,17);s.maze.pellets.fill(0);s.maze.pellets[key(12,17)]=1;s.maze.remaining=1;
+    for(let i=0;i<12;i++)step(s,1);
+    // A dangerous ghost at the last pellet cannot steal a completed level.
+    s.invulnerable=0;place(s.ghosts[0],12,17);s.ghosts[0].wait=0;step(s,1);
+    assert.equal(s.clearedStages,stage+1);assert.equal(s.lives,3);
+    if(stage<LEVEL_COUNT-1){assert.equal(s.done,false);for(let i=0;i<150;i++)step(s,4);}
+  }
+  assert.equal(s.score,55100);assert.equal(s.done,true);assert.equal(s.reason,'campaign_complete');assert.equal(s.stage,9);assert.equal(s.transition,0);
+  const snapshot=JSON.stringify(s);for(let i=0;i<200;i++)step(s,1);assert.equal(JSON.stringify(s),snapshot);
 });
 test('compact evidence deterministically recomputes a completed run and rejects tampering',()=>{
   const config={version:VERSION,seed:0x504143,ability:'dash'},s=createRun(config),r=new Recorder();
@@ -68,6 +87,7 @@ test('compact evidence deterministically recomputes a completed run and rejects 
   assert.throws(()=>validateReplay({...evidence,inputs:'!!!!'},config),/encoding|replay/);
   assert.throws(()=>validateReplay({...evidence,inputs:btoa(String.fromCharCode(7)+atob(evidence.inputs).slice(1))},config),/controller/);
   assert.throws(()=>validateReplay({...evidence,ticks:1,inputs:btoa('\x04')},config),/Incomplete/);
-  assert.throws(()=>validateReplay({...evidence,ticks:RUN_TICKS+1},config),/envelope/);
-  const full=new Recorder();for(let i=0;i<RUN_TICKS;i++)full.add(4);assert.ok(JSON.stringify({evidence:full.export(),score:999999}).length<16*1024);
+  assert.throws(()=>validateReplay({...evidence,ticks:MAX_REPLAY_TICKS+1},config),/envelope/);
+  const full=new Recorder();for(let i=0;i<MAX_REPLAY_TICKS;i++)full.add(4);assert.equal(full.export().inputs.length,MAX_EVIDENCE_CHARACTERS);
+  full.add(4);assert.equal(full.export(),null);assert.doesNotThrow(()=>full.add(4));
 });

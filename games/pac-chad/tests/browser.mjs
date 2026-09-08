@@ -10,7 +10,7 @@ const errors=[],report={};
 async function context(options={}){
   const ctx=await browser.newContext(options);
   // Read-only and stepping hooks exist solely in the intercepted test response.
-  await ctx.route('**/js/app.mjs',async route=>{const code=await readFile(new URL('../js/app.mjs',import.meta.url),'utf8');await route.fulfill({contentType:'text/javascript',body:code+`\nwindow.__pacQA={get state(){return state},get phase(){return phase},get renderer(){return renderer},get recorder(){return recorder},get platform(){return platform},step,createRun,setState(s){state=s},finish,pause,validate:async(e,c)=>(await import('./replay.mjs')).validateReplay(e,c)};`});});
+  await ctx.route('**/js/app.mjs',async route=>{const code=await readFile(new URL('../js/app.mjs',import.meta.url),'utf8');await route.fulfill({contentType:'text/javascript',body:code+`\nwindow.__pacQA={get state(){return state},get phase(){return phase},get renderer(){return renderer},get recorder(){return recorder},get platform(){return platform},step,createRun,updateHUD,setState(s){state=s},finish,pause,validate:async(e,c)=>(await import('./replay.mjs')).validateReplay(e,c)};`});});
   ctx.on('page',page=>{page.on('pageerror',e=>errors.push(e.message));});return ctx;
 }
 try{
@@ -27,7 +27,26 @@ try{
   // Finish a real deterministic run rapidly in the same imported simulation.
   report.completed=await page.evaluate(async()=>{const q=window.__pacQA;q.pause(true);while(!q.state.done){q.recorder.add(4);q.step(q.state,4);}await q.finish();const evidence=q.recorder.export();return await q.validate(evidence,{version:q.state.version,seed:q.state.seed,ability:q.state.ability,score:q.state.score});});
   assert.ok(report.completed.score>0);assert.match(await page.locator('#personal-board').textContent(),/DASH/);await page.reload();await page.waitForFunction(()=>!document.getElementById('start').disabled);assert.ok((await page.locator('#best').textContent())!=='000000');
-  await page.locator('[data-ability="decoy"]').click();await page.locator('#start').click();await page.waitForFunction(()=>window.__pacQA.phase==='run');await page.keyboard.press('Space');await page.waitForTimeout(70);assert.ok(await page.evaluate(()=>!!window.__pacQA.state.decoy));report.desktop='keyboard, pause, ability, fullscreen, completed replay, persistent personal best, decoy passed';await desktop.close();
+  await page.locator('[data-ability="decoy"]').click();await page.locator('#start').click();await page.waitForFunction(()=>window.__pacQA.phase==='run');await page.keyboard.press('Space');await page.waitForTimeout(70);assert.ok(await page.evaluate(()=>!!window.__pacQA.state.decoy));report.desktop='keyboard, pause, ability, fullscreen, completed replay, persistent personal best, decoy passed';
+  report.campaign=await page.evaluate(async()=>{
+    const q=window.__pacQA;q.pause(true);const s=q.createRun();q.setState(s);const levels=[];
+    for(let level=0;level<10;level++){
+      q.updateHUD();q.renderer.draw(s,s.tick*1000/60);
+      levels.push({number:document.getElementById('stage-number').textContent,name:document.getElementById('stage-name').textContent});
+      for(const g of s.ghosts)g.wait=Number.MAX_SAFE_INTEGER;
+      s.maze.pellets.fill(0);s.maze.pellets[17*23+12]=1;s.maze.remaining=1;
+      for(let i=0;i<13;i++)q.step(s,1);
+      if(level<9)for(let i=0;i<150;i++)q.step(s,4);
+    }
+    await q.finish();q.updateHUD();return {levels,reason:s.reason,cleared:s.clearedStages};
+  });
+  assert.equal(report.campaign.reason,'campaign_complete');assert.equal(report.campaign.cleared,10);
+  assert.equal(new Set(report.campaign.levels.map(l=>l.name)).size,10);
+  assert.equal(await page.locator('#stage-number').textContent(),'10/10');
+  assert.equal(await page.locator('#result-title').textContent(),'CAMPAIGN COMPLETE.');
+  assert.equal(await page.locator('#result-mazes').textContent(),'10');
+  await page.locator('#cabinet').screenshot({path:new URL('../art/qa-campaign-complete.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1')});
+  await desktop.close();
   const mobile=await context({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});const phone=await mobile.newPage();await phone.goto(base);await phone.waitForFunction(()=>!document.getElementById('start').disabled);
   assert.ok(await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await phone.screenshot({path:new URL('../art/qa-phone-title.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1'),fullPage:true});
   await phone.locator('#start').tap();await phone.waitForFunction(()=>window.__pacQA.phase==='run');await phone.locator('[data-dir="3"]').tap();await phone.waitForTimeout(160);assert.equal(await phone.evaluate(()=>window.__pacQA.state.player.dir),3);await phone.locator('#touch-ability').tap();await phone.waitForTimeout(50);assert.ok(await phone.evaluate(()=>window.__pacQA.state.energy<600));
