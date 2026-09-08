@@ -1,0 +1,234 @@
+[
+  {
+    "id": "binance",
+    "site": "https://www.binance.com/en",
+    "status": 202,
+    "icons": []
+  },
+  {
+    "id": "mexc",
+    "site": "https://www.mexc.com",
+    "status": 403,
+    "icons": []
+  },
+  {
+    "id": "kraken",
+    "site": "https://www.kraken.com",
+    "status": 200,
+    "icons": [
+      {
+        "data-rh": "true",
+        "rel": "shortcut icon",
+        "sizes": "32x32",
+        "href": "https://www.kraken.com/favicon.ico"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "type": "image/png",
+        "sizes": "16x16",
+        "href": "https://www.kraken.com/_assets/icons/favicon-16x16.png"
+      },
+      {
+        "data-rh": "true",
+        "rel": "apple-touch-icon",
+        "sizes": "180x180",
+        "href": "https://www.kraken.com/_assets/icons/apple-touch-icon.png"
+      }
+    ]
+  },
+  {
+    "id": "coinbase",
+    "site": "https://www.coinbase.com",
+    "status": 200,
+    "icons": [
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_6z3OfXe9.png",
+        "sizes": "32x32"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_C_T4Rln_.png",
+        "sizes": "57x57"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_BG1I6TR_.png",
+        "sizes": "76x76"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_DVA0h2KN.png",
+        "sizes": "96x96"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_CDW_BqV2.png",
+        "sizes": "128x128"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_4fFhElUj.png",
+        "sizes": "192x192"
+      },
+      {
+        "data-rh": "true",
+        "rel": "icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_CcvONSrV.png",
+        "sizes": "228x228"
+      },
+      {
+        "data-rh": "true",
+        "rel": "shortcut icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_B4aDYo-G.png",
+        "sizes": "196x196"
+      },
+      {
+        "data-rh": "true",
+        "rel": "apple-touch-icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_GRKmPJt5.png",
+        "sizes": "120x120"
+      },
+      {
+        "data-rh": "true",
+        "rel": "apple-touch-icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_Ct1dkDsA.png",
+        "sizes": "152x152"
+      },
+      {
+        "data-rh": "true",
+        "rel": "apple-touch-icon",
+        "href": "https://www.coinbase.com/assets/sw-cache/a_BIaaMV9S.png",
+        "sizes": "180x180"
+      }
+    ]
+  },
+  {
+    "id": "okx",
+    "site": "https://www.okx.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "shortcut icon",
+        "href": "https://www.okx.com/cdn/assets/imgs/291/89001A8FD7AB4038904A203EAECB68E6.png"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "https://www.okx.com/cdn/assets/imgs/253/59830BB78B18A776.png",
+        "type": "image/png"
+      }
+    ]
+  },
+  {
+    "id": "bybit",
+    "site": "https://www.bybit.com",
+    "status": 403,
+    "icons": []
+  },
+  {
+    "id": "kucoin",
+    "site": "https://www.kucoin.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "shortcut icon",
+        "href": "https://www.kucoin.com/logo.png"
+      }
+    ]
+  },
+  {
+    "id": "gate",
+    "site": "https://www.gate.com",
+    "status": 403,
+    "icons": []
+  },
+  {
+    "id": "bitget",
+    "site": "https://www.bitget.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "icon",
+        "type": "image/x-icon",
+        "href": "https://www.bitget.com/baseasset/favicon4.png"
+      }
+    ]
+  },
+  {
+    "id": "crypto-com",
+    "site": "https://crypto.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "icon",
+        "href": "https://crypto.com/favicon.ico",
+        "type": "image/x-icon",
+        "sizes": "32x32"
+      }
+    ]
+  },
+  {
+    "id": "gemini",
+    "site": "https://www.gemini.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "shortcut icon",
+        "href": "https://www.gemini.com/favicon.ico"
+      },
+      {
+        "rel": "icon",
+        "href": "https://www.gemini.com/favicon.ico",
+        "sizes": "any"
+      },
+      {
+        "rel": "icon",
+        "href": "https://www.gemini.com/favicon-16x16.png",
+        "type": "image/png",
+        "sizes": "16x16"
+      },
+      {
+        "rel": "icon",
+        "href": "https://www.gemini.com/favicon-32x32.png",
+        "type": "image/png",
+        "sizes": "32x32"
+      },
+      {
+        "rel": "icon",
+        "href": "https://www.gemini.com/favicon-96x96.png",
+        "type": "image/png",
+        "sizes": "96x96"
+      },
+      {
+        "rel": "icon",
+        "href": "https://www.gemini.com/android-icon-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "rel": "apple-touch-icon",
+        "href": "https://www.gemini.com/apple-touch-icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ]
+  },
+  {
+    "id": "bitfinex",
+    "site": "https://www.bitfinex.com",
+    "status": 200,
+    "icons": [
+      {
+        "rel": "icon",
+        "href": "https://www.bitfinex.com/assets/favicons/bitfinex.ico"
+      }
+    ]
+  }
+]

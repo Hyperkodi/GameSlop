@@ -1,0 +1,85 @@
+[
+  {
+    "id": "binance",
+    "url": "https://bin.bnbstatic.com/static/images/common/favicon.ico",
+    "status": 200,
+    "type": "image/vnd.microsoft.icon",
+    "bytes": 4286,
+    "file": "binance.ico"
+  },
+  {
+    "id": "kraken",
+    "url": "https://www.kraken.com/_assets/icons/apple-touch-icon.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 5465,
+    "file": "kraken.png"
+  },
+  {
+    "id": "coinbase",
+    "url": "https://www.coinbase.com/assets/sw-cache/a_CDW_BqV2.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 1574,
+    "file": "coinbase.png"
+  },
+  {
+    "id": "okx",
+    "url": "https://www.okx.com/cdn/assets/imgs/253/59830BB78B18A776.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 331,
+    "file": "okx.png"
+  },
+  {
+    "id": "kucoin",
+    "url": "https://www.kucoin.com/logo.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 2764,
+    "file": "kucoin.png"
+  },
+  {
+    "id": "bitget",
+    "url": "https://www.bitget.com/baseasset/favicon4.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 820,
+    "file": "bitget.png"
+  },
+  {
+    "id": "crypto-com",
+    "url": "https://crypto.com/favicon.ico",
+    "status": 200,
+    "type": "image/vnd.microsoft.icon",
+    "bytes": 102825,
+    "file": "crypto-com.ico"
+  },
+  {
+    "id": "gemini",
+    "url": "https://www.gemini.com/android-icon-192x192.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 18216,
+    "file": "gemini.png"
+  },
+  {
+    "id": "bitfinex",
+    "url": "https://www.bitfinex.com/assets/favicons/bitfinex.ico",
+    "status": 200,
+    "type": "image/x-icon",
+    "bytes": 15406,
+    "file": "bitfinex.ico"
+  },
+  {
+    "id": "mexc",
+    "url": "https://mexc-rainbown-activityimages.s3.ap-northeast-1.amazonaws.com/banner/F20260907162558166GC1eEzPnH1qN0V.png",
+    "sourcePage": "https://www.mexc.com/support/other-services",
+    "file": "mexc.png"
+  },
+  {
+    "id": "bybit",
+    "url": "https://www.bybit.com/common-static/fht-static/cms/cs-assets/blte46e6f3c02758df5/4f7cad3049cddc51e5a3f2113747cb34.jpg",
+    "file": "bybit.jpg"
+  }
+]
