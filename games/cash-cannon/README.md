@@ -1,4 +1,4 @@
-# Cash Cannon
+# Cashcat Cannon
 
 Original browser launch game inspired by Kitten Cannon, starring CashCat. Vanilla JavaScript and Canvas; no build step or runtime dependencies.
 

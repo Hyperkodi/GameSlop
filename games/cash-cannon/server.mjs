@@ -8,4 +8,4 @@ const server=http.createServer(async(req,res)=>{try{
   if(!/^\/(index\.html|style\.css|js\/[a-z-]+\.mjs|assets\/[a-z-]+\.png|assets\/cex\/[a-z-]+\.(png|ico|jpg))$/.test(path)){res.writeHead(404);res.end('Not found');return;}
   const data=await readFile(fileURLToPath(new URL(path.slice(1),root))),extension=path.slice(path.lastIndexOf('.'));res.writeHead(200,{'Content-Type':mime[extension]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(data);
 }catch{res.writeHead(404);res.end('Not found');}});
-server.listen(port,'127.0.0.1',()=>console.log(`Cash Cannon: http://127.0.0.1:${port}`));
+server.listen(port,'127.0.0.1',()=>console.log(`Cashcat Cannon: http://127.0.0.1:${port}`));
