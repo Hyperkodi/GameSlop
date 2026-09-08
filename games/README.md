@@ -1,6 +1,6 @@
 # Armara Arcade
 
-Eight browser games (Slop in Time, Slop Commando, Armaratris, Serpent, Breaker, Aegis, Flight, Starfall) sharing one kit
+Eight browser games (Sloppy in Time, Slop Commando, Armaratris, Serpent, Breaker, Aegis, Flight, Starfall) sharing one kit
 (`_kit/`: `rng.js`, `draw.js`, `skin.js`, `audio.js`, `input.js`, `shell.js`, `kit.css`). Static,
 no build step, no server-side code. `index.html` is the arcade hub.
 
@@ -41,7 +41,7 @@ Slop Commando adds a GameSlop-branded landscape run-and-gun campaign with mobile
 browser fullscreen and local co-op. It reuses kit RNG/audio with its own landscape controller;
 see `commando/README.md` for controls, campaign details, and browser verification.
 
-Slop in Time adds a six-era arcade brawler with the GameSlop mascot, mobile touch,
+Sloppy in Time adds a six-era arcade brawler with the GameSlop mascot, mobile touch,
 automatic jump kicks, combos, throws, collectible melee weapons, and local co-op.
 See `slop-in-time/README.md` for controls and validation.
 
