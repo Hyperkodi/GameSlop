@@ -1,5 +1,6 @@
 import {createRun,step,CAST,THEMES,LEVEL_COUNT,VERSION} from './model.mjs';
 import {POWERUPS,SPECIAL_TICKS} from './powerups.mjs';
+import {POWER_PELLETS} from './pellet-art.mjs';
 import {Recorder} from './replay.mjs';
 import {Renderer} from './renderer.mjs';
 import {Audio} from './audio.mjs';
@@ -27,7 +28,7 @@ for(const [i,spec] of POWERUPS.entries()){
   copy.append(level,name,effect);card.append(img,copy);$('powerup-guide').append(card);
 }
 const images={};
-try{await Promise.all(['chad','chad-chomp',...CAST.map(c=>c.id),...POWERUPS.map(p=>'power-'+p.id)].map(id=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{images[id]=img;resolve();};img.onerror=()=>reject(new Error('Could not load '+id));img.src=`assets/${id}.${id.startsWith('power-')?'svg':'png'}`;})));}catch(e){$('start').textContent='ART COULD NOT LOAD. RELOAD TO RETRY.';$('platform-note').textContent=e.message;throw e;}
+try{await Promise.all(['chad','chad-chomp',...CAST.map(c=>c.id),...POWER_PELLETS.map(p=>p.id),...POWERUPS.map(p=>'power-'+p.id)].map(id=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{images[id]=img;resolve();};img.onerror=()=>reject(new Error('Could not load '+id));img.src=`assets/${id}.${id.startsWith('power-')?'svg':'png'}`;})));}catch(e){$('start').textContent='ART COULD NOT LOAD. RELOAD TO RETRY.';$('platform-note').textContent=e.message;throw e;}
 const renderer=new Renderer($('game'),images);renderer.resize();new ResizeObserver(()=>renderer.resize()).observe($('viewport'));
 let state=createRun(),recorder=new Recorder(),ability='dash',phase='title',desired=4,queuedAbility=false,paused=false,hostPaused=false,countdown=0,previous=performance.now(),accumulator=0,toastUntil=0,lastFinished=null,padAbility=false;
 function toast(text,ms=1800){$('toast').textContent=text;$('toast').classList.add('visible');toastUntil=performance.now()+ms;}

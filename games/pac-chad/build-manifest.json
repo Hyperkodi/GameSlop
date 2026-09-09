@@ -1,6 +1,6 @@
 {
   "version": "pac-chad-campaign-v3",
-  "buildHash": "5f3e737897471b0bd50210b095ec6a7f2f8ca17824d79a8fb801c668b80c0387",
+  "buildHash": "9c7fb698fc33e383e02e7f90fa8a215f9b623b534a69b6188ad84461491e16f9",
   "files": [
     {
       "path": "assets/Blue.mp3",
@@ -151,6 +151,26 @@
       "path": "assets/music-violet-vault.ogg",
       "bytes": 3637381,
       "sha256": "08301c4f269d91ac01e502f014c59612f3595b43bf9fd80d008d78d0746a8425"
+    },
+    {
+      "path": "assets/pickup-cleavage.png",
+      "bytes": 71403,
+      "sha256": "f6a99fc65f2f1eca1a9de39107c30a032c17225bbd9f856d45e65a7666248a17"
+    },
+    {
+      "path": "assets/pickup-creatine.png",
+      "bytes": 89294,
+      "sha256": "0b2e8722023ff2e58202b2bea4691f5a635bb0911d568986bcb33e74b1d8ceab"
+    },
+    {
+      "path": "assets/pickup-protein-bar.png",
+      "bytes": 84525,
+      "sha256": "a6051fae9e851bf975e39d746a6641ea917709285f2ec848c04466d5961e77cc"
+    },
+    {
+      "path": "assets/pickup-white-monster.png",
+      "bytes": 72047,
+      "sha256": "64d8718cd3e654a52f49cf21cbac438701f4a689733b49f12238a6d104e228da"
     },
     {
       "path": "assets/power-absolute-aura.svg",
@@ -314,8 +334,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 9984,
-      "sha256": "8b3c2340ef2d0812dee69c5e1f505560c29c61d3037d8c7b1cf15b5cdce3ad88"
+      "bytes": 10036,
+      "sha256": "440776a82beeb95360d4446128e2d1e70c3ffb471080001bd1512151678bb75e"
     },
     {
       "path": "integration/gameslop-sdk.js",
@@ -324,8 +344,8 @@
     },
     {
       "path": "js/app.mjs",
-      "bytes": 15482,
-      "sha256": "b219bb4477e0ad1fed695b86ef2bb2b3d6770049968c4f57f80de949b362445e"
+      "bytes": 15560,
+      "sha256": "793b130811fc3c7d9c597d98cfe9666f63bde4c1986525d21254219630da6f22"
     },
     {
       "path": "js/audio.mjs",
@@ -363,6 +383,11 @@
       "sha256": "37d27c98b4a9b77e1c54801d715df6640d98894f3f35238a8406c9df667caadc"
     },
     {
+      "path": "js/pellet-art.mjs",
+      "bytes": 384,
+      "sha256": "9baaa8ef07435278ff6b8d12510bc8ddc41a9b981ff2bb89723dde8099e2b25e"
+    },
+    {
       "path": "js/platform.mjs",
       "bytes": 1320,
       "sha256": "acdc1bb586f1555eb251c34ac0199a727c0e874ee16541fd4aaeb3df6a62e08f"
@@ -379,8 +404,8 @@
     },
     {
       "path": "js/renderer.mjs",
-      "bytes": 9452,
-      "sha256": "7942b3129c7c0ab2adffce4b0f87c92789344bea98e3508df17475516c938ed4"
+      "bytes": 9713,
+      "sha256": "205b441e45ba968036567dfa4d51494d5836005e08765182ba42489bb8a92277"
     },
     {
       "path": "js/replay.mjs",

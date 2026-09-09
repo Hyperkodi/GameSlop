@@ -2,6 +2,7 @@ import {WIDTH,HEIGHT,THEMES,CAST,position,key} from './model.mjs';
 import {CHOMP_ATLAS,chompFrame} from './chomp.mjs';
 import {specialIs,canEat} from './powerups.mjs';
 import {drawPickup,drawPlayerEffect,drawGhostEffect} from './powerup-render.mjs';
+import {powerPelletArt} from './pellet-art.mjs';
 export class Renderer {
   constructor(canvas,images){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.images=images;this.particles=[];this.labels=[];this.shake=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;this.width=0;this.height=0;this.touch=navigator.maxTouchPoints>0||matchMedia('(any-pointer: coarse)').matches;}
   resize(){const r=this.canvas.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);this.width=r.width;this.height=r.height;if(this.canvas.width!==Math.round(r.width*dpr)||this.canvas.height!==Math.round(r.height*dpr)){this.canvas.width=Math.round(r.width*dpr);this.canvas.height=Math.round(r.height*dpr);}this.dpr=dpr;}
@@ -33,7 +34,12 @@ export class Renderer {
       }else if(s.maze.pellets[i]){
         const power=s.maze.pellets[i]===2;
         c.fillStyle=power?theme.accent:specialIs(s,'cheat-day')?'#ffdc55':'#e2d7a2';
-        if(power){c.shadowColor=theme.accent;c.shadowBlur=18;c.beginPath();c.arc(px+tile/2,py+tile/2,tile*(.17+.018*Math.sin(now*.004)),0,Math.PI*2);c.fill();c.shadowBlur=0;c.strokeStyle=theme.accent+'60';c.lineWidth=1;c.beginPath();c.arc(px+tile/2,py+tile/2,tile*.27,0,Math.PI*2);c.stroke();}
+        if(power){
+          const icon=this.images[powerPelletArt(x,y).id];
+          const bob=this.reduced?0:Math.sin(now*.003+x+y)*tile*.035;
+          c.strokeStyle=theme.accent+'60';c.lineWidth=1.5;c.beginPath();c.ellipse(px+tile/2,py+tile*.84,tile*.34,tile*.1,0,0,Math.PI*2);c.stroke();
+          if(icon){const size=tile*.96,ratio=icon.naturalWidth/icon.naturalHeight;const iw=ratio>1?size:size*ratio,ih=ratio>1?size/ratio:size;c.drawImage(icon,px+(tile-iw)/2,py+(tile-ih)/2+bob,iw,ih);}
+        }
         else {c.beginPath();c.arc(px+tile/2,py+tile/2,specialIs(s,'cheat-day')?4:2.2,0,Math.PI*2);c.fill();}
       }
     }
