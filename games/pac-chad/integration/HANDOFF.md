@@ -1,5 +1,27 @@
 # Pac-Chad: X login and leaderboard handoff
 
+## Main-site release, 2026-09-08
+
+Pac-Chad is live at https://gameslop.gg/play/pac-chad with the homepage New Game feature, original ghost portraits, four generated ordinary power-pellet sprites and the existing X community leaderboard.
+
+Website source: `kobeyaki/game-slop`, branch `feature/pac-chad-launch-20260908`, commit `c1aa64d`. This includes Koba's live design branch through `55d827d`. Canonical published game code is `game-content-host/source-games/pac-chad/`. Its SDK and `js/platform.mjs` use the current live host's score-only protocol and distinguish local play, pending persistence and saved community scores. Preserve that adapter when syncing later game changes from this workspace.
+
+Production releases:
+- Website: `dpl_99RCygNDHAYmrCxDSastShufppTm`.
+- Content host: `dpl_6og2V8Y8zcZg51udiVKqi6ZFgeXv`.
+- Previous website: `dpl_2zvTKq8t6XFj6BSaaJvbpnuFz9V7`.
+- Previous content host: `dpl_BAKSmSPi1gxs8V45gjDnZ1vDa6XA`.
+
+Scores are explicitly unverified community scores, with the best run per X player. They are not verified tournament results. The seven existing game board versions are preserved. All 24 pre-release leaderboard entries were retained.
+
+Validation: eight website tests, production website build, content build, exact runtime checks, four transparent collectible sprites at desktop/mobile size, live guest gameplay at desktop/mobile/landscape sizes, live X configuration and leaderboard reads. Signed-in persistence was tested end-to-end against a disposable local database with an encrypted session fixture. No real X authorization was automated and no synthetic production scores were submitted.
+
+Local release checkout and screenshot evidence: `.superpowers/pac-chad-main-site/artifacts/pac-chad-qa/`. Source game collectible prompts: `art/POWER-PELLET-ART.md`.
+
+## Earlier tournament integration plan (not the live community-score contract)
+
+The notes below describe the earlier tournament branch and the remaining work for server-verified tournament scoring. The main-site launch above supersedes its publication and community leaderboard steps.
+
 Target: `kobeyaki/game-slop`, branch `feature/x-tournaments-20260907`, inspected at `f7463189ec91d4ad802aab621353c71dda6020f7` on September 7, 2026. No changes have been made to that checkout or its deployments.
 
 ## Already implemented here
