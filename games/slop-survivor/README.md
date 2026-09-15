@@ -1,55 +1,48 @@
-# Slop Survivor — The Serpent Siege
+# Slop Survivor: The Serpent Siege
 
-A complete standalone mobile browser defense game: **Wojak shoots, Slippy is the snake.** Original implementation and new game artwork, inspired by Cell Survivor's segmented-boss and chest-choice mechanics.
+A mobile browser defense game. Wojak defends the vault against Slippy and four recurring bosses. The v2 campaign has **100 levels, three difficulties and 24 weapons**. Each attempt starts with Mint Condition and builds a fresh arsenal from battle chests.
 
-See [PROGRESSION.md](PROGRESSION.md) for the current 15-chapter campaign, 14 weapons, weighted upgrade tiers and automatic saving and endless tournament behavior.
+## Run and verify
 
-See [ILLUSTRATED-UPDATE.md](ILLUSTRATED-UPDATE.md) for the new art, boss cast and three additional chapters.
+From `games/slop-survivor`:
 
-Wojak is the starting defender; v1.6.0 adds rear-facing weapon animations. See [PLAYTEST-NOTES.md](PLAYTEST-NOTES.md) for validation and limitations. Sloppy and Pepons progression unlocks are deferred; see [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).
+```sh
+npm start                     # http://localhost:8193
+npm test                      # deterministic unit and regression tests
+node tests/balance.mjs         # 63 encounters, no-card checks, 100-level economy
+node tests/balance.mjs --full  # all 300 encounters and 100 Hard no-card controls
+node tests/economy-harness.mjs # detailed purchase and farming replay
+```
 
-## Play locally
+No build step, framework or package dependencies. Use an HTTP server rather than opening `index.html` directly. All production files can be served statically from a subdirectory. HTTPS enables supported browsers' installation and offline features.
 
-From this folder, run `npm start`, then open **http://localhost:8193**. No npm dependencies or build step are required; Node.js serves the files. For a phone on the same Wi-Fi, open `http://YOUR-PC-LAN-IP:8193` while the server is running and the firewall allows it. HTTPS hosting enables installation and offline caching on mobile. Opening index.html directly with `file://` is not supported because the game uses JavaScript modules.
+## Permanent progression
 
-Run `npm test` for engine/economy tests. From the workspace root, run `node --test tools/mobile-joystick-policy.test.mjs`. The deterministic campaign audit is `node tests/balance.mjs` from this folder.
+- Weapons reach level 50 through five ranks. Spend coins and that weapon's parts on levels, and cores on ranks.
+- Foundry Ordnance, Precision, Overclock and Vault improve every future run.
+- C/B weapons come from Easy clears, A weapons from Hard clears, and S weapons require discovery plus 22 shared blueprints each.
+- Every unlocked weapon remains eligible in battle. Account investment increases its selection weight. There is no pre-equipped loadout.
+- Six battle slots expand to seven after Easy level 30 and eight after level 65.
+- The Refinery exchanges 3 spare parts for 1 part of any unlocked weapon.
+- Four idle chest tiers share a 32-chest cap and a ten-minute timer. Better tiers appear with campaign progress. Every tenth Easy first clear grants a Vault chest.
+- See [PROGRESSION.md](PROGRESSION.md) for exact formulas, rewards, all weapons and migration rules.
 
-## Included
+## Controls and saves
 
-- Fifteen chapters, each with its own Normal → Hard → Hell unlock chain: 45 chapter/difficulty encounters.
-- Three waves per early chapter, four from chapter five onward. Body sections span four pieces and share one health pool. Breaking a section slides the snake ahead backward along its route while the rear stays anchored. Shorter tail sections keep each wave's original body length.
-- Fourteen unlocked weapons can enter the chest pool, with up to six collected per run. Six later unlocks add homing bots, percentage-health strikes, black holes, splitting shots, damage marks and dragons.
-- Each weapon has a starting critical chance and multiplier. Critical hits bypass armor; chest cards state before/after statistics. Green/Blue/Red/Gold cards add 5/10/15/25 critical percentage points, capped at 85%.
-- Battle chests freeze the visible battlefield and overlay three options. Green/Blue/Red/Gold rates are 60/28/10/2 per ordinary option; the opening chest offers Green weapon unlocks. Each new level resets battle weapons/upgrades; unlocks and workshop levels stay saved.
-- One starting bonus on Normal, two on Hard, three on Hell; higher difficulty rewards more coins. Each difficulty has its own completion record and best score.
-- Permanent weapon levels 1–10, earning +12% of the original base damage per level. Coins and weapon shards pay for upgrades.
-- Idle chest accumulation every **10 minutes**, including while closed, capped at **32**. Open one or a full batch. Each awards coins and shards; four welcome chests are provided.
-- Market Crash special attack, charged by damage. It hits visible segments and slows the snake.
-- Original synthesized effects and a quiet looping musical sequence, independent volume controls and reduced visual effects.
-- Portrait and landscape layouts, thumb joystick with pointer capture and multi-touch, keyboard and mouse support, basic physical-controller aiming.
-- Automatic local and Telegram progress saving, separate campaign/tournament resume slots, pause on app switching, and an offline service worker.
-- Endless tournament mode with progressively tougher waves, exactly three full-health revives per attempt, and saved personal bests.
+Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire. Space or the star button activates Market Crash. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
 
-## Controls
+Campaign and endless tournament have separate saved attempts. The tournament keeps its three revives, score, arsenal and personal best across reloads. Permanent account bonuses apply to new attempts. No online leaderboard or paid progression is included.
 
-- Weapons fire automatically. Let go of the joystick for automatic target selection.
-- Thumb joystick: choose an area to focus fire. The joystick owns only its own touch; another finger can activate the special.
-- Desktop: point in the battlefield or use arrows/WASD to move the target. Space activates Market Crash. Esc pauses/resumes.
-- Shield icons below Wojak are the vault's health. A breach consumes a shield and pushes Slippy back. Zero shields loses a campaign siege. In endless tournament mode it offers a revive, up to three per attempt.
-- Destroy all sections in all waves to win. Any point along a section takes damage; a piercing projectile hits that health pool only once per pass. Chest choices freeze the retreat animation along with combat. Existing saved runs migrate automatically to larger sections.
+Local progress saves automatically. Telegram Mini App launches also synchronize account progress. Version 1 saves migrate automatically, including existing battle choices and both active runs. An existing v2 account rejects a newer-timestamp v1 cloud snapshot. A fresh device can recover and migrate its old cloud save.
 
-## Hosting / installation
+## Art and offline play
 
-The production game is static. Host the contents of the release ZIP on an HTTPS static host (GitHub Pages works). All runtime paths are relative, including the service worker and manifest, so a subdirectory is supported. No wallet, login, paid API or database is needed. A Telegram Mini App launch loads the official Telegram SDK for automatic account sync; offline and ordinary browser play retain local saves.
+All 24 weapons have original procedural icons and illustrated sprites. The ten expansion sprites were generated individually as transparent PNG masters and converted to WebP. [ART-PROMPTS.md](ART-PROMPTS.md) records the exact prompts and selected source files. Existing character art and generic weapon poses remain in use. The service worker caches every runtime module and sprite.
 
-On Android, use the browser's Install option. On iOS, use Safari → Share → Add to Home Screen. Desktop and ordinary browser tabs also work. Browser support determines fullscreen availability. Physical Galaxy S25 Ultra / iPhone performance has not yet been measured; mobile QA uses Chromium device emulation. This is a browser game, not a signed Android APK.
+Mobile browser checks cover 320-pixel and 390-pixel portrait layouts, landscape, purchases, live combat rendering, saved progression and an offline reload. These checks use Chromium emulation, not physical iPhone or Galaxy hardware. Device-clock-based saves are not a server-authoritative competitive system.
 
-Progress saves automatically on this device. A supported Gameslop Telegram Mini App also restores and syncs account progress automatically, without save/load buttons. Both active run slots and revive counts persist. Offline timers and snapshot ordering rely on the device clock; the endless mode is **not** a server-authoritative tournament build. Online leaderboard submission and paid monetization are not included.
+## Verification and design decisions
 
-## Files
+[VERIFICATION.md](VERIFICATION.md) records the baseline, final tests, campaign sweep, economy assumptions and pacing limits. [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md) explains resolved brief contradictions and engine fixes. The analytical model in `docs/superpowers/specs/2026-09-14-slop-survivor-curve-model.mjs` remains the source of the target difficulty band; actual engine victories are tested separately.
 
-`data.mjs` owns weapon/chapter definitions, account progression and save validation. `engine.mjs` is the DOM-independent deterministic combat simulation. `art.mjs` draws animated gameplay and original weapon icons. `audio.mjs` synthesizes sound. `app.mjs` connects menus, controls, lifecycle, persistence and rendering. `style.css` includes both orientations. `sw.js` caches the standalone game.
-
-See [RESEARCH-AND-DESIGN.md](RESEARCH-AND-DESIGN.md) for researched mechanics versus our own rules, and [ART-PROMPTS.md](ART-PROMPTS.md) for art provenance. QA screenshots and browser checks are in `artifacts/slop-survivor` at the workspace root.
-
-This is fan-made mascot game artwork, not an official Cell Survivor product or a claim of affiliation with Robinhood. No Cell Survivor code, graphics or sounds are shipped.
+Original fan-made game implementation and artwork. No Cell Survivor assets or affiliation claims. Character progression beyond Wojak remains the existing separate backlog in [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).

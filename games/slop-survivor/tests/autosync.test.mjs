@@ -36,3 +36,6 @@ test('write failures retain local progress and retry the most recent snapshot',a
  f.storage.save=v=>fail?Promise.reject(new Error('offline')):write(v);
  try{f.change({updatedAt:2,coins:500});await f.sync.flush();assert.equal(f.local.coins,500);assert.equal(f.sync.dirty,true);f.change({updatedAt:3,coins:600});fail=false;await f.sync.flush();assert.equal(f.writes.at(-1).coins,600);assert.equal(f.sync.dirty,false);}finally{f.sync.stop();}
 });
+test('a fresh device migrates v1 cloud progress, but an existing v2 save rejects it',async()=>{
+ for(const hasLocalSave of [false,true]){let local={version:2,updatedAt:1,coins:240},restores=0;const sync=new AutoSync({hasLocalSave,storage:{load:async()=>({savedAt:200,save:{version:1,updatedAt:200,coins:999}}),save:async()=>{}},read:()=>local,restore:s=>{local={...s,version:2};restores++;}});try{await sync.start();assert.equal(restores,hasLocalSave?0:1);assert.equal(local.coins,hasLocalSave?240:999);}finally{sync.stop();}}
+});

@@ -1,4 +1,4 @@
-# Illustrated expansion — v1.5.0
+# Illustrated expansion - v1.5.0
 
 The campaign now has 15 chapters, five boss identities and 14 illustrated weapons. Sloppy keeps the red GameSlop slime silhouette, cream eyes and plus-shaped mouth. Slippy keeps his sleepy eyelids, pink lips and brown tuft.
 

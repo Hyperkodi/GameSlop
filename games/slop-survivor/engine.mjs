@@ -1,6 +1,6 @@
 import {encounterPhase} from './world.mjs';
 import {drawCards,applyCard,preview} from './upgrades.mjs';
-import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked} from './data.mjs';
+import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth} from './data.mjs';
 export const W=480,H=760;
 export {pathPoint} from './snake.mjs';
 import {pathPoint,groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,aimPoint,onBoard} from './snake.mjs';
@@ -59,7 +59,7 @@ export function reroll(r){if(r.state!=='choice'||r.rerolls<=0)return false;r.rer
 const visible=sectionVisible;
 function target(r){const list=r.segments.filter(visible);if(!list.length)return null;return list.reduce((best,s)=>{const score=r.manual?sectionDistance(s,r.aimX,r.aimY):610-Math.max(...sectionPoints(s).filter(onBoard).map(p=>p.y))+(s.head?-30:0);return !best||score<best.score?{s,score}:best;},null).s;}
 function fx(r,e){if(r.effects.length<140)r.effects.push({...e,life:e.life??.4,max:e.life??.4});}
-export function hit(r,s,w,amount=w.damage){if(!s||s.hp<=0)return;const crit=w.guaranteedCrit||random(r)<w.crit;let dmg=amount*(crit?w.mult:1)*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));if(s.armor&&!crit)dmg*=.68;if(!s.head&&!crit&&encounterPhase(r).id==='shutters')dmg*=.7;if(r.mode==='tournament')dmg=Math.min(s.hp,dmg);if(w.id==='sniper'&&w.legendary&&s.hp<s.maxHp*.15)dmg=Math.max(dmg,s.hp);s.hp-=dmg;if(s.markedUntil>r.time&&s.hp>0&&s.hp<=s.maxHp*.1&&r.weapons.some(x=>x.id==='oracle'&&x.legendary)){dmg+=s.hp;s.hp=0;}s.flash=.1;w.totalDamage+=dmg;r.charge=Math.min(100,r.charge+dmg*.012);r.score+=Math.round(dmg*.12);if(r.numbers.length<55)r.numbers.push({x:s.x+(random(r)-.5)*15,y:s.y,text:Math.round(dmg),crit,color:weapon(w.id).color,life:.65});}
+export function hit(r,s,w,amount=w.damage){if(!s||s.hp<=0)return;const hpBefore=s.hp,crit=w.guaranteedCrit||random(r)<w.crit;let dmg=amount*(crit?w.mult:1)*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));if(s.armor&&!crit)dmg*=.68;if(!s.head&&!crit&&encounterPhase(r).id==='shutters')dmg*=.7;if(r.mode==='tournament')dmg=Math.min(s.hp,dmg);if(w.id==='sniper'&&w.legendary&&s.hp<s.maxHp*.15)dmg=Math.max(dmg,s.hp);s.hp-=dmg;if(s.markedUntil>r.time&&s.hp>0&&s.hp<=s.maxHp*.1&&r.weapons.some(x=>x.id==='oracle'&&x.legendary)){dmg+=s.hp;s.hp=0;}s.flash=.1;w.totalDamage+=dmg;r.charge=Math.min(100,r.charge+Math.min(dmg,hpBefore)*.012/(r.mode==='tournament'?1:encounterHealth(r.chapter+1)));r.score+=Math.round(dmg*.12);if(r.numbers.length<55)r.numbers.push({x:s.x+(random(r)-.5)*15,y:s.y,text:Math.round(dmg),crit,color:weapon(w.id).color,life:.65});}
 function area(r,w,x,y,radius,amount=w.damage){for(const s of r.segments)if(visible(s)&&sectionDistance(s,x,y)<radius+17)hit(r,s,w,amount);}
 function hazard(r,w,x,y,radius,duration,amount,style){fx(r,{type:'hazard',style,x,y,r:radius,color:weapon(w.id).color,life:duration,weapon:w.id,amount,tick:0});}
 function ignite(s,w){s.burn=Math.max(s.burn,w.burnTime);if(s.burnDps<=w.damage*.6){s.burnDps=w.damage*.6;s.burnWeapon=w.id;}}
@@ -135,8 +135,8 @@ export function tick(r,dt){
  if(r.state!=='playing')return;groupSections(r);dt=clamp(dt,0,.05);r.time+=dt;r.events=[];
  const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);
  advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):11+r.wave*1.5)*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1));
- for(const s of r.segments){s.flash=Math.max(0,s.flash-dt);if(s.slipStacks>0&&s.slipUntil<=r.time){s.slipStacks--;s.slipUntil=r.time+1;}if(s.burn>0){s.burn=Math.max(0,s.burn-dt);const amount=s.burnDps*dt*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));s.hp-=amount;r.charge=Math.min(100,r.charge+amount*.012);const w=r.weapons.find(w=>w.id===s.burnWeapon);if(w)w.totalDamage+=amount;}if(s.hp>0&&(s.regen||!s.head&&encounterPhase(r).id==='mend'))s.hp=Math.min(s.maxHp,s.hp+s.maxHp*(encounterPhase(r).id==='mend'?.009:.006)*dt);}
- const t=target(r);if(t){if(!r.manual){const p=aimPoint(t,r.heroX,r.heroY);r.aimX=p.x;r.aimY=p.y;}for(const w of r.weapons){w.timer-=dt;if(w.debtUntil>r.time){const debtor=r.segments.find(s=>s.id===w.debtTarget&&s.hp>0);if(!debtor){w.debtUntil=0;w.debtTarget=0;w.timer=w.legendary?0:Math.max(0,w.timer-2.5);}else continue;}if(w.timer<=0){w.timer=w.cooldown;fire(r,w,t);}}}
+ for(const s of r.segments){s.flash=Math.max(0,s.flash-dt);if(s.slipStacks>0&&s.slipUntil<=r.time){s.slipStacks--;s.slipUntil=r.time+1;}if(s.burn>0){s.burn=Math.max(0,s.burn-dt);const amount=s.burnDps*dt*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));s.hp-=amount;r.charge=Math.min(100,r.charge+amount*.012/(r.mode==='tournament'?1:encounterHealth(r.chapter+1)));const w=r.weapons.find(w=>w.id===s.burnWeapon);if(w)w.totalDamage+=amount;}if(s.hp>0&&(s.regen||!s.head&&encounterPhase(r).id==='mend'))s.hp=Math.min(s.maxHp,s.hp+s.maxHp*(encounterPhase(r).id==='mend'?.009:.006)*dt);}
+ const t=target(r);if(t){if(!r.manual){const p=aimPoint(t,r.heroX,r.heroY);r.aimX=p.x;r.aimY=p.y;}for(const w of r.weapons){w.timer=Math.max(0,w.timer-dt);if(w.debtUntil>r.time){const debtor=r.segments.find(s=>s.id===w.debtTarget&&s.hp>0);if(!debtor){w.debtUntil=0;w.debtTarget=0;w.timer=w.legendary?0:Math.max(0,w.timer-2.5);}else continue;}if(w.timer<=0){w.timer=w.cooldown;fire(r,w,t);}}}
  for(const b of r.bullets){b.age+=dt;b.life-=dt;const w=r.weapons.find(w=>w.id===b.weapon);if(!w)continue;
   if(b.type==='disc'&&b.age>b.turnAt){if(!b.returning){b.hits=[];b.returning=true;}const a=Math.atan2(r.heroY-b.y,r.heroX-b.x);b.vx=Math.cos(a)*360;b.vy=Math.sin(a)*360;if(Math.hypot(r.heroX-b.x,r.heroY-b.y)<15)b.life=0;}
   if(['homing','fragment','dragon','printer'].includes(b.type)){const dest=r.segments.find(s=>s.id===b.targetId&&visible(s))||r.segments.find(visible);if(dest){b.targetId=dest.id;const p=aimPoint(dest,b.x,b.y),a=Math.atan2(p.y-b.y,p.x-b.x),speed=weapon(w.id).speed||330;b.vx=Math.cos(a)*speed;b.vy=Math.sin(a)*speed;}}
@@ -149,7 +149,7 @@ export function tick(r,dt){
  }
  r.bullets=r.bullets.filter(b=>b.life>0&&b.x>-50&&b.x<530&&b.y>-100&&b.y<750).slice(-240);
  const contacts=new Set();
- for(const e of r.effects){e.life-=dt;
+ for(const e of [...r.effects]){e.life-=dt;
   const source=r.weapons.find(w=>w.id===e.weapon);
   if(e.type==='trap'&&e.armed&&r.segments.some(s=>visible(s)&&sectionDistance(s,e.x,e.y)<22)){e.armed=false;e.life=0;if(source)area(r,source,e.x,e.y,e.r);r.rootUntil=r.time+2;if(source?.legendary&&!e.secondary){const nearest=r.segments.filter(visible).sort((a,b)=>sectionDistance(a,e.x,e.y)-sectionDistance(b,e.x,e.y))[0];if(nearest){const distance=nearest.distance,p=pathPoint(distance,r.chapter);fx(r,{type:'trap',id:++r.castId,weapon:source.id,distance,x:p.x,y:p.y,r:source.radius,color:e.color,life:8,armed:true,secondary:true});}}fx(r,{type:'blast',x:e.x,y:e.y,r:e.r,color:e.color,life:.5});}
   if(e.type==='lambo'&&source){e.travel+=420*dt;e.distance=e.start+e.direction*Math.min(e.travel,e.range);const p=pathPoint(e.distance,r.chapter);Object.assign(e,p);
@@ -173,7 +173,7 @@ export function completeRun(save,r){
  const coins=win?Math.round(firstClearCoins(n,r.difficulty)*(first?1:.25)):Math.min(30+r.kills*2,Math.round(firstClearCoins(n,r.difficulty)*.1));
  const parts={},amount=win?Math.round(firstClearParts(n,r.difficulty)*(first?1:.25)):0;
  // Rewards are a total budget, distributed across the weapons actually used this run.
- const pool=[...new Set(r.weapons.map(w=>w.id))];for(let i=0;i<amount;i++){const id=pool[i%pool.length];parts[id]=(parts[id]||0)+1;save.parts[id]++;}
+ const pool=[...new Set(r.weapons.length?r.weapons.map(w=>w.id):['coin'])];for(let i=0;i<amount;i++){const id=pool[i%pool.length];parts[id]=(parts[id]||0)+1;save.parts[id]++;}
  let cores=0,blueprints=0,chests=0,overflowLoot=null;
  if(first){if(r.difficulty==='hard')cores=Math.ceil(n/12)+1;if(r.difficulty==='impossible'){cores=Math.ceil(n/6)+2;if(n%4===0)blueprints++;}
   if(r.difficulty==='hard'&&WEAPONS.some(w=>w.grade==='S'&&w.discovery===n))blueprints+=10;
