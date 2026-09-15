@@ -1,6 +1,6 @@
 import {poseAsset,BAKED_WEAPONS} from './player-poses.mjs';
 import {bossForChapter,arenaForChapter} from './world.mjs';
-export const WEAPON_ART=['coin','laser','gas','diamond','chain','rug','burn','whale','satellite','swarm','vortex','fork','oracle','dragon'];
+export const WEAPON_ART=['coin','laser','gas','diamond','chain','rug','burn','whale','satellite','swarm','vortex','fork','oracle','dragon','paper','copium','printer','sniper','halving','slippage','trap','nuke','lambo','flashloan'];
 const cache=new Map(),skins=new Map();
 export const artUrl=id=>`assets/illustrated/${id}.webp`;
 export function getArt(id){
