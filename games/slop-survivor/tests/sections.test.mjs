@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {defaultSave,normalizeSave,validRun} from '../data.mjs';
 import {createRun,chooseBoon,chooseUpgrade,tick,makeWeapon,spawnWave} from '../engine.mjs';
 import {groupSections,updatePositions,sectionSpan,sectionDistance} from '../snake.mjs';
-function ready(){const save=defaultSave(100),r=createRun(save,0,'easy',77);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;return {save,r};}
+function ready(){const save=defaultSave(100),r=createRun(save,0,'easy',77);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;r.headDistance=640;r.segments.forEach(s=>s.spacing=32);updatePositions(r);return {save,r};}
 function settle(r){for(let i=0;i<300&&r.segments.some(s=>s.retreat>0);i++){r.pending=0;r.state='playing';tick(r,.01);}assert.ok(r.segments.every(s=>s.retreat===0));}
 test('25 body pieces become a head and six four-piece health pools without increasing total health',()=>{
  const {r}=ready();assert.equal(r.segments.length,7);assert.equal(r.segments[0].pieces,1);assert.ok(r.segments.slice(1).every(s=>s.pieces===4));

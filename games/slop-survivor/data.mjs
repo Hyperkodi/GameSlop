@@ -1,3 +1,4 @@
+import {campaignSpacing} from './campaign-pacing.mjs';
 import {groupSections} from './snake.mjs';
 export const VERSION = 2;
 export const CHEST_INTERVAL = 600000;
@@ -70,7 +71,12 @@ export function generateLevels(anchors=ACT_ANCHORS){
  const basePool=rawPool({segments:25,waves:3});
  return Array.from({length:100},(_,index)=>{const n=index+1,anchorIndex=Math.min(anchors.length-1,Math.floor(index*anchors.length/100)),act=Math.floor(index/10),anchor=anchors[anchorIndex];
   const level={...anchor,number:n,act,anchorIndex,boss:['slippy','baron','coldbyte','rattler','mamba'][act%5],arena:['glasshouse','citadel','marina','canyon','marina'][act%5],phase:n%10===0?['calm','shutters','mend','stampede','mend'][act%5]:'calm',secondaryPhase:n>50&&n%10===0?['stampede','mend','shutters','mend','shutters'][act%5]:'calm',traits:{armor:n>40||!!(n%8&1),regen:n>40||!!(n%8&2),volatile:n>40||!!(n%8&4)},segments:Math.min(64,24+n),waves:waveCount(n),speed:1+.5*(1-Math.exp(-index/28)),ehp:encounterHealth(n)};
-  level.hp=level.ehp*basePool/rawPool(level);return level;
+  level.hp=level.ehp*basePool/rawPool(level);
+  level.pieceSpacing=campaignSpacing(level);
+  level.modifier=Object.entries(level.traits).filter(([,active])=>active).map(([id])=>({armor:'Armor',regen:'Regeneration',volatile:'Volatile'})[id]).join(' + ')||'Classic';
+  const phases={calm:'',shutters:'Body shutters periodically reduce damage. Critical hits bypass them.',mend:'Damaged body sections periodically heal. Focus a section to finish it.',stampede:'A warning precedes a speed burst. Break sections to push the snake back.'};
+  level.detail=`${level.waves} waves. ${level.modifier==='Classic'?'Break the body, collect chests and protect the vault.':level.modifier+' sections appear in this siege.'} ${[...new Set([level.phase,level.secondaryPhase])].map(id=>phases[id]).filter(Boolean).join(' ')} Impossible enables all three section traits.`.trim();
+  return level;
  });
 }
 export const LEVELS=generateLevels();
@@ -146,9 +152,10 @@ function validCombatState(r){
  const optional=(o,keys,min=-1e12,max=1e12)=>keys.every(k=>o[k]===undefined||number(o[k],min,max));
  const ids=xs=>Array.isArray(xs)&&xs.length<=200&&xs.every(x=>Number.isSafeInteger(x)&&x>=0);
  if(!Array.isArray(r.weapons)||!Array.isArray(r.deck)||!Array.isArray(r.segments)||!Array.isArray(r.effects)||!Array.isArray(r.bullets)||!Array.isArray(r.numbers))return false;
+ if(r.rootTargets!==undefined&&!ids(r.rootTargets))return false;
  if(new Set(r.weapons.map(w=>w?.id)).size!==r.weapons.length||new Set(r.deck).size!==r.deck.length)return false;
  if(!r.weapons.every(w=>w&&Number.isInteger(w.level)&&number(w.level,1,50)&&optional(w,['rank'],1,5)))return false;
- if(!r.segments.every(s=>s&&optional(s,['distance','markedUntil','slipUntil'])&&(!s.points||Array.isArray(s.points)&&s.points.length<=100&&s.points.every(p=>p&&number(p.x)&&number(p.y)&&number(p.angle)))))return false;
+ if(!r.segments.every(s=>s&&optional(s,['spacing'],32,100)&&optional(s,['distance','markedUntil','slipUntil'])&&(!s.points||Array.isArray(s.points)&&s.points.length<=100&&s.points.every(p=>p&&number(p.x)&&number(p.y)&&number(p.angle)))))return false;
  if(!r.effects.every(e=>e&&optional(e,['x','y','x2','y2','angle','start','distance'])&&optional(e,['r'],0,4000)&&(!['trap','lambo'].includes(e.type)||e.weapon===e.type)&&
   (e.type!=='lambo'||number(e.start,-6400,10000)&&[-1,1].includes(e.direction)&&typeof e.returning==='boolean'&&ids(e.hits))&&
   (e.type!=='trap'||e.secondary===undefined||typeof e.secondary==='boolean')))return false;

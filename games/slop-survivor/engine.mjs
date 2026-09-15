@@ -1,3 +1,4 @@
+import {CAMPAIGN_ENTRY,waveMovement} from './campaign-pacing.mjs';
 import {encounterPhase} from './world.mjs';
 import {drawCards,applyCard,preview} from './upgrades.mjs';
 import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth} from './data.mjs';
@@ -25,9 +26,9 @@ export function endTournament(r){
 function runWeapon(r,id){const w=makeWeapon(id,r.baseLevels[id],r.boons,r.baseRanks?.[id]||1,r.foundry);if(r.mode==='tournament')w.endless=true;return w;}
 export function chooseBoon(r,id){if(r.state!=='boon'||!r.boonOptions.includes(id)||r.boons.includes(id))return false;r.boons.push(id);r.boonsLeft--;r.boonOptions=r.boonOptions.filter(x=>x!==id);if(r.boonsLeft<=0){if(r.boons.includes('health'))r.health=r.maxHealth=Math.min(10,r.maxHealth+2);r.weapons=[runWeapon(r,'coin')];r.state='playing';spawnWave(r);r.pending=1;offerChoice(r,true);}return true;}
 export function spawnWave(r){
- r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=640;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;r.rootUntil=0;
+ r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=r.mode==='tournament'?640:CAMPAIGN_ENTRY;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;r.rootUntil=0;r.rootTargets=[];
  const endless=r.mode==='tournament';const n=endless?Math.min(64,25+(r.wave-1)*3):Math.min(64,c.segments+(r.wave-1)*3);
- r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000:260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
+ r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000:260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,spacing:endless?32:c.pieceSpacing,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
  r.snakeLayout=undefined;groupSections(r);
  // Traits belong to health pools, not each of the four decorative body pieces.
  // Keep their original frequency instead of making every grouped section armored.
@@ -134,7 +135,8 @@ function removeDead(r){
 export function tick(r,dt){
  if(r.state!=='playing')return;groupSections(r);dt=clamp(dt,0,.05);r.time+=dt;r.events=[];
  const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);
- advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):11+r.wave*1.5)*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1));
+ if(r.rootTargets?.length&&!r.segments.some(s=>s.hp>0&&r.rootTargets.includes(s.id)))r.rootUntil=0;
+ advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):waveMovement(r.wave))*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1));
  for(const s of r.segments){s.flash=Math.max(0,s.flash-dt);if(s.slipStacks>0&&s.slipUntil<=r.time){s.slipStacks--;s.slipUntil=r.time+1;}if(s.burn>0){s.burn=Math.max(0,s.burn-dt);const amount=s.burnDps*dt*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));s.hp-=amount;r.charge=Math.min(100,r.charge+amount*.012/(r.mode==='tournament'?1:encounterHealth(r.chapter+1)));const w=r.weapons.find(w=>w.id===s.burnWeapon);if(w)w.totalDamage+=amount;}if(s.hp>0&&(s.regen||!s.head&&encounterPhase(r).id==='mend'))s.hp=Math.min(s.maxHp,s.hp+s.maxHp*(encounterPhase(r).id==='mend'?.009:.006)*dt);}
  const t=target(r);if(t){if(!r.manual){const p=aimPoint(t,r.heroX,r.heroY);r.aimX=p.x;r.aimY=p.y;}for(const w of r.weapons){w.timer=Math.max(0,w.timer-dt);if(w.debtUntil>r.time){const debtor=r.segments.find(s=>s.id===w.debtTarget&&s.hp>0);if(!debtor){w.debtUntil=0;w.debtTarget=0;w.timer=w.legendary?0:Math.max(0,w.timer-2.5);}else continue;}if(w.timer<=0){w.timer=w.cooldown;fire(r,w,t);}}}
  for(const b of r.bullets){b.age+=dt;b.life-=dt;const w=r.weapons.find(w=>w.id===b.weapon);if(!w)continue;
@@ -151,7 +153,7 @@ export function tick(r,dt){
  const contacts=new Set();
  for(const e of [...r.effects]){e.life-=dt;
   const source=r.weapons.find(w=>w.id===e.weapon);
-  if(e.type==='trap'&&e.armed&&r.segments.some(s=>visible(s)&&sectionDistance(s,e.x,e.y)<22)){e.armed=false;e.life=0;if(source)area(r,source,e.x,e.y,e.r);r.rootUntil=r.time+2;if(source?.legendary&&!e.secondary){const nearest=r.segments.filter(visible).sort((a,b)=>sectionDistance(a,e.x,e.y)-sectionDistance(b,e.x,e.y))[0];if(nearest){const distance=nearest.distance,p=pathPoint(distance,r.chapter);fx(r,{type:'trap',id:++r.castId,weapon:source.id,distance,x:p.x,y:p.y,r:source.radius,color:e.color,life:8,armed:true,secondary:true});}}fx(r,{type:'blast',x:e.x,y:e.y,r:e.r,color:e.color,life:.5});}
+  if(e.type==='trap'&&e.armed&&r.segments.some(s=>visible(s)&&sectionDistance(s,e.x,e.y)<22)){e.armed=false;e.life=0;if(source)area(r,source,e.x,e.y,e.r);r.rootTargets=r.segments.filter(s=>visible(s)&&sectionDistance(s,e.x,e.y)<e.r+17).map(s=>s.id);r.rootUntil=r.rootTargets.length?r.time+2:0;if(source?.legendary&&!e.secondary){const nearest=r.segments.filter(visible).sort((a,b)=>sectionDistance(a,e.x,e.y)-sectionDistance(b,e.x,e.y))[0];if(nearest){const distance=nearest.distance,p=pathPoint(distance,r.chapter);fx(r,{type:'trap',id:++r.castId,weapon:source.id,distance,x:p.x,y:p.y,r:source.radius,color:e.color,life:8,armed:true,secondary:true});}}fx(r,{type:'blast',x:e.x,y:e.y,r:e.r,color:e.color,life:.5});}
   if(e.type==='lambo'&&source){e.travel+=420*dt;e.distance=e.start+e.direction*Math.min(e.travel,e.range);const p=pathPoint(e.distance,r.chapter);Object.assign(e,p);
    for(const s of r.segments)if(visible(s)&&!e.hits.includes(s.id)&&sectionDistance(s,e.x,e.y)<30){e.hits.push(s.id);hit(r,s,source);}
    if(e.travel>=e.range){if(source.legendary&&!e.returning){e.returning=true;e.start=e.distance;e.direction=1;e.travel=0;e.hits=[];}else e.life=0;}

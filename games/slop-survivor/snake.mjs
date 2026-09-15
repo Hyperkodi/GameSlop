@@ -14,7 +14,7 @@ export function pathPoint(d,chapter=0){
  }
  return {x:240,y:850,angle:Math.PI/2};
 }
-export const sectionSpan=s=>(s.pieces||1)*PIECE_SPACING;
+export const sectionSpan=s=>(s.pieces||1)*(s.spacing||PIECE_SPACING);
 export const sectionPoints=s=>s.points?.length?s.points:[s];
 export const onBoard=p=>p.x>22&&p.x<458&&p.y>75&&p.y<610;
 export const sectionVisible=s=>s.hp>0&&sectionPoints(s).some(onBoard);
@@ -36,7 +36,7 @@ export function updatePositions(r){
  let distance=r.headDistance;
  for(const s of r.segments){
   s.distance=distance+(s.retreat||0);
-  const length=sectionSpan(s)-PIECE_SPACING;
+  const length=sectionSpan(s)-(s.spacing||PIECE_SPACING);
   // Eight-pixel samples keep both the curved outline and all hit tests continuous.
   s.points=Array.from({length:length/8+1},(_,i)=>pathPoint(s.distance-i*8,r.chapter));
   Object.assign(s,pathPoint(s.distance-length/2,r.chapter));distance-=sectionSpan(s);

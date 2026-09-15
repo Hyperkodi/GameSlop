@@ -102,7 +102,7 @@ export class Renderer{
   const width=Math.max(38,c.measureText(String(txt)).width+14);
   round(c,x-width/2,y-10,width,20,5,'#252232e6');c.fillStyle='#ffffff';c.fillText(txt,x,y);
   if(s.hp<s.maxHp){round(c,x-20,y+12,40,4,2,'#172c2b');round(c,x-20,y+12,40*Math.max(0,s.hp/s.maxHp),4,2,'#b9f478');}
-  if(s.slipStacks){c.fillStyle='#8dffe0';c.font='bold 10px sans-serif';c.fillText('SLIP '+s.slipStacks,x,y-17);}
+  if(s.slipStacks){for(let stack=0;stack<s.slipStacks;stack++)ellipse(c,x+(stack-(s.slipStacks-1)/2)*5,y-25,1.8,1.8,'#8dffe0');c.fillStyle='#8dffe0';c.font='bold 10px sans-serif';c.fillText('SLIP '+s.slipStacks,x,y-17);}
   if(s.regen)drawIcon(c,'shield',x-width/2-9,y,16);if(s.volatile)drawIcon(c,'gas',x+width/2+9,y,17);
  }
  for(const e of r.effects){const a=Math.max(0,e.life/e.max),p=1-a;c.save();c.globalAlpha=Math.min(1,a*2);c.strokeStyle=e.color;c.fillStyle=e.color;c.lineWidth=3;

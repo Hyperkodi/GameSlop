@@ -43,6 +43,8 @@ Mobile browser checks cover 320-pixel and 390-pixel portrait layouts, landscape,
 
 ## Verification and design decisions
 
-[VERIFICATION.md](VERIFICATION.md) records the baseline, final tests, campaign sweep, economy assumptions and pacing limits. [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md) explains resolved brief contradictions and engine fixes. The analytical model in `docs/superpowers/specs/2026-09-14-slop-survivor-curve-model.mjs` remains the source of the target difficulty band; actual engine victories are tested separately.
+[VERIFICATION.md](VERIFICATION.md) records the baseline, final tests, campaign sweep, economy assumptions and passing pacing checks. [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md) explains resolved brief contradictions and engine fixes. The analytical model in `docs/superpowers/specs/2026-09-14-slop-survivor-curve-model.mjs` remains the source of the target difficulty band; actual engine victories are tested separately.
 
 Original fan-made game implementation and artwork. No Cell Survivor assets or affiliation claims. Character progression beyond Wojak remains the existing separate backlog in [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).
+
+[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every clear to take six to twelve active minutes.

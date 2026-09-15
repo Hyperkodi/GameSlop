@@ -4,7 +4,7 @@ Working branch: `codex/slop-survivor-complete`. Base: `slop-survivor-progression
 
 ## Results
 
-- 145 unit and regression tests passed, zero failures.
+- 152 unit and regression tests passed, zero failures.
 - 300 of 300 campaign encounters won with a six-weapon core at the intended permanent level/rank and Foundry curve.
 - All 100 Hard controls with no battle cards lost.
 - Every sampled active battle state passed save validation, including choices and periodic in-flight checks.
@@ -16,23 +16,27 @@ Working branch: `codex/slop-survivor-complete`. Base: `slop-survivor-progression
 
 ## What the sweep measures
 
-The combat bot uses automatic aiming, a deterministic card policy, immediate card selection and Market Crash whenever charged. It invests only in Mint Condition, Paper Hands, Gas Fees, Block Lightning, Liquidator and Burn Address. Other eligible weapons remain level 1; S weapons enter after discovery plus a blueprint chase. Boons are damage, slow and crit in that order. Seeds are fixed per level. This is a reproducible route, not a statistical win-rate claim across all builds and seeds.
+The combat bot uses automatic aiming, an investment-aware, speed-focused deterministic card policy, immediate card selection and Market Crash whenever charged. It invests only in Mint Condition, Paper Hands, Gas Fees, Block Lightning, Liquidator and Burn Address. Other eligible weapons remain level 1; S weapons enter after discovery plus a blueprint chase. Boons are damage, slow and crit in that order. Seeds are fixed per level. This is a reproducible route, not a statistical win-rate claim across all builds and seeds.
 
 The no-card control receives starting boons but rejects all battle choices, including new weapons. Clear margin is the fraction of shields remaining. The analytical pressure index is reported separately from real combat results; it is not claimed to be an experimentally measured minimum card multiplier.
 
 Economy uses actual reward and purchase functions, sequential Easy/Hard/Impossible clears, greedy cheapest affordable useful upgrades, and 3:1 refinement of non-core spare parts. One ten-minute idle interval is credited per clear. If below 85%, it repeats the previous Impossible encounter, with a bound of twenty repeats at a level and twenty across the accepted route. There is no free currency injection. Repeats are reported explicitly, so idle time and farming are not hidden assumptions.
 
-## Pacing limitation
+## Pacing validation
 
-Six to twelve minutes remains the target, not a forced minimum or timeout. This bot's active-combat times range from 87 to 1,319 seconds, with a 386-second median; 161 of 300 are within the target interval. Card-reading time is excluded. Early levels are faster and some unlucky late builds are longer. The report retains these outliers. No artificial waiting, wave-count changes or damage-curve changes were added to force the timing statistic.
+All 300 canonical encounters pass the required 360-to-720-second assertion. Active combat ranges from 434 to 628 seconds, with a 513-second median. Another 63 encounters at every fifth level plus level 1 pass using alternate seeds (20260915 + level). Card-reading time is excluded.
+
+Campaign snakes enter at the portal. A shared formula derives body spacing from eight minutes of baseline travel, with the original 32-pixel minimum. Movement, health and wave-count formulas are unchanged. Trap roots release when their victims die. There is no waiting state or minimum victory timer. The model prints the geometry derivation; focused tests verify recoil, save resumption and unchanged tournament geometry.
+
+The speed-focused card policy favors funded weapons and damage upgrades, and deprioritizes redundant control/healing unlocks. Every unlocked weapon remains eligible. Accounts contain only prior encounter clears, never the encounter under test. Control-heavy player builds can take longer; this sweep does not guarantee timing for every choice or seed.
 
 ## Baseline and phase checkpoints
 
-The supplied branch passed 70 unit tests and 42/45 balance encounters. The user authorized repairs. Applying the required highest-damage campaign special scaling restored 45/45 with the same seeds and policy; the regression checkpoint passed 71 tests. Phases 1 and 2 were integrated atomically to avoid an incompatible schema/engine intermediate build: 105 tests, 63 sampled wins. Phase 3: 133 tests and 63 wins. Phase 4: 135 tests and 63 wins. Phase 5: 138 tests and 63 wins. Final phase: 145 tests, full sweep, no-card controls, economy and browser checks.
+The supplied branch passed 70 unit tests and 42/45 balance encounters. The user authorized repairs. Applying the required highest-damage campaign special scaling restored 45/45 with the same seeds and policy; the regression checkpoint passed 71 tests. Phases 1 and 2 were integrated atomically to avoid an incompatible schema/engine intermediate build: 105 tests, 63 sampled wins. Phase 3: 133 tests and 63 wins. Phase 4: 135 tests and 63 wins. Phase 5: 138 tests and 63 wins. Initial verification checkpoint: 145 tests. Completion audit: 152 tests, enforced pacing, full sweep, no-card controls, economy and browser checks.
 
 Real legacy fixture provenance: `tests/fixtures/v1-original-engine.json` was generated by the original `data.mjs` and `engine.mjs` from fc9c41c, with earned progression seeded before creating active campaign and tournament runs. It verifies migration of original shapes, rather than a v2 run relabeled as v1.
 
-Full raw logs: [unit tests](tests/reports/unit-tests.txt), [balance sweep](tests/reports/balance-full.txt), [unchanged curve model output](tests/reports/curve-model.txt). Physical mobile devices and a live Telegram account were not available; browser integration and mocked cloud-ordering tests cover those paths.
+Full raw logs: [unit tests](tests/reports/unit-tests.txt), [balance sweep](tests/reports/balance-full.txt), [curve model and pacing derivation](tests/reports/curve-model.txt). Physical mobile devices and a live Telegram account were not available; browser integration and mocked cloud-ordering tests cover those paths.
 
 ## Campaign sweep
 
@@ -40,109 +44,109 @@ Every listed encounter won. Cells contain active seconds / remaining shield frac
 
 | Level | Easy | Hard | Impossible | No cards |
 |---:|---|---|---|---|
-| 1 | 94s / 1 | 118s / 1 | 224s / 1 | Lost |
-| 2 | 87s / 1 | 219s / 1 | 133s / 1 | Lost |
-| 3 | 102s / 1 | 184s / 1 | 134s / 1 | Lost |
-| 4 | 234s / 1 | 369s / 1 | 393s / 1 | Lost |
-| 5 | 187s / 1 | 238s / 1 | 211s / 1 | Lost |
-| 6 | 106s / 1 | 216s / 1 | 179s / 1 | Lost |
-| 7 | 196s / 1 | 375s / 1 | 566s / 1 | Lost |
-| 8 | 189s / 1 | 243s / 1 | 301s / 1 | Lost |
-| 9 | 179s / 1 | 158s / 1 | 382s / 1 | Lost |
-| 10 | 191s / 1 | 236s / 1 | 360s / 1 | Lost |
-| 11 | 167s / 1 | 210s / 1 | 354s / 1 | Lost |
-| 12 | 165s / 1 | 374s / 1 | 328s / 1 | Lost |
-| 13 | 235s / 1 | 265s / 1 | 385s / 1 | Lost |
-| 14 | 200s / 1 | 292s / 1 | 386s / 1 | Lost |
-| 15 | 209s / 1 | 250s / 1 | 455s / 1 | Lost |
-| 16 | 183s / 1 | 311s / 1 | 291s / 1 | Lost |
-| 17 | 205s / 1 | 302s / 1 | 343s / 1 | Lost |
-| 18 | 260s / 1 | 329s / 1 | 384s / 1 | Lost |
-| 19 | 212s / 1 | 288s / 1 | 239s / 1 | Lost |
-| 20 | 242s / 1 | 305s / 1 | 363s / 1 | Lost |
-| 21 | 197s / 1 | 253s / 1 | 231s / 1 | Lost |
-| 22 | 230s / 1 | 254s / 1 | 248s / 1 | Lost |
-| 23 | 214s / 1 | 281s / 1 | 298s / 1 | Lost |
-| 24 | 250s / 1 | 285s / 1 | 295s / 1 | Lost |
-| 25 | 218s / 1 | 325s / 1 | 327s / 1 | Lost |
-| 26 | 251s / 1 | 272s / 1 | 291s / 1 | Lost |
-| 27 | 227s / 1 | 289s / 1 | 408s / 1 | Lost |
-| 28 | 239s / 1 | 367s / 1 | 455s / 1 | Lost |
-| 29 | 245s / 1 | 283s / 1 | 327s / 1 | Lost |
-| 30 | 299s / 1 | 299s / 1 | 468s / 1 | Lost |
-| 31 | 256s / 1 | 323s / 1 | 428s / 1 | Lost |
-| 32 | 260s / 1 | 370s / 1 | 425s / 1 | Lost |
-| 33 | 266s / 1 | 393s / 1 | 455s / 1 | Lost |
-| 34 | 268s / 1 | 439s / 1 | 607s / 1 | Lost |
-| 35 | 390s / 1 | 460s / 1 | 338s / 1 | Lost |
-| 36 | 318s / 1 | 331s / 1 | 366s / 1 | Lost |
-| 37 | 328s / 1 | 411s / 1 | 544s / 1 | Lost |
-| 38 | 278s / 1 | 355s / 1 | 398s / 1 | Lost |
-| 39 | 284s / 1 | 447s / 1 | 391s / 1 | Lost |
-| 40 | 257s / 1 | 325s / 1 | 461s / 1 | Lost |
-| 41 | 327s / 1 | 542s / 1 | 352s / 1 | Lost |
-| 42 | 321s / 1 | 353s / 1 | 380s / 1 | Lost |
-| 43 | 325s / 1 | 412s / 1 | 356s / 1 | Lost |
-| 44 | 318s / 1 | 541s / 1 | 349s / 1 | Lost |
-| 45 | 388s / 1 | 680s / 1 | 388s / 1 | Lost |
-| 46 | 315s / 1 | 409s / 1 | 349s / 1 | Lost |
-| 47 | 391s / 1 | 379s / 1 | 339s / 1 | Lost |
-| 48 | 326s / 1 | 372s / 1 | 440s / 1 | Lost |
-| 49 | 538s / 1 | 355s / 1 | 368s / 1 | Lost |
-| 50 | 311s / 1 | 389s / 1 | 390s / 1 | Lost |
-| 51 | 324s / 1 | 396s / 1 | 554s / 1 | Lost |
-| 52 | 321s / 1 | 441s / 1 | 368s / 1 | Lost |
-| 53 | 325s / 1 | 417s / 1 | 621s / 1 | Lost |
-| 54 | 329s / 1 | 755s / 1 | 491s / 1 | Lost |
-| 55 | 331s / 1 | 482s / 1 | 738s / 1 | Lost |
-| 56 | 321s / 1 | 503s / 1 | 505s / 1 | Lost |
-| 57 | 386s / 1 | 458s / 1 | 393s / 1 | Lost |
-| 58 | 322s / 1 | 393s / 1 | 697s / 1 | Lost |
-| 59 | 325s / 1 | 357s / 1 | 367s / 1 | Lost |
-| 60 | 302s / 1 | 439s / 1 | 528s / 1 | Lost |
-| 61 | 316s / 1 | 384s / 1 | 858s / 1 | Lost |
-| 62 | 402s / 1 | 465s / 1 | 536s / 1 | Lost |
-| 63 | 401s / 1 | 391s / 1 | 547s / 1 | Lost |
-| 64 | 400s / 1 | 387s / 1 | 418s / 1 | Lost |
-| 65 | 318s / 1 | 379s / 1 | 617s / 1 | Lost |
-| 66 | 408s / 1 | 475s / 1 | 447s / 1 | Lost |
-| 67 | 320s / 1 | 376s / 1 | 653s / 1 | Lost |
-| 68 | 333s / 1 | 399s / 1 | 828s / 1 | Lost |
-| 69 | 422s / 1 | 544s / 1 | 576s / 1 | Lost |
-| 70 | 525s / 1 | 383s / 1 | 583s / 1 | Lost |
-| 71 | 471s / 1 | 553s / 1 | 432s / 1 | Lost |
-| 72 | 381s / 1 | 660s / 1 | 1223s / 1 | Lost |
-| 73 | 357s / 1 | 488s / 1 | 578s / 1 | Lost |
-| 74 | 461s / 1 | 520s / 1 | 648s / 1 | Lost |
-| 75 | 352s / 1 | 480s / 1 | 589s / 1 | Lost |
-| 76 | 431s / 1 | 428s / 1 | 517s / 1 | Lost |
-| 77 | 354s / 1 | 745s / 1 | 679s / 1 | Lost |
-| 78 | 350s / 1 | 444s / 1 | 980s / 1 | Lost |
-| 79 | 351s / 1 | 465s / 1 | 522s / 1 | Lost |
-| 80 | 362s / 1 | 424s / 1 | 570s / 1 | Lost |
-| 81 | 420s / 1 | 392s / 1 | 715s / 1 | Lost |
-| 82 | 441s / 1 | 641s / 1 | 1319s / 1 | Lost |
-| 83 | 353s / 1 | 421s / 1 | 491s / 1 | Lost |
-| 84 | 493s / 1 | 464s / 1 | 633s / 1 | Lost |
-| 85 | 410s / 1 | 404s / 1 | 798s / 1 | Lost |
-| 86 | 471s / 1 | 606s / 1 | 502s / 1 | Lost |
-| 87 | 439s / 1 | 624s / 1 | 1001s / 1 | Lost |
-| 88 | 439s / 1 | 440s / 1 | 522s / 1 | Lost |
-| 89 | 354s / 1 | 394s / 1 | 413s / 1 | Lost |
-| 90 | 405s / 1 | 504s / 1 | 494s / 1 | Lost |
-| 91 | 381s / 1 | 402s / 1 | 780s / 1 | Lost |
-| 92 | 351s / 1 | 527s / 1 | 487s / 1 | Lost |
-| 93 | 348s / 1 | 472s / 1 | 421s / 1 | Lost |
-| 94 | 389s / 1 | 408s / 1 | 485s / 1 | Lost |
-| 95 | 421s / 1 | 441s / 1 | 546s / 1 | Lost |
-| 96 | 426s / 1 | 564s / 1 | 841s / 1 | Lost |
-| 97 | 419s / 1 | 413s / 1 | 386s / 1 | Lost |
-| 98 | 352s / 1 | 399s / 1 | 511s / 1 | Lost |
-| 99 | 413s / 1 | 540s / 1 | 505s / 1 | Lost |
-| 100 | 394s / 1 | 843s / 1 | 489s / 1 | Lost |
+| 1 | 434s / 1 | 483s / 1 | 443s / 1 | Lost |
+| 2 | 441s / 1 | 482s / 1 | 457s / 1 | Lost |
+| 3 | 449s / 1 | 489s / 1 | 464s / 1 | Lost |
+| 4 | 459s / 1 | 502s / 1 | 467s / 1 | Lost |
+| 5 | 442s / 1 | 493s / 1 | 443s / 1 | Lost |
+| 6 | 445s / 1 | 493s / 1 | 488s / 1 | Lost |
+| 7 | 450s / 1 | 510s / 1 | 470s / 1 | Lost |
+| 8 | 468s / 1 | 518s / 1 | 495s / 1 | Lost |
+| 9 | 454s / 1 | 519s / 1 | 497s / 1 | Lost |
+| 10 | 461s / 1 | 524s / 1 | 487s / 1 | Lost |
+| 11 | 467s / 1 | 508s / 1 | 482s / 1 | Lost |
+| 12 | 458s / 1 | 512s / 1 | 473s / 1 | Lost |
+| 13 | 462s / 1 | 509s / 1 | 495s / 1 | Lost |
+| 14 | 464s / 1 | 527s / 1 | 505s / 1 | Lost |
+| 15 | 465s / 1 | 516s / 1 | 510s / 1 | Lost |
+| 16 | 467s / 1 | 514s / 1 | 499s / 1 | Lost |
+| 17 | 460s / 1 | 511s / 1 | 501s / 1 | Lost |
+| 18 | 468s / 1 | 512s / 1 | 492s / 1 | Lost |
+| 19 | 468s / 1 | 515s / 1 | 502s / 1 | Lost |
+| 20 | 489s / 1 | 545s / 1 | 578s / 1 | Lost |
+| 21 | 462s / 1 | 517s / 1 | 491s / 1 | Lost |
+| 22 | 467s / 1 | 524s / 1 | 553s / 1 | Lost |
+| 23 | 471s / 1 | 519s / 1 | 547s / 1 | Lost |
+| 24 | 468s / 1 | 539s / 1 | 494s / 1 | Lost |
+| 25 | 467s / 1 | 520s / 1 | 507s / 1 | Lost |
+| 26 | 467s / 1 | 527s / 1 | 520s / 1 | Lost |
+| 27 | 470s / 1 | 523s / 1 | 544s / 1 | Lost |
+| 28 | 466s / 1 | 517s / 1 | 493s / 1 | Lost |
+| 29 | 470s / 1 | 528s / 1 | 489s / 1 | Lost |
+| 30 | 471s / 1 | 529s / 1 | 511s / 1 | Lost |
+| 31 | 469s / 1 | 524s / 1 | 617s / 1 | Lost |
+| 32 | 481s / 1 | 528s / 1 | 530s / 1 | Lost |
+| 33 | 475s / 1 | 536s / 1 | 580s / 1 | Lost |
+| 34 | 471s / 1 | 530s / 1 | 548s / 1 | Lost |
+| 35 | 479s / 1 | 523s / 1 | 498s / 1 | Lost |
+| 36 | 478s / 1 | 529s / 1 | 492s / 1 | Lost |
+| 37 | 472s / 1 | 524s / 1 | 511s / 1 | Lost |
+| 38 | 477s / 1 | 531s / 1 | 542s / 1 | Lost |
+| 39 | 473s / 1 | 526s / 1 | 497s / 1 | Lost |
+| 40 | 443s / 1 | 514s / 1 | 487s / 1 | Lost |
+| 41 | 478s / 1 | 525s / 1 | 502s / 1 | Lost |
+| 42 | 474s / 1 | 525s / 1 | 508s / 1 | Lost |
+| 43 | 470s / 1 | 517s / 1 | 494s / 1 | Lost |
+| 44 | 472s / 1 | 518s / 1 | 513s / 1 | Lost |
+| 45 | 471s / 1 | 521s / 1 | 498s / 1 | Lost |
+| 46 | 470s / 1 | 518s / 1 | 479s / 1 | Lost |
+| 47 | 464s / 1 | 524s / 1 | 490s / 1 | Lost |
+| 48 | 470s / 1 | 530s / 1 | 533s / 1 | Lost |
+| 49 | 468s / 1 | 533s / 1 | 489s / 1 | Lost |
+| 50 | 466s / 1 | 524s / 1 | 493s / 1 | Lost |
+| 51 | 470s / 1 | 518s / 1 | 517s / 1 | Lost |
+| 52 | 471s / 1 | 519s / 1 | 554s / 1 | Lost |
+| 53 | 467s / 1 | 514s / 1 | 488s / 1 | Lost |
+| 54 | 472s / 1 | 515s / 1 | 483s / 1 | Lost |
+| 55 | 474s / 1 | 551s / 1 | 513s / 1 | Lost |
+| 56 | 474s / 1 | 547s / 1 | 528s / 1 | Lost |
+| 57 | 476s / 1 | 519s / 1 | 486s / 1 | Lost |
+| 58 | 471s / 1 | 517s / 1 | 500s / 1 | Lost |
+| 59 | 471s / 1 | 524s / 1 | 499s / 1 | Lost |
+| 60 | 455s / 1 | 536s / 1 | 475s / 1 | Lost |
+| 61 | 468s / 1 | 515s / 1 | 527s / 1 | Lost |
+| 62 | 475s / 1 | 536s / 1 | 500s / 1 | Lost |
+| 63 | 468s / 1 | 543s / 1 | 524s / 1 | Lost |
+| 64 | 475s / 1 | 521s / 1 | 494s / 1 | Lost |
+| 65 | 467s / 1 | 533s / 1 | 532s / 1 | Lost |
+| 66 | 472s / 1 | 516s / 1 | 495s / 1 | Lost |
+| 67 | 479s / 1 | 626s / 1 | 533s / 1 | Lost |
+| 68 | 477s / 1 | 546s / 1 | 628s / 1 | Lost |
+| 69 | 474s / 1 | 528s / 1 | 553s / 1 | Lost |
+| 70 | 490s / 1 | 535s / 1 | 613s / 1 | Lost |
+| 71 | 517s / 1 | 575s / 1 | 563s / 1 | Lost |
+| 72 | 516s / 1 | 572s / 1 | 589s / 1 | Lost |
+| 73 | 521s / 1 | 588s / 1 | 547s / 1 | Lost |
+| 74 | 514s / 1 | 567s / 1 | 535s / 1 | Lost |
+| 75 | 516s / 1 | 563s / 1 | 534s / 1 | Lost |
+| 76 | 511s / 1 | 567s / 1 | 575s / 1 | Lost |
+| 77 | 513s / 1 | 567s / 1 | 551s / 1 | Lost |
+| 78 | 510s / 1 | 564s / 1 | 543s / 1 | Lost |
+| 79 | 511s / 1 | 579s / 1 | 606s / 1 | Lost |
+| 80 | 525s / 1 | 570s / 1 | 600s / 1 | Lost |
+| 81 | 517s / 1 | 574s / 1 | 547s / 1 | Lost |
+| 82 | 516s / 1 | 561s / 1 | 548s / 1 | Lost |
+| 83 | 514s / 1 | 562s / 1 | 529s / 1 | Lost |
+| 84 | 512s / 1 | 559s / 1 | 528s / 1 | Lost |
+| 85 | 511s / 1 | 568s / 1 | 537s / 1 | Lost |
+| 86 | 509s / 1 | 560s / 1 | 531s / 1 | Lost |
+| 87 | 508s / 1 | 563s / 1 | 522s / 1 | Lost |
+| 88 | 512s / 1 | 567s / 1 | 533s / 1 | Lost |
+| 89 | 513s / 1 | 567s / 1 | 534s / 1 | Lost |
+| 90 | 492s / 1 | 545s / 1 | 527s / 1 | Lost |
+| 91 | 507s / 1 | 581s / 1 | 563s / 1 | Lost |
+| 92 | 504s / 1 | 571s / 1 | 531s / 1 | Lost |
+| 93 | 507s / 1 | 565s / 1 | 532s / 1 | Lost |
+| 94 | 504s / 1 | 576s / 1 | 526s / 1 | Lost |
+| 95 | 504s / 1 | 555s / 1 | 528s / 1 | Lost |
+| 96 | 509s / 1 | 559s / 1 | 537s / 1 | Lost |
+| 97 | 510s / 1 | 558s / 1 | 520s / 1 | Lost |
+| 98 | 508s / 1 | 563s / 1 | 527s / 1 | Lost |
+| 99 | 508s / 1 | 574s / 1 | 534s / 1 | Lost |
+| 100 | 517s / 1 | 590s / 1 | 598s / 1 | Lost |
 
 ## Summary output
 
 ```text
-SUMMARY: 300/300 engine wins; 100 Hard no-card losses required; economy minimum 0.854, 14 repeat clears. Runtime min/median/max 87/386/1319 seconds; 161/300 within 6 to 12 minutes. PASS
+SUMMARY: 300/300 engine wins; 100 Hard no-card losses required; economy minimum 0.854, 14 repeat clears. Runtime min/median/max 434/513/628 seconds; 300/300 within 6 to 12 minutes. PASS
 ```

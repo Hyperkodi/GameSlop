@@ -77,7 +77,7 @@ The explicit old chapter 1 to new level 1 and old chapter 15 to new level 21 end
 
 Run validation covers level 100, six waves, eight weapons, ten shields, level-50 bases, ranks, Foundry and all new weapon timers and effects. Original engine fixtures verify preservation of rolled cards and projectiles. New effects are tested for deterministic continuation after normalization.
 
-Local saving is automatic. Telegram reads before writing. An existing v2 local save cannot be overwritten by v1 cloud progress even if its timestamp is newer. Fresh devices may restore and migrate legacy cloud progress before creating their first local save. Service-worker cache v2.0.0 includes all runtime modules and sprites.
+Local saving is automatic. Telegram reads before writing. An existing v2 local save cannot be overwritten by v1 cloud progress even if its timestamp is newer. Fresh devices may restore and migrate legacy cloud progress before creating their first local save. Service-worker cache v2.0.1 includes all runtime modules and sprites.
 
 ## Full weapon roster
 
@@ -109,3 +109,9 @@ C/B discovery requires an Easy clear, A requires Hard. S requires Easy discovery
 | Nonce Nuke (nuke) | S | 92 | Screen clear | Hit every visible section with damage falling away from the head. Gold: Strike every visible section without distance falloff. |
 | Wen Lambo (lambo) | A | 54 | Path sweep | Drive along the snake body path, striking each section once per pass. Gold: Make a return pass along the snake body path. |
 | Flash Loan (flashloan) | S | 80 | Debt burst | Deliver a huge hit, then repay for 2.5 seconds. A target kill forgives the debt. Gold: Forgiving a debt refunds the cooldown for an immediate new cast. |
+
+## Campaign pacing
+
+Campaign snakes enter at the portal. Body-piece spacing is derived from an eight-minute baseline travel budget, with the original 32-pixel minimum. Health, movement multipliers, piece caps and wave counts retain the specified formulas. The shared curve model prints the derivation. There is no waiting state or minimum victory timer. Tournament geometry stays unchanged. Bear Trap roots living struck sections for two seconds and releases when those victims die.
+
+The full balance harness requires all 300 wins to fall between 360 and 720 active seconds. The final sweep records 434 to 628 seconds, median 513, using an investment-aware speed-focused card policy. Card-reading time is excluded; control-heavy builds and other player choices can take longer. See VERIFICATION.md for assumptions and complete results.
