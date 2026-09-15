@@ -13,7 +13,7 @@ export function preview(w,kind,tier='blue',legacy=false){const v=values({rarity:
  default:return `${rank>1?rank+' signature ranks. ':''}${base.specialText}${rank>1?' Applied once per rank.':''}`;
 }}
 export function eligible(r,tier,opening=false){const cards=[];
- for(const id of r.deck){const w=r.weapons.find(x=>x.id===id),b=weapon(id);if(!w){if(tier==='green'&&r.weapons.length<6)cards.push({id:`${id}:unlock`,weapon:id,kind:'unlock',title:b.name,description:b.description,rarity:'green',weight:2});continue;}
+ for(const id of r.deck){const w=r.weapons.find(x=>x.id===id),b=weapon(id);if(!w){if(tier==='green'&&r.weapons.length<(r.slots||6))cards.push({id:`${id}:unlock`,weapon:id,kind:'unlock',title:b.name,description:b.description,rarity:'green',weight:2*(1+.06*((r.baseLevels[id]||1)-1)+.5*((r.baseRanks?.[id]||1)-1))});continue;}
   if(opening)continue;
   for(const kind of ['damage','power','crit','haste','special','criticalDamage','legendary']){
    if(kind==='criticalDamage'&&w.endless&&w.mult>=6||kind==='crit'&&w.crit>=.85||kind==='haste'&&w.cooldown<=.091||kind==='special'&&(tier==='green'||w.specialRanks>=4)||kind==='legendary'&&(tier!=='gold'||w.legendary||w.upgrades<3))continue;

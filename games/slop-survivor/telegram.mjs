@@ -19,7 +19,7 @@ export class TelegramSaves{
  async load(){if(this.busy)throw new Error('A cloud operation is already in progress.');this.busy=true;try{
   const raw=await this.call('getItem',PREFIX+'head');if(!raw)return null;const meta=JSON.parse(raw);if(!/^[a-z0-9_]+$/.test(meta.id)||!Number.isInteger(meta.count)||meta.count<1||meta.count>MAX_CHUNKS)throw new Error('Invalid cloud save manifest.');
   const keys=Array.from({length:meta.count},(_,i)=>PREFIX+meta.id+'_'+i),items=await this.call('getItems',keys);if(keys.some(k=>typeof items[k]!=='string'))throw new Error('Cloud save is incomplete. Your local progress is unchanged.');const body=keys.map(k=>items[k]).join('');if(checksum(body)!==meta.hash)throw new Error('Cloud save integrity check failed.');
-  const data=JSON.parse(body);if(data.format!==1||data.save?.version!==1||!data.save.levels)throw new Error('Unsupported cloud save.');return data;
+  const data=JSON.parse(body);if(data.format!==1||![1,2].includes(data.save?.version)||!data.save.levels)throw new Error('Unsupported cloud save.');return data;
  }finally{this.busy=false;}}
 }
 export async function connectTelegram(){

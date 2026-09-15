@@ -16,7 +16,7 @@ export class AutoSync {
     const before=JSON.stringify(this.read()),cloud=await this.storage.load(),local=this.read();
     const cloudTime=cloud?.save?.updatedAt||cloud?.savedAt||0;
     // Do not replace actions taken while the initial network request was pending.
-    if(cloud&&JSON.stringify(local)===before&&cloudTime>(local.updatedAt||0)){
+    if(cloud&&(cloud.save?.version||0)>=(local.version||0)&&JSON.stringify(local)===before&&cloudTime>(local.updatedAt||0)){
      this.restore({...cloud.save,updatedAt:cloudTime});this.dirty=false;
     }else this.dirty=true;
     this.ready=true;

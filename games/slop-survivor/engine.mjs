@@ -1,16 +1,17 @@
 import {encounterPhase} from './world.mjs';
 import {drawCards,applyCard,preview} from './upgrades.mjs';
-import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked} from './data.mjs';
+import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked} from './data.mjs';
 export const W=480,H=760;
 export {pathPoint} from './snake.mjs';
 import {groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,aimPoint,onBoard} from './snake.mjs';
-export function makeWeapon(id,level=1,boons=[]){const base=weapon(id);return {id,level,damage:base.damage*(1+(level-1)*.12)*(boons.includes('damage')?1.25:1),cooldown:base.cooldown*(boons.includes('rapid')?.85:1),crit:Math.min(.85,base.crit+(boons.includes('crit')?.1:0)),mult:base.mult,pierce:base.type==='beam'?2:base.type==='disc'?3:0,count:base.type==='swarm'?3:1,radius:base.radius||0,chains:base.type==='oracle'?3:4,slow:.2,burnTime:3,legendary:false,timer:0,tier:1,upgrades:0,totalDamage:0,specialRanks:0};}
-export function createRun(save,chapter=0,difficulty='normal',seed=Date.now()){
- if(!unlockedDifficulty(save,chapter,difficulty))throw new Error('Chapter or difficulty is locked');
- return {version:VERSION,rules:2,mode:'campaign',chapter,difficulty,seed:(seed>>>0)||1,time:0,state:'boon',wave:0,segments:[],bullets:[],effects:[],numbers:[],weapons:[],deck:WEAPONS.filter(w=>weaponUnlocked(save,w)).map(w=>w.id),baseLevels:{...save.levels},boons:[],boonOptions:BOONS.map(b=>b.id),boonsLeft:DIFFICULTIES.find(d=>d.id===difficulty).boons,choices:[],pending:0,headDistance:180,health:5,maxHealth:5,score:0,kills:0,waveKills:0,nextChest:3,castId:0,charge:0,slowUntil:0,slowAmount:0,aimX:240,aimY:130,manual:false,heroX:240,heroY:640,events:[],resultApplied:false,rerolls:2,lastChoice:0};
+export function makeWeapon(id,level=1,boons=[],rank=1,foundry={}){const base=weapon(id);return {id,level,rank,damage:base.damage*1.135**(level-1)*1.12**(rank-1)*1.08**(foundry.ordnance||0)*(boons.includes('damage')?1.25:1),cooldown:base.cooldown*(1-.0055*(foundry.overclock||0))*(boons.includes('rapid')?.85:1),crit:Math.min(.85,base.crit+.01*(foundry.precision||0)+(boons.includes('crit')?.1:0)),mult:base.mult+.02*(foundry.precision||0),pierce:base.type==='beam'?2:base.type==='disc'?3:0,count:base.type==='swarm'?3:1,radius:base.radius||0,chains:base.type==='oracle'?3:4,slow:.2,burnTime:3,legendary:false,timer:0,tier:1,upgrades:0,totalDamage:0,specialRanks:0};}
+export function createRun(save,chapter=0,difficulty='easy',seed=Date.now()){
+ if(!unlockedDifficulty(save,chapter,difficulty))throw new Error('Level or difficulty is locked');
+ const d=DIFFICULTIES.find(x=>x.id===difficulty),health=d.shields+Math.floor(save.foundry.vault/8);
+ return {version:VERSION,rules:2,mode:'campaign',chapter,difficulty,seed:(seed>>>0)||1,time:0,state:'boon',wave:0,segments:[],bullets:[],effects:[],numbers:[],weapons:[],deck:WEAPONS.filter(w=>weaponUnlocked(save,w)).map(w=>w.id),baseLevels:{...save.levels},baseRanks:{...save.ranks},foundry:{...save.foundry},slots:arsenalSlots(save),boons:[],boonOptions:BOONS.map(b=>b.id),boonsLeft:DIFFICULTIES.find(d=>d.id===difficulty).boons,choices:[],pending:0,headDistance:180,health,maxHealth:health,score:0,kills:0,waveKills:0,nextChest:3,castId:0,charge:0,slowUntil:0,slowAmount:0,aimX:240,aimY:130,manual:false,heroX:240,heroY:640,events:[],resultApplied:false,rerolls:d.rerolls,lastChoice:0};
 }
 export function createTournamentRun(save,seed=Date.now()){
- const r=createRun(save,0,'normal',seed);r.mode='tournament';r.revivesUsed=0;return r;
+ const r=createRun(save,0,DIFFICULTIES[0].id,seed);r.mode='tournament';r.revivesUsed=0;return r;
 }
 export function reviveTournament(r){
  if(r.mode!=='tournament'||r.state!=='revive'||r.revivesUsed>=3)return false;
@@ -21,19 +22,19 @@ export function endTournament(r){
  if(r.mode!=='tournament'||r.state!=='revive')return false;
  r.state='lost';return true;
 }
-function runWeapon(r,id){const w=makeWeapon(id,r.baseLevels[id],r.boons);if(r.mode==='tournament')w.endless=true;return w;}
-export function chooseBoon(r,id){if(r.state!=='boon'||!r.boonOptions.includes(id)||r.boons.includes(id))return false;r.boons.push(id);r.boonsLeft--;r.boonOptions=r.boonOptions.filter(x=>x!==id);if(r.boonsLeft<=0){if(r.boons.includes('health'))r.health=r.maxHealth=7;r.weapons=[runWeapon(r,'coin')];r.state='playing';spawnWave(r);r.pending=1;offerChoice(r,true);}return true;}
+function runWeapon(r,id){const w=makeWeapon(id,r.baseLevels[id],r.boons,r.baseRanks?.[id]||1,r.foundry);if(r.mode==='tournament')w.endless=true;return w;}
+export function chooseBoon(r,id){if(r.state!=='boon'||!r.boonOptions.includes(id)||r.boons.includes(id))return false;r.boons.push(id);r.boonsLeft--;r.boonOptions=r.boonOptions.filter(x=>x!==id);if(r.boonsLeft<=0){if(r.boons.includes('health'))r.health=r.maxHealth=Math.min(10,r.maxHealth+2);r.weapons=[runWeapon(r,'coin')];r.state='playing';spawnWave(r);r.pending=1;offerChoice(r,true);}return true;}
 export function spawnWave(r){
  r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=640;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;
- const endless=r.mode==='tournament';const n=endless?Math.min(64,25+(r.wave-1)*3):c.segments+(r.wave-1)*3;
- r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(r.chapter===1||r.chapter>=4||endless&&r.wave>=3)&&i%4===2;const regen=([2,5,7,9,10,11].includes(r.chapter)||endless&&r.wave>=5)&&i%5===3;const volatile=([3,5,8,10,11].includes(r.chapter)||endless&&r.wave>=7)&&i%5===1;const hp=Math.min(1e12,(head?1000:260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
+ const endless=r.mode==='tournament';const n=endless?Math.min(64,25+(r.wave-1)*3):Math.min(64,c.segments+(r.wave-1)*3);
+ r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000:260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
  r.snakeLayout=undefined;groupSections(r);
  // Traits belong to health pools, not each of the four decorative body pieces.
  // Keep their original frequency instead of making every grouped section armored.
  r.segments.forEach((s,i)=>{
-  s.armor=(r.chapter===1||r.chapter>=4||endless&&r.wave>=3)&&i%4===2;
-  s.regen=([2,5,7,9,10,11].includes(r.chapter)||endless&&r.wave>=5)&&i%5===3;
-  s.volatile=([3,5,8,10,11].includes(r.chapter)||endless&&r.wave>=7)&&i%5===1;
+  s.armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;
+  s.regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;
+  s.volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;
  });
  r.waveMaxHp=r.segments.reduce((n,s)=>n+s.hp,0);
  updatePositions(r);r.events.push({type:'wave',wave:r.wave});
@@ -50,7 +51,7 @@ export function offerChoice(r,opening=false){
 }
 export function chooseUpgrade(r,choiceId){
  if(r.state!=='choice')return false;const c=r.choices.find(x=>x.id===choiceId);if(!c)return false;
- if(c.kind==='unlock'){if(r.weapons.length>=6||r.weapons.some(w=>w.id===c.weapon))return false;r.weapons.push(runWeapon(r,c.weapon));}
+ if(c.kind==='unlock'){if(r.weapons.length>=(r.slots||6)||r.weapons.some(w=>w.id===c.weapon))return false;r.weapons.push(runWeapon(r,c.weapon));}
  else {const w=r.weapons.find(w=>w.id===c.weapon);if(!w||!applyCard(w,c))return false;}
  r.pending=Math.max(0,r.pending-1);r.choices=[];r.state='playing';r.lastChoice=r.time;r.openingChoice=false;r.events.push({type:'upgrade'});offerChoice(r);return true;
 }
@@ -123,4 +124,22 @@ export function tick(r,dt){
  if(r.time-r.lastChoice>24&&r.pending===0){r.pending=1;}
  offerChoice(r);
 }
-export function completeRun(save,r){if(!['won','lost'].includes(r.state)||r.resultApplied)return null;r.resultApplied=true;if(r.mode==='tournament'){const coins=Math.min(1000,30+r.kills*2);save.coins+=coins;save.totalKills+=r.kills;save.totalRuns++;save.tournamentRuns++;save.tournamentBest=Math.max(save.tournamentBest,r.score);save.tournamentRun=null;return {tournament:true,win:false,first:false,coins,score:r.score,kills:r.kills,time:r.time,chests:0};}const win=r.state==='won';const diff=DIFFICULTIES.find(d=>d.id===r.difficulty),key=`${r.chapter}:${r.difficulty}`,first=win&&!save.clears[key];const coins=Math.round((win?150+r.chapter*55:30+r.kills*2)*diff.reward+(first?150:0));save.coins+=coins;save.totalKills+=r.kills;save.totalRuns++;if(win){save.clears[key]=true;save.best[key]=Math.max(save.best[key]||0,r.score);save.chests=Math.min(32,save.chests+2+(first?1:0));for(const w of r.weapons)save.shards[w.id]+=2;}save.run=null;return {win,first,coins,score:r.score,kills:r.kills,time:r.time,chests:win?first?3:2:0};}
+export function completeRun(save,r){
+ if(!['won','lost'].includes(r.state)||r.resultApplied)return null;r.resultApplied=true;
+ if(r.mode==='tournament'){const coins=Math.min(1000,30+r.kills*2);save.coins+=coins;save.totalKills+=r.kills;save.totalRuns++;save.tournamentRuns++;save.tournamentBest=Math.max(save.tournamentBest,r.score);save.tournamentRun=null;return {tournament:true,win:false,first:false,coins,score:r.score,kills:r.kills,time:r.time,chests:0};}
+ const win=r.state==='won',n=r.chapter+1,key=`${r.chapter}:${r.difficulty}`,first=win&&!save.clears[key];
+ const coins=win?Math.round(firstClearCoins(n,r.difficulty)*(first?1:.25)):Math.min(30+r.kills*2,Math.round(firstClearCoins(n,r.difficulty)*.1));
+ const parts={},amount=win?Math.round(firstClearParts(n,r.difficulty)*(first?1:.25)):0;
+ // Rewards are a total budget, distributed across the weapons actually used this run.
+ const pool=[...new Set(r.weapons.map(w=>w.id))];for(let i=0;i<amount;i++){const id=pool[i%pool.length];parts[id]=(parts[id]||0)+1;save.parts[id]++;}
+ let cores=0,blueprints=0,chests=0,overflowLoot=null;
+ if(first){if(r.difficulty==='hard')cores=Math.ceil(n/12)+1;if(r.difficulty==='impossible'){cores=Math.ceil(n/6)+2;if(n%4===0)blueprints++;}
+  if(r.difficulty==='hard'&&WEAPONS.some(w=>w.grade==='S'&&w.discovery===n))blueprints+=10;
+  if(r.difficulty==='easy'&&n%10===0){blueprints+=3;if(chestTotal(save)>=32)overflowLoot=openChests(save,1,save.chestAt,()=>random(r));addChest(save,'vault');chests++;}
+ }
+ save.coins+=coins;save.cores+=cores;save.blueprints+=blueprints;save.totalKills+=r.kills;save.totalRuns++;
+ const previous=WEAPONS.filter(w=>weaponUnlocked(save,w)).map(w=>w.id);
+ if(win){save.clears[key]=true;save.best[key]=Math.max(save.best[key]||0,r.score);save.furthest[r.difficulty]=Math.max(save.furthest[r.difficulty],n);if(!save.selectedManual)save.selected=highestUnlocked(save);}
+ const unlocked=WEAPONS.filter(w=>weaponUnlocked(save,w)&&!previous.includes(w.id)).map(w=>w.id);
+ save.run=null;return {win,first,coins,parts,cores,blueprints,chests,overflowLoot,unlocked,score:r.score,kills:r.kills,time:r.time};
+}

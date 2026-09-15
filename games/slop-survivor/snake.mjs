@@ -1,7 +1,9 @@
+import {LEVELS} from './data.mjs';
 // One health pool covers four body pieces. Distances run from tail to head.
 export const PIECE_SPACING=32, SECTION_PIECES=4, RETREAT_SPEED=260;
 export function pathPoint(d,chapter=0){
- const [left,right,row,radius]=chapter===12?[55,425,108,33]:chapter===13?[76,404,98,24]:chapter===14?[61,419,110,30]:[67,413,103,27];const straight=right-left-2*radius,turn=Math.PI*radius;
+ const arena=LEVELS[chapter]?.arena;const act=arena==='canyon'?12:arena==='marina'?13:arena==='citadel'?14:0;
+ const [left,right,row,radius]=act===12?[55,425,108,33]:act===13?[76,404,98,24]:act===14?[61,419,110,30]:[67,413,103,27];const straight=right-left-2*radius,turn=Math.PI*radius;
  let y=113,dir=chapter%2?-1:1,x=dir>0?left+radius:right-radius;
  if(d<0)return {x:x+dir*d,y,angle:dir>0?0:Math.PI};
  for(let i=0;i<7;i++){
