@@ -25,3 +25,8 @@ test('expired burning leaves a valid save and contributes ongoing damage',()=>{c
 test('a weaker rug slow cannot cancel the special attack slow',()=>{const {r}=ready();r.weapons.push(makeWeapon('rug'));r.charge=100;ultimate(r);const until=r.slowUntil;tick(r,.05);assert.equal(r.slowAmount,.7);assert.equal(r.slowUntil,until);});
 test('damaged or incomplete imported run data is discarded while account progress survives',()=>{const {r,s}=ready();s.coins=800;s.run={...r,bullets:null};const restored=normalizeSave(s);assert.equal(restored.run,null);assert.equal(restored.coins,800);});
 test('unattended breaches can lose a siege without resetting or hanging',()=>{const {r}=ready();r.weapons=[];r.lastChoice=10000;r.headDistance=2100;r.health=1;tick(r,.05);assert.equal(r.state,'lost');assert.equal(r.health,0);});
+
+test('campaign special uses the highest-damage collected weapon',()=>{
+ const s=defaultSave(),r=createRun(s,0,'normal',42);chooseBoon(r,'damage');r.state='playing';r.pending=0;r.weapons=[makeWeapon('coin'),makeWeapon('whale')];for(const w of r.weapons)w.crit=0;
+ r.segments=[{id:1,hp:10000,maxHp:10000,x:240,y:200,head:true,markedUntil:0}];r.charge=100;ultimate(r);assert.equal(r.segments[0].hp,9160);
+});

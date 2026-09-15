@@ -91,10 +91,10 @@ function fire(r,w,t){
  if(base.type==='oracle'){const targets=r.segments.filter(visible).sort((a,b)=>Math.hypot(a.x-t.x,a.y-t.y)-Math.hypot(b.x-t.x,b.y-t.y)).slice(0,w.chains);for(const s of targets){s.markedUntil=r.time+5;hit(r,s,w);fx(r,{type:'prophecy',x:s.x,y:s.y,color,r:25,life:.75});}}
  if(base.type==='dragon'){const head=r.segments.find(visible)||t;for(let i=0;i<(w.legendary?2:1);i++)homing(r,w,r.heroX+(i?25:-10),r.heroY-25,head,'dragon');}
 }
-export function ultimate(r){if(r.state!=='playing'||r.charge<100)return false;r.slowUntil=r.time+3;r.slowAmount=.7;const w=r.weapons[0];for(const s of r.segments)if(visible(s))hit(r,s,w,w.damage*4);r.charge=0;fx(r,{type:'ultimate',x:240,y:340,r:400,color:'#ffd27b',life:1.1});r.events.push({type:'ultimate'});return true;}
+export function ultimate(r){if(r.state!=='playing'||r.charge<100)return false;r.slowUntil=r.time+3;r.slowAmount=.7;const w=r.mode==='tournament'?r.weapons[0]:r.weapons.reduce((best,w)=>w.damage>best.damage?w:best);for(const s of r.segments)if(visible(s))hit(r,s,w,w.damage*4);r.charge=0;fx(r,{type:'ultimate',x:240,y:340,r:400,color:'#ffd27b',life:1.1});r.events.push({type:'ultimate'});return true;}
 function removeDead(r){
  const dead=r.segments.filter(s=>s.hp<=0);if(!dead.length)return;
- for(const s of dead){r.kills+=s.pieces||1;r.waveKills+=s.pieces||1;r.score+=s.head?350:70*(s.pieces||1);for(const p of sectionPoints(s).filter((_,i)=>i%4===0))fx(r,{type:'burst',x:p.x,y:p.y,r:s.head?45:24,color:CHAPTERS[r.chapter].color,life:.5});if(s.volatile){const w=r.weapons[0];area(r,w,s.x,s.y,70,w.damage*2);}r.events.push({type:'kill'});}
+ for(const s of dead){r.kills+=s.pieces||1;r.waveKills+=s.pieces||1;r.score+=s.head?350:70*(s.pieces||1);for(const p of sectionPoints(s).filter((_,i)=>i%4===0))fx(r,{type:'burst',x:p.x,y:p.y,r:s.head?45:24,color:CHAPTERS[r.chapter].color,life:.5});if(s.volatile){const w=r.mode==='tournament'?r.weapons[0]:r.weapons.reduce((best,w)=>w.damage>best.damage?w:best);area(r,w,s.x,s.y,70,w.damage*2);}r.events.push({type:'kill'});}
  const ids=new Set(dead.map(s=>s.id));closeSectionGaps(r,ids);
  while(r.waveKills>=r.nextChest){r.pending++;r.nextChest+=4;}
 }
