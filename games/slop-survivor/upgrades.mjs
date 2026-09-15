@@ -36,6 +36,6 @@ export function drawCards(r,opening=false){const cards=[];let openingPool=openin
 export function applyCard(w,c){const v=values(c);if(c.kind==='damage')w.damage=nextDamage(w,v);if(c.kind==='power')w.damage+=Math.round(weapon(w.id).damage*v.damage);
  if(c.kind==='crit')w.crit=Math.min(.85,w.crit+v.crit);if(c.kind==='haste')w.cooldown=Math.max(.09,w.cooldown*(1-v.haste));if(c.kind==='criticalDamage')w.mult=Math.min(w.endless?6:Infinity,w.mult+v.mult);
  if(c.kind==='legendary'){if(w.legendary)return false;w.legendary=true;}
- if(c.kind==='special')for(let i=0;i<v.ranks&&w.specialRanks<4;i++){w.specialRanks++;switch(weapon(w.id).special){case'pierce':w.pierce+=w.id==='laser'?2:1;break;case'count':w.count++;break;case'radius':w.radius=Math.min(800,w.radius*1.35);break;case'chain':w.chains+=2;break;case'slow':w.slow=Math.min(.6,w.slow+.1);break;case'burn':w.burnTime=Math.min(15,w.burnTime+2);break;}}
+ if(c.kind==='special')for(let i=0;i<v.ranks&&w.specialRanks<4;i++){w.specialRanks++;switch(weapon(w.id).special){case'pierce':w.pierce+=w.id==='laser'?2:1;break;case'count':w.count++;break;case'radius':w.radius=Math.min(w.id==='nuke'?4000:800,w.radius*1.35);break;case'chain':w.chains+=2;break;case'slow':w.slow=Math.min(.6,w.slow+.1);break;case'haste':break;case'burn':w.burnTime=Math.min(15,w.burnTime+2);break;}}
  w.upgrades++;w.tier=1+Math.floor(w.upgrades/2);return true;
 }
