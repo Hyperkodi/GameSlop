@@ -1,3 +1,4 @@
+import {compactNumber} from './presentation.mjs';
 import {drawPlayer} from './player-render.mjs';
 import {WeaponPosePlayer,poseAsset,muzzlePoint} from './player-poses.mjs';
 import {bossForChapter,arenaForChapter,encounterPhase} from './world.mjs';
@@ -97,7 +98,7 @@ export class Renderer{
   const visible=points.filter(p=>p.x>28&&p.x<452&&p.y>78&&p.y<590);
   if(!visible.length)continue;const label=visible[Math.floor(visible.length/2)],x=label.x,y=label.y+(s.head?30:0);
   c.font='900 12px "Segoe UI",sans-serif';c.textAlign='center';c.textBaseline='middle';
-  const txt=s.hp>=1000?(s.hp/1000).toFixed(1)+'k':Math.ceil(Math.max(0,s.hp));
+  const txt=compactNumber(Math.max(0,s.hp));
   const width=Math.max(38,c.measureText(String(txt)).width+14);
   round(c,x-width/2,y-10,width,20,5,'#252232e6');c.fillStyle='#ffffff';c.fillText(txt,x,y);
   if(s.hp<s.maxHp){round(c,x-20,y+12,40,4,2,'#172c2b');round(c,x-20,y+12,40*Math.max(0,s.hp/s.maxHp),4,2,'#b9f478');}
@@ -130,7 +131,7 @@ export class Renderer{
  const phase=encounterPhase(r);if(phase.label){round(c,48,64,384,27,9,phase.active?'#a83922ee':'#141009dd','#f5a300');c.font='800 10px Nunito, sans-serif';c.fillStyle='#fff3d6';c.textAlign='center';c.fillText(phase.label,240,82);}
 
  if(r.manual){c.strokeStyle='#d9f5d2aa';c.lineWidth=1.5;c.beginPath();c.arc(r.aimX,r.aimY,13,0,TAU);c.stroke();line(c,[[r.aimX-19,r.aimY],[r.aimX-9,r.aimY]],'#e6ebc8',1);line(c,[[r.aimX+9,r.aimY],[r.aimX+19,r.aimY]],'#e6ebc8',1);}
- for(const n of r.numbers){c.globalAlpha=Math.min(1,n.life*3);c.textAlign='center';c.font=`bold ${n.crit?17:12}px "Segoe UI",sans-serif`;c.strokeStyle='#182b31';c.lineWidth=3;c.strokeText(n.crit?n.text+'!':n.text,n.x,n.y);c.fillStyle=n.crit?'#ffe195':'#dce9df';c.fillText(n.crit?n.text+'!':n.text,n.x,n.y);}c.globalAlpha=1;
+ for(const n of r.numbers){c.globalAlpha=Math.min(1,n.life*3);c.textAlign='center';c.font=`bold ${n.crit?17:12}px "Segoe UI",sans-serif`;c.strokeStyle='#182b31';c.lineWidth=3;c.strokeText(n.crit?compactNumber(n.text)+'!':compactNumber(n.text),n.x,n.y);c.fillStyle=n.crit?'#ffe195':'#dce9df';c.fillText(n.crit?compactNumber(n.text)+'!':compactNumber(n.text),n.x,n.y);}c.globalAlpha=1;
  // Fireflies provide gentle life without obscuring hit targets.
  if(!reduced){for(let i=0;i<8;i++){const x=30+((i*57.3+Math.sin(time*.3+i)*10)%420),y=100+(i*79+time*4)%480;ellipse(c,x,y,1.1,1.1,'#ddf7a455');}}
  }

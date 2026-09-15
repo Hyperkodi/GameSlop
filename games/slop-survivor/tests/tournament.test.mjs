@@ -46,7 +46,7 @@ test('campaign victory also leaves an unfinished tournament untouched',()=>{
 });
 test('late tournament damage grows steadily and previews match the actual gain',()=>{
  const w=makeWeapon('laser');w.endless=true;w.damage=3400;
- const expected=nextDamage(w,{damage:.5});assert.equal(expected,4080);assert.match(preview(w,'damage','blue'),/4080.*late-run scaling/);
+ const expected=nextDamage(w,{damage:.5});assert.equal(expected,4080);assert.match(preview(w,'damage','blue'),/4\.08K.*late-run scaling/);
  applyCard(w,{kind:'damage',rarity:'blue'});assert.equal(w.damage,expected);
  w.mult=5.8;applyCard(w,{kind:'criticalDamage',rarity:'gold'});assert.equal(w.mult,6);
  const campaign=makeWeapon('laser');campaign.damage=3400;applyCard(campaign,{kind:'damage',rarity:'blue'});assert.equal(campaign.damage,5100);

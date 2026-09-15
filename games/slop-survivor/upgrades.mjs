@@ -1,10 +1,11 @@
+import {compactNumber} from './presentation.mjs';
 import {UPGRADE_RARITIES,LEGENDARY,weapon,random} from './data.mjs';
 export const rarity=id=>UPGRADE_RARITIES.find(t=>t.id===id)||UPGRADE_RARITIES[1];
 export function rollRarity(state){let pick=random(state)*100;for(const t of UPGRADE_RARITIES){pick-=t.weight;if(pick<0)return t.id;}return 'gold';}
 export function values(card){if(card.legacy||!card.rarity)return {damage:.5,crit:.25,haste:.2,mult:.5,ranks:1};return rarity(card.rarity);}
 export const nextDamage=(w,v)=>w.damage+Math.min(w.damage,w.endless?weapon(w.id).damage*40:Infinity)*v.damage;
 export function preview(w,kind,tier='blue',legacy=false){const v=values({rarity:tier,legacy}),base=weapon(w.id),rank=Math.min(v.ranks,4-w.specialRanks);switch(kind){
- case'damage':return `Damage ${Math.round(w.damage)} → ${Math.round(nextDamage(w,v))} (${w.endless&&w.damage>base.damage*40?'late-run scaling':'+'+v.damage*100+'%'})`;
+ case'damage':return `Damage ${compactNumber(w.damage)} → ${compactNumber(nextDamage(w,v))} (${w.endless&&w.damage>base.damage*40?'late-run scaling':'+'+v.damage*100+'%'})`;
  case'power':return `Hit damage +${Math.round(base.damage*v.damage)}. Adds base power before future multipliers.`;
  case'crit':return `Critical chance ${Math.round(w.crit*100)}% → ${Math.round(Math.min(.85,w.crit+v.crit)*100)}% (+${Math.round(v.crit*100)} points; cap 85%)`;
  case'haste':return `Cooldown ${w.cooldown.toFixed(2)}s → ${Math.max(.09,w.cooldown*(1-v.haste)).toFixed(2)}s (−${v.haste*100}%)`;
