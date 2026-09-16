@@ -1,3 +1,4 @@
+import {campaignSpacing,waveMovement,BASE_FEED_SECONDS} from '../../../games/slop-survivor/campaign-pacing.mjs';
 // Derivation and verification for the Slop Survivor 100-level progression spec.
 // Run: node docs/superpowers/specs/2026-09-14-slop-survivor-curve-model.mjs
 //
@@ -50,6 +51,8 @@ const cumulativePartsToLevel = (L, grade = 'A') =>
 function main() {
   const marks = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
+  console.log(`Campaign entrance: portal; baseline feed target ${BASE_FEED_SECONDS}s, minimum 32px piece spacing.`);
+  console.table(marks.map(n=>{const level={segments:sections(n),waves:waves(n),speed:speed(n)},spacing=campaignSpacing(level);return {level:n,pieceSpacing:+spacing.toFixed(2),travelSeconds:+Array.from({length:level.waves},(_,i)=>Math.min(64,level.segments+3*i)*spacing/(waveMovement(i+1)*level.speed)).reduce((a,b)=>a+b,0).toFixed(1)};}));
   console.log('=== Level curve and difficulty band (spec section 8) ===');
   console.table(
     marks.map(n => ({

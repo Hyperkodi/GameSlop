@@ -5,7 +5,7 @@ import {WEAPON_POSES,WeaponPosePlayer,poseAsset,muzzlePoint} from '../player-pos
 const run=ids=>({time:1,weapons:ids.map(id=>({id})),events:[]});
 test('every weapon has its own four-frame action and a finite hand/muzzle anchor',()=>{
  assert.deepEqual(Object.keys(WEAPON_POSES).sort(),WEAPONS.map(w=>w.id).sort());
- assert.equal(new Set(Object.values(WEAPON_POSES).map(x=>x.action)).size,14);
+ assert.equal(new Set(Object.values(WEAPON_POSES).map(x=>x.action)).size,WEAPONS.length);
  for(const w of WEAPONS){assert.ok(WEAPON_POSES[w.id].duration>0);const p=muzzlePoint({heroX:240,heroY:650},w.id,.75);assert.ok(Number.isFinite(p.x)&&Number.isFinite(p.y));assert.ok(p.y<650);assert.equal(poseAsset(w.id,3),`rear-${w.id}-3`);}
 });
 test('an individual shot advances all four frames and settles without replaying a paused event',()=>{

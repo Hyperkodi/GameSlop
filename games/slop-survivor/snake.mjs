@@ -1,7 +1,9 @@
+import {LEVELS} from './data.mjs';
 // One health pool covers four body pieces. Distances run from tail to head.
 export const PIECE_SPACING=32, SECTION_PIECES=4, RETREAT_SPEED=260;
 export function pathPoint(d,chapter=0){
- const [left,right,row,radius]=chapter===12?[55,425,108,33]:chapter===13?[76,404,98,24]:chapter===14?[61,419,110,30]:[67,413,103,27];const straight=right-left-2*radius,turn=Math.PI*radius;
+ const arena=LEVELS[chapter]?.arena;const act=arena==='canyon'?12:arena==='marina'?13:arena==='citadel'?14:0;
+ const [left,right,row,radius]=act===12?[55,425,108,33]:act===13?[76,404,98,24]:act===14?[61,419,110,30]:[67,413,103,27];const straight=right-left-2*radius,turn=Math.PI*radius;
  let y=113,dir=chapter%2?-1:1,x=dir>0?left+radius:right-radius;
  if(d<0)return {x:x+dir*d,y,angle:dir>0?0:Math.PI};
  for(let i=0;i<7;i++){
@@ -12,7 +14,7 @@ export function pathPoint(d,chapter=0){
  }
  return {x:240,y:850,angle:Math.PI/2};
 }
-export const sectionSpan=s=>(s.pieces||1)*PIECE_SPACING;
+export const sectionSpan=s=>(s.pieces||1)*(s.spacing||PIECE_SPACING);
 export const sectionPoints=s=>s.points?.length?s.points:[s];
 export const onBoard=p=>p.x>22&&p.x<458&&p.y>75&&p.y<610;
 export const sectionVisible=s=>s.hp>0&&sectionPoints(s).some(onBoard);
@@ -34,7 +36,7 @@ export function updatePositions(r){
  let distance=r.headDistance;
  for(const s of r.segments){
   s.distance=distance+(s.retreat||0);
-  const length=sectionSpan(s)-PIECE_SPACING;
+  const length=sectionSpan(s)-(s.spacing||PIECE_SPACING);
   // Eight-pixel samples keep both the curved outline and all hit tests continuous.
   s.points=Array.from({length:length/8+1},(_,i)=>pathPoint(s.distance-i*8,r.chapter));
   Object.assign(s,pathPoint(s.distance-length/2,r.chapter));distance-=sectionSpan(s);

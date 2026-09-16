@@ -14,7 +14,17 @@ export const WEAPON_POSES={
  vortex:{duration:.60,muzzle:[12,-20],action:'Open the gravity gyroscope'},
  fork:{duration:.40,muzzle:[25,-27],action:'Alternating twin-barrel recoil'},
  oracle:{duration:.60,muzzle:[-17,-22],action:'Raise the eye talisman'},
- dragon:{duration:.65,muzzle:[15,-23],action:'Two-handed dragon summoning'}
+ dragon:{duration:.65,muzzle:[15,-23],action:'Two-handed dragon summoning'},
+ paper:{duration:.36,muzzle:[24,-24],action:'Fan the panic notes'},
+ printer:{duration:.30,muzzle:[24,-24],action:'Crank the money press'},
+ sniper:{duration:.45,muzzle:[26,-31],action:'Brace the precision scope'},
+ halving:{duration:.55,muzzle:[20,-25],action:'Swing the halving hammer'},
+ slippage:{duration:.50,muzzle:[18,-18],action:'Tip the liquidity vial'},
+ copium:{duration:.55,muzzle:[22,-22],action:'Open the pressure valve'},
+ trap:{duration:.45,muzzle:[14,-18],action:'Set the trap jaws'},
+ nuke:{duration:.65,muzzle:[15,-22],action:'Arm the nonce rocket'},
+ lambo:{duration:.50,muzzle:[20,-16],action:'Release the sports car'},
+ flashloan:{duration:.40,muzzle:[18,-23],action:'Trigger the loan clock'}
 };
 export const poseAsset=(weapon,frame=0)=>`rear-${WEAPON_POSES[weapon]?weapon:'coin'}-${Math.max(0,Math.min(3,frame|0))}`;
 export function muzzlePoint(r,weapon,aspect=1){const [x,y]=(WEAPON_POSES[weapon]||WEAPON_POSES.coin).muzzle;return {x:r.heroX+x,y:r.heroY+y*aspect};}

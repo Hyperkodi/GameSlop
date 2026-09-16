@@ -1,8 +1,8 @@
 // Serial, coalesced cloud writes. Never write before the initial cloud read succeeds.
 // Local persistence remains the source of truth while offline; no save/load UI is needed.
 export class AutoSync {
- constructor({storage,read,restore,status=()=>{},delay=15000,retryDelay=30000}) {
-  Object.assign(this,{storage,read,restore,status,delay,retryDelay});
+ constructor({storage,read,restore,status=()=>{},delay=15000,retryDelay=30000,hasLocalSave=true}) {
+  Object.assign(this,{storage,read,restore,status,delay,retryDelay,hasLocalSave});
   this.ready=false;this.busy=false;this.dirty=false;this.timer=null;this.stopped=false;
  }
  schedule(delay=this.delay){if(this.stopped||this.timer)return;this.timer=setTimeout(()=>{this.timer=null;void this.flush();},delay);}
@@ -16,10 +16,10 @@ export class AutoSync {
     const before=JSON.stringify(this.read()),cloud=await this.storage.load(),local=this.read();
     const cloudTime=cloud?.save?.updatedAt||cloud?.savedAt||0;
     // Do not replace actions taken while the initial network request was pending.
-    if(cloud&&JSON.stringify(local)===before&&cloudTime>(local.updatedAt||0)){
+    if(cloud&&(!this.hasLocalSave||(cloud.save?.version||0)>=(local.version||0))&&JSON.stringify(local)===before&&cloudTime>(local.updatedAt||0)){
      this.restore({...cloud.save,updatedAt:cloudTime});this.dirty=false;
     }else this.dirty=true;
-    this.ready=true;
+    this.ready=true;this.hasLocalSave=true;
    }
    if(this.dirty){
     this.dirty=false;const snapshot=JSON.parse(JSON.stringify(this.read()));
