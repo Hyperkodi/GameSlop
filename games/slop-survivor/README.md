@@ -47,4 +47,4 @@ Mobile browser checks cover 320-pixel and 390-pixel portrait layouts, landscape,
 
 Original fan-made game implementation and artwork. No Cell Survivor assets or affiliation claims. Character progression beyond Wojak remains the existing separate backlog in [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).
 
-[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every clear to take six to twelve active minutes.
+[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every Easy clear to take six to twelve active minutes, allows Hard and Impossible up to 14 and 16 minutes because breaches push the snake back, and requires the three tiers to differ in remaining shields.

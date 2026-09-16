@@ -1,12 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {LEVELS,defaultSave,validRun,normalizeSave,weaponUnlocked,weapon} from '../data.mjs';
-import {campaignSpacing,waveMovement} from '../campaign-pacing.mjs';
+import {campaignSpacing,waveMovement,feedSeconds} from '../campaign-pacing.mjs';
 import {createRun,createTournamentRun,chooseBoon,spawnWave,tick,makeWeapon,fire} from '../engine.mjs';
 import {sectionSpan,closeSectionGaps,updatePositions} from '../snake.mjs';
 import {intendedAccount} from './campaign-harness.mjs';
 test('all levels derive bounded spacing and a consistent entrance travel budget',()=>{
  for(const level of LEVELS){assert.equal(level.pieceSpacing,campaignSpacing(level));assert.ok(level.pieceSpacing>=32&&level.pieceSpacing<=100);
- const time=Array.from({length:level.waves},(_,i)=>Math.min(64,level.segments+i*3)*level.pieceSpacing/(waveMovement(i+1)*level.speed)).reduce((a,b)=>a+b,0);assert.ok(time>=479.99&&time<=600,`${level.number}: ${time}`);}
+ const time=Array.from({length:level.waves},(_,i)=>Math.min(64,level.segments+i*3)*level.pieceSpacing/(waveMovement(i+1)*level.speed)).reduce((a,b)=>a+b,0);assert.ok(time>=feedSeconds(level)-.01&&time<=feedSeconds(level)*1.25,`${level.number}: ${time}`);}
 });
 test('campaign starts at the entrance, with unchanged continuous simulation time',()=>{
  const r=createRun(defaultSave(0));chooseBoon(r,'damage');assert.equal(r.headDistance,0);r.pending=0;r.choices=[];r.state='playing';const start=r.time;tick(r,.05);assert.equal(r.time,start+.05);assert.ok(r.headDistance>0);assert.ok(r.segments.some(s=>s.hp>0&&s.points.some(p=>p.x>22&&p.x<458)));

@@ -1,7 +1,7 @@
 import {CAMPAIGN_ENTRY,waveMovement} from './campaign-pacing.mjs';
 import {encounterPhase} from './world.mjs';
 import {drawCards,applyCard,preview} from './upgrades.mjs';
-import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth} from './data.mjs';
+import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth,chestStride} from './data.mjs';
 export const W=480,H=760;
 export {pathPoint} from './snake.mjs';
 import {pathPoint,groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,aimPoint,onBoard} from './snake.mjs';
@@ -130,7 +130,7 @@ function removeDead(r){
  const dead=r.segments.filter(s=>s.hp<=0);if(!dead.length)return;
  for(const s of dead){r.kills+=s.pieces||1;r.waveKills+=s.pieces||1;r.score+=s.head?350:70*(s.pieces||1);for(const p of sectionPoints(s).filter((_,i)=>i%4===0))fx(r,{type:'burst',x:p.x,y:p.y,r:s.head?45:24,color:CHAPTERS[r.chapter].color,life:.5});if(s.volatile){const w=r.mode==='tournament'?r.weapons[0]:r.weapons.reduce((best,w)=>w.damage>best.damage?w:best);area(r,w,s.x,s.y,70,w.damage*2);}r.events.push({type:'kill'});}
  const ids=new Set(dead.map(s=>s.id));closeSectionGaps(r,ids);
- while(r.waveKills>=r.nextChest){r.pending++;r.nextChest+=4;}
+ while(r.waveKills>=r.nextChest){r.pending++;r.nextChest+=r.mode==='tournament'?4:chestStride(CHAPTERS[r.chapter]);}
 }
 export function tick(r,dt){
  if(r.state!=='playing')return;groupSections(r);dt=clamp(dt,0,.05);r.time+=dt;r.events=[];
@@ -165,7 +165,7 @@ if(e.type==='hazard'){e.tick-=dt;if(e.tick<=0){e.tick=.4;const source=r.weapons.
  removeDead(r);
  if(r.segments.length&&!r.segments.some(s=>s.retreat>0)&&sectionPoints(r.segments[0])[0].y>575){r.health--;r.headDistance=Math.max(250,r.headDistance-360);updatePositions(r);fx(r,{type:'breach',x:240,y:580,r:170,color:'#fa745d',life:.6});r.events.push({type:'breach'});if(r.health<=0){r.state=r.mode==='tournament'&&r.revivesUsed<3?'revive':'lost';r.pending=0;r.events.push({type:r.state});return;}}
  if(!r.segments.length){if(r.mode!=='tournament'&&r.wave>=c.waves){r.state='won';r.pending=0;r.events.push({type:'won'});return;}spawnWave(r);r.pending++;}
- if(r.time-r.lastChoice>24&&r.pending===0){r.pending=1;}
+ if(r.time-r.lastChoice>(r.mode==='tournament'?24:d.chestTimer)&&r.pending===0){r.pending=1;}
  offerChoice(r);
 }
 export function completeRun(save,r){

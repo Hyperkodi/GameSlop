@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {defaultSave,normalizeSave,validRun} from '../data.mjs';
+import {defaultSave,normalizeSave,validRun,LEVELS} from '../data.mjs';
 import {createRun,chooseBoon,chooseUpgrade,tick,makeWeapon,spawnWave} from '../engine.mjs';
 import {groupSections,updatePositions,sectionSpan,sectionDistance} from '../snake.mjs';
 function ready(){const save=defaultSave(100),r=createRun(save,0,'easy',77);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;r.headDistance=640;r.segments.forEach(s=>s.spacing=32);updatePositions(r);return {save,r};}
 function settle(r){for(let i=0;i<300&&r.segments.some(s=>s.retreat>0);i++){r.pending=0;r.state='playing';tick(r,.01);}assert.ok(r.segments.every(s=>s.retreat===0));}
-test('25 body pieces become a head and six four-piece health pools without increasing total health',()=>{
- const {r}=ready();assert.equal(r.segments.length,7);assert.equal(r.segments[0].pieces,1);assert.ok(r.segments.slice(1).every(s=>s.pieces===4));
- assert.equal(r.waveMaxHp,1000+Array.from({length:24},(_,i)=>260+(i+1)*3).reduce((a,b)=>a+b,0));
+test('33 body pieces become a head and eight four-piece health pools without increasing total health',()=>{
+ const {r}=ready();assert.equal(r.segments.length,9);assert.equal(r.segments[0].pieces,1);assert.ok(r.segments.slice(1).every(s=>s.pieces===4));
+ assert.ok(Math.abs(r.waveMaxHp-(1000+Array.from({length:32},(_,i)=>260+(i+1)*3).reduce((a,b)=>a+b,0))*LEVELS[0].hp)<1e-6);
  assert.equal(r.segments[1].points.length,13);assert.equal(r.segments[1].distance-r.segments[2].distance,128);
 });
 test('breaking a middle section slides the front backward 128 pixels and leaves the tail anchored',()=>{
@@ -54,6 +54,6 @@ test('recoil on the final approach prevents a breach before the snake can slide 
 });
 test('partial tail sections preserve chapter length and armor retains its one-in-four frequency',()=>{
  const {r}=ready();r.chapter=4;r.wave=0;spawnWave(r);
- assert.equal(r.segments.reduce((v,s)=>v+s.pieces,0),29);assert.equal(r.segments.at(-1).pieces,4);
+ assert.equal(r.segments.reduce((v,s)=>v+s.pieces,0),37);assert.equal(r.segments.at(-1).pieces,4);
  assert.deepEqual(r.segments.flatMap((s,i)=>s.armor?[i]:[]),[2,6]);
 });

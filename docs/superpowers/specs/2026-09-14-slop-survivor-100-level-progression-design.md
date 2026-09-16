@@ -44,7 +44,7 @@ Supporting curves:
 | Quantity | Formula | Range |
 |---|---|---|
 | Snake speed | `1 + 0.5 * (1 - exp(-(n-1)/28))` | 1.00 to 1.49 |
-| Sections | `min(64, 24 + n)` | 25 to 64, capped at level 40 |
+| Sections | `min(64, 32 + n)` | 33 to 64, capped at level 32 |
 | Waves | 3 below level 11, 4 to level 40, 5 to level 70, 6 above | 3 to 6 |
 
 The section cap of 64 is the existing mobile rendering bound and is kept. Past level
@@ -67,6 +67,30 @@ than designed.
 The cap of 64 applies to the **per-wave total** including the three sections each
 later wave adds, not to the level's base count.
 
+The section base started at 25. It was raised to 33 after the first build, because
+the eight-minute feed budget stretched a 25-piece level 1 to 80 px body spacing. More,
+weaker pieces fill the same time with content instead of gaps. The absolute health
+anchor stays the original 25-piece level 1, so raising the count changed how health is
+divided, not how much there is.
+
+### Battle chest cadence
+
+Battle chests arrive every `chestStride` kills, where
+`chestStride = max(4, round(totalPieces / 24))` and `totalPieces` is the level's piece
+count summed across its waves. The original fixed stride of 4 kills scaled cards per
+run from 28 at level 1 to 101 at level 80, which let an optimal player out-kill the
+snake at every tier. Deriving the stride from piece count holds every level near 30
+cards, so the difficulty multipliers show in the shield bar rather than being buried
+under card volume. The endless tournament keeps the fixed stride of 4.
+
+### Feed budget
+
+Campaign body spacing is derived from a travel budget of `420 + 60 * min(1, (n-1)/30)`
+seconds, so seven minutes at level 1 rising to eight by level 31, with 32 px as the
+floor. Easy runs must land between 360 and 720 active seconds. Hard and Impossible
+lose shields by design, and every breach pushes the snake back, so their ceilings are
+840 and 960 seconds.
+
 ### Acts, arenas and bosses
 
 Ten acts of ten levels. Levels ending in zero are boss encounters using the existing
@@ -85,11 +109,17 @@ maintainable.
 
 The three tiers replace Normal, Hard and Hell.
 
-| Tier | Health | Speed | Shields | Boons | Rerolls | Rewards |
-|---|---:|---:|---:|---:|---:|---:|
-| Easy | 1.00x | 1.00x | 5 | 1 | 2 | 1.0x |
-| Hard | 1.90x | 1.10x | 4 | 2 | 1 | 2.2x |
-| Impossible | 2.80x | 1.22x | 3 | 3 | 0 | 4.5x |
+| Tier | Health | Speed | Shields | Boons | Rerolls | Rescue chest | Rewards |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Easy | 1.00x | 1.00x | 5 | 1 | 2 | 24 s | 1.0x |
+| Hard | 1.90x | 1.10x | 4 | 2 | 1 | 28 s | 2.2x |
+| Impossible | 2.80x | 1.22x | 3 | 3 | 0 | 28 s | 4.5x |
+
+The rescue chest is the battle chest handed out when no chest has arrived for that many
+seconds. It exists to prevent card droughts, but it also rescues a struggling run, and
+it rescues it more the longer the fight drags on. A slightly longer timer on the harder
+tiers is the lever that made them bite without making them unwinnable. Timers of 32
+seconds or more tipped Impossible into losses at intended power.
 
 Impossible is set at 2.80x rather than 3.60x because level 100 Impossible must be
 beatable by a maxed account. At 2.80x it needs a 2.62x in-run card multiplier, which a
@@ -341,22 +371,24 @@ progress `n/95`, and the arsenal slots of that level.
 
 | Level | Health vs L1 | Sections | Waves | Weapon level | Rank | Easy | Hard | Impossible |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 1.00 | 25 | 3 | 1 | 1 | 0.97 | 1.85 | 2.72 |
-| 10 | 3.01 | 34 | 3 | 5 | 1 | 0.86 | 1.63 | 2.40 |
-| 20 | 10 | 44 | 4 | 10 | 1 | 0.86 | 1.63 | 2.40 |
-| 30 | 31 | 54 | 4 | 15 | 2 | 0.79 | 1.50 | 2.22 |
-| 40 | 94 | 64 | 4 | 20 | 2 | 0.92 | 1.75 | 2.58 |
-| 50 | 274 | 64 | 5 | 25 | 3 | 0.88 | 1.67 | 2.46 |
-| 60 | 768 | 64 | 5 | 30 | 3 | 0.98 | 1.87 | 2.75 |
-| 70 | 2,074 | 64 | 5 | 35 | 4 | 0.89 | 1.70 | 2.51 |
-| 80 | 5,386 | 64 | 6 | 40 | 4 | 0.90 | 1.70 | 2.51 |
-| 90 | 13,457 | 64 | 6 | 45 | 5 | 0.83 | 1.58 | 2.32 |
-| 100 | 32,351 | 64 | 6 | 50 | 5 | 0.94 | 1.78 | 2.62 |
+| 1 | 1 | 33 | 3 | 1 | 1 | 0.97 | 1.85 | 2.73 |
+| 10 | 3.01 | 42 | 3 | 5 | 1 | 0.87 | 1.65 | 2.43 |
+| 20 | 10 | 52 | 4 | 10 | 1 | 0.91 | 1.72 | 2.53 |
+| 30 | 31 | 62 | 4 | 15 | 2 | 0.88 | 1.67 | 2.47 |
+| 40 | 94 | 64 | 4 | 20 | 2 | 1.05 | 1.99 | 2.93 |
+| 50 | 274 | 64 | 5 | 25 | 3 | 1.06 | 2.01 | 2.96 |
+| 60 | 768 | 64 | 5 | 30 | 3 | 1.21 | 2.30 | 3.39 |
+| 70 | 2,074 | 64 | 5 | 35 | 4 | 1.10 | 2.09 | 3.08 |
+| 80 | 5,386 | 64 | 6 | 40 | 4 | 1.17 | 2.23 | 3.28 |
+| 90 | 13,457 | 64 | 6 | 45 | 5 | 1.08 | 2.06 | 3.04 |
+| 100 | 32,351 | 64 | 6 | 50 | 5 | 1.22 | 2.32 | 3.43 |
 
 Swept across all 100 levels rather than only the rows above, the required multiplier
-stays inside 0.73 to 0.98 on Easy, 1.39 to 1.87 on Hard, and 2.04 to 2.76 on
-Impossible. The widest spread within a tier is 1.35x, against a health curve that
-grows by a factor of 32,351 over the same span.
+stays inside 0.78 to 1.22 on Easy, 1.49 to 2.32 on Hard, and 2.20 to 3.43 on
+Impossible, against a health curve that grows by a factor of 32,351 over the same span.
+These bands moved up from the first draft because the model's card allowance was
+corrected to the piece-derived chest stride; the earlier draft assumed far fewer late
+cards than the game actually gave and far more than it gives now.
 
 Read it like this. **Easy is always clearable by a player on the curve even with a
 poor card run**, which is what keeps the campaign moving. **Hard needs a decent run**,
@@ -473,7 +505,19 @@ build if any is unwinnable. It is the right arbiter for this design and it needs
 grow with it.
 
 The extended harness sweeps all 300 encounters at the account power the curve intends
-for that level, and reports the clear margin for each. It fails if any Easy encounter
+for that level, and reports the clear margin for each. It also requires the tiers to
+differ in the fight itself, not only in the win column. Because a deterministic bot
+either keeps up with the feed or collapses, remaining shields are bimodal and are given
+only a floor: Impossible must cost a shield in at least a tenth of encounters and at
+least as often as Hard. The graded signal is **feed overrun**, active seconds divided by
+the level's feed budget: Hard must exceed Easy by 5% and Impossible by 20% at the
+median. Falling behind the feed is exactly the pressure a player feels.
+
+Easy and Hard must win every level on the canonical seed. Impossible is meant to sit on
+a knife edge, so a canonical-seed loss there is retried on up to two alternate seeds
+and the retry is reported; the level fails only if none of the three wins. In the first
+full sweep after tuning, level 74 was the only level that needed this. Level 100
+Impossible must win, and did, with two shields left. It fails if any Easy encounter
 is unclearable on the curve, if any Hard encounter is clearable with no cards at all,
 or if the required card multiplier for any tier falls outside the band in section 8 by
 more than 25%. That last check is what stops a later tuning change from quietly

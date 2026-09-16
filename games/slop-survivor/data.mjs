@@ -65,13 +65,18 @@ export const ACT_ANCHORS = [
 export const encounterHealth=n=>Math.exp(.124*(n-1)-.000193*(n-1)**2);
 export const waveCount=n=>n<=10?3:n<=40?4:n<=70?5:6;
 export const wavePieces=(level,wave)=>Math.min(64,level.segments+(wave-1)*3);
+// Battle chests arrive every chestStride kills. Deriving the stride from the level's total
+// pieces keeps every level near 25 to 35 cards instead of scaling from 28 to 101.
+export function chestStride(level){let pieces=0;for(let wave=1;wave<=level.waves;wave++)pieces+=wavePieces(level,wave);return Math.max(4,Math.round(pieces/24));}
 export function rawPool(level){let pool=0;for(let wave=1;wave<=level.waves;wave++)for(let i=0;i<wavePieces(level,wave);i++)pool+=(i===0?1000:260+i*3)*(1+(wave-1)*1.6);return pool;}
+// Absolute health anchor: the original 25-piece, three-wave level 1. EHP(n) scales from it,
+// so changing the section curve never changes how much total health a level carries.
+export const BASE_POOL=rawPool({segments:25,waves:3});
 export function generateLevels(anchors=ACT_ANCHORS){
  const cast=['slippy','baron','coldbyte','rattler','mamba','slippy','baron','coldbyte','rattler','mamba','baron','slippy','rattler','mamba','baron'];
- const basePool=rawPool({segments:25,waves:3});
  return Array.from({length:100},(_,index)=>{const n=index+1,anchorIndex=Math.min(anchors.length-1,Math.floor(index*anchors.length/100)),act=Math.floor(index/10),anchor=anchors[anchorIndex];
-  const level={...anchor,number:n,act,anchorIndex,boss:['slippy','baron','coldbyte','rattler','mamba'][act%5],arena:['glasshouse','citadel','marina','canyon','marina'][act%5],phase:n%10===0?['calm','shutters','mend','stampede','mend'][act%5]:'calm',secondaryPhase:n>50&&n%10===0?['stampede','mend','shutters','mend','shutters'][act%5]:'calm',traits:{armor:n>40||!!(n%8&1),regen:n>40||!!(n%8&2),volatile:n>40||!!(n%8&4)},segments:Math.min(64,24+n),waves:waveCount(n),speed:1+.5*(1-Math.exp(-index/28)),ehp:encounterHealth(n)};
-  level.hp=level.ehp*basePool/rawPool(level);
+  const level={...anchor,number:n,act,anchorIndex,boss:['slippy','baron','coldbyte','rattler','mamba'][act%5],arena:['glasshouse','citadel','marina','canyon','marina'][act%5],phase:n%10===0?['calm','shutters','mend','stampede','mend'][act%5]:'calm',secondaryPhase:n>50&&n%10===0?['stampede','mend','shutters','mend','shutters'][act%5]:'calm',traits:{armor:n>40||!!(n%8&1),regen:n>40||!!(n%8&2),volatile:n>40||!!(n%8&4)},segments:Math.min(64,32+n),waves:waveCount(n),speed:1+.5*(1-Math.exp(-index/28)),ehp:encounterHealth(n)};
+  level.hp=level.ehp*BASE_POOL/rawPool(level);
   level.pieceSpacing=campaignSpacing(level);
   level.modifier=Object.entries(level.traits).filter(([,active])=>active).map(([id])=>({armor:'Armor',regen:'Regeneration',volatile:'Volatile'})[id]).join(' + ')||'Classic';
   const phases={calm:'',shutters:'Body shutters periodically reduce damage. Critical hits bypass them.',mend:'Damaged body sections periodically heal. Focus a section to finish it.',stampede:'A warning precedes a speed burst. Break sections to push the snake back.'};
@@ -83,9 +88,11 @@ export const LEVELS=generateLevels();
 // Compatibility export for the existing renderer and campaign UI.
 export const CHAPTERS=LEVELS;
 export const DIFFICULTIES = [
- {id:'easy',name:'Easy',hp:1,speed:1,reward:1,boons:1,shields:5,rerolls:2,color:'#8ed7aa'},
- {id:'hard',name:'Hard',hp:1.9,speed:1.10,reward:2.2,boons:2,shields:4,rerolls:1,color:'#f5bb66'},
- {id:'impossible',name:'Impossible',hp:2.8,speed:1.22,reward:4.5,boons:3,shields:3,rerolls:0,color:'#fd8c86'}
+ // chestTimer: seconds without a chest before one is handed out anyway. Longer on harder
+ // tiers so a struggling run is rescued less often; the tournament keeps 24.
+ {id:'easy',name:'Easy',hp:1,speed:1,reward:1,boons:1,shields:5,rerolls:2,chestTimer:24,color:'#8ed7aa'},
+ {id:'hard',name:'Hard',hp:1.9,speed:1.10,reward:2.2,boons:2,shields:4,rerolls:1,chestTimer:28,color:'#f5bb66'},
+ {id:'impossible',name:'Impossible',hp:2.8,speed:1.22,reward:4.5,boons:3,shields:3,rerolls:0,chestTimer:28,color:'#fd8c86'}
 ];
 const roster={coin:['C',0,'Single target'],rug:['C',4,'Control'],gas:['B',9,'Burst area'],chain:['B',14,'Chain'],laser:['A',16,'Pierce line'],burn:['B',18,'Damage over time'],diamond:['A',21,'Multi-pass'],swarm:['B',23,'Homing multi'],whale:['S',26,'Burst nuke'],fork:['A',31,'Splitting'],satellite:['S',44,'Percent current health'],dragon:['A',46,'Head hunter'],vortex:['S',58,'Zone control'],oracle:['S',68,'Support amplifier']};
 for(const w of WEAPONS)if(roster[w.id]){[w.grade,w.discovery,w.class]=roster[w.id];}
