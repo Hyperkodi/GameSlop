@@ -140,10 +140,12 @@ export function tick(r,dt){
  if(r.state!=='playing')return;groupSections(r);dt=clamp(dt,0,.05);r.time+=dt;r.events=[];
  const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);
  if(r.rootTargets?.length&&!r.segments.some(s=>s.hp>0&&r.rootTargets.includes(s.id)))r.rootUntil=0;
- // Frenzy: the snake rushes in at FRENZY_SPEED until FRENZY_SECTIONS sections have shown
- // on the board this wave, so the player is not left waiting for it to arrive.
+ // Frenzy: the snake rushes in until FRENZY_SECTIONS sections have shown on the board this
+ // wave, so the player is not left waiting. The rush is FRENZY_SPEED times the base snake,
+ // not times the tier's own speed, so every tier's entrance takes the same time and
+ // Impossible does not get a 7x head charge on top of its 1.42x.
  if(r.mode!=='tournament'){r.entered=Math.max(r.entered||0,r.segments.filter(sectionVisible).length);}
- r.frenzy=r.mode!=='tournament'&&(r.entered||0)<FRENZY_SECTIONS?1+(FRENZY_SPEED-1)*(1-frenzyReduction(r.boons)):1;
+ r.frenzy=r.mode!=='tournament'&&(r.entered||0)<FRENZY_SECTIONS?1+(FRENZY_SPEED/d.speed-1)*(1-frenzyReduction(r.boons)):1;
  advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):waveMovement(r.wave))*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1)*r.frenzy);
  for(const s of r.segments){s.flash=Math.max(0,s.flash-dt);if(s.slipStacks>0&&s.slipUntil<=r.time){s.slipStacks--;s.slipUntil=r.time+1;}if(s.burn>0){s.burn=Math.max(0,s.burn-dt);const amount=s.burnDps*dt*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));s.hp-=amount;r.charge=Math.min(100,r.charge+amount*.012/(r.mode==='tournament'?1:encounterHealth(r.chapter+1)));const w=r.weapons.find(w=>w.id===s.burnWeapon);if(w)w.totalDamage+=amount;}if(s.hp>0&&(s.regen||!s.head&&encounterPhase(r).id==='mend'))s.hp=Math.min(s.maxHp,s.hp+s.maxHp*(encounterPhase(r).id==='mend'?.009:.006)*dt);}
  const t=target(r);if(t){if(!r.manual){const p=aimPoint(t,r.heroX,r.heroY);r.aimX=p.x;r.aimY=p.y;}for(const w of r.weapons){w.timer=Math.max(0,w.timer-dt);if(w.debtUntil>r.time){const debtor=r.segments.find(s=>s.id===w.debtTarget&&s.hp>0);if(!debtor){w.debtUntil=0;w.debtTarget=0;w.timer=w.legendary?0:Math.max(0,w.timer-2.5);}else continue;}if(w.timer<=0){w.timer=w.cooldown;fire(r,w,t);}}}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {defaultSave,BOONS,FRENZY_SPEED,FRENZY_SECTIONS,frenzyReduction,validRun} from '../data.mjs';
+import {defaultSave,BOONS,DIFFICULTIES,FRENZY_SPEED,FRENZY_SECTIONS,frenzyReduction,validRun} from '../data.mjs';
 import {createRun,createTournamentRun,chooseBoon,tick,boonOptionsFor} from '../engine.mjs';
 
 function unlocked(){const s=defaultSave(0);s.clears['0:easy']=true;s.clears['0:hard']=true;return s;}
@@ -30,7 +30,7 @@ test('frenzy boons scale the rush down and Trading Halt removes it',()=>{
  const seed=[...Array(200).keys()].find(s=>boonOptionsFor('hard',s+1).includes('frenzy100'))+1;
  const halted=playing('hard','frenzy100',seed);tick(halted,.05);assert.equal(halted.frenzy,1);
  const s25=[...Array(200).keys()].find(s=>boonOptionsFor('hard',s+1).includes('frenzy25'))+1;
- const bumped=playing('hard','frenzy25',s25);tick(bumped,.05);assert.equal(bumped.frenzy,1+(FRENZY_SPEED-1)*.75);
+ const hardSpeed=DIFFICULTIES.find(x=>x.id==='hard').speed;const bumped=playing('hard','frenzy25',s25);tick(bumped,.05);assert.ok(Math.abs(bumped.frenzy-(1+(FRENZY_SPEED/hardSpeed-1)*.75))<1e-9,'frenzy is relative to the base snake, softened by the boon');
 });
 
 test('tournament has no frenzy and rejects a corrupt entered count',()=>{

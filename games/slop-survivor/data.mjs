@@ -95,7 +95,7 @@ export const DIFFICULTIES = [
  // coin flip. coreDiv/coreAdd: first-clear cores are ceil(level/coreDiv)+coreAdd.
  {id:'easy',name:'Easy',hp:1,speed:1,reward:1,boons:1,shields:5,rerolls:2,chestTimer:24,color:'#8ed7aa'},
  {id:'hard',name:'Hard',hp:2.2,speed:1.16,reward:2.8,boons:2,shields:4,rerolls:1,chestTimer:28,headWeight:2,coreDiv:9,coreAdd:1,color:'#f5bb66'},
- {id:'impossible',name:'Impossible',hp:2.8,speed:1.42,reward:4.5,boons:3,shields:3,rerolls:0,chestTimer:28,headWeight:4,coreDiv:6,coreAdd:2,color:'#fd8c86'}
+ {id:'impossible',name:'Impossible',hp:2.8,speed:1.42,reward:4.5,boons:3,shields:3,rerolls:0,chestTimer:28,headWeight:3.5,coreDiv:6,coreAdd:2,color:'#fd8c86'}
 ];
 const roster={coin:['C',0,'Single target'],rug:['C',4,'Control'],gas:['B',9,'Burst area'],chain:['B',14,'Chain'],laser:['A',16,'Pierce line'],burn:['B',18,'Damage over time'],diamond:['A',21,'Multi-pass'],swarm:['B',23,'Homing multi'],whale:['S',26,'Burst nuke'],fork:['A',31,'Splitting'],satellite:['S',44,'Percent current health'],dragon:['A',46,'Head hunter'],vortex:['S',58,'Zone control'],oracle:['S',68,'Support amplifier']};
 for(const w of WEAPONS)if(roster[w.id]){[w.grade,w.discovery,w.class]=roster[w.id];}

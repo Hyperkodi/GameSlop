@@ -13,7 +13,11 @@ export function intendedAccount(n,difficulty='easy'){
  return normalizeSave(s,0);
 }
 export function simulate(n,d,{save=intendedAccount(n,d),seed=20260914+n-1,noCards=false,maxSeconds=1800}={}){
- const r=createRun(save,n-1,d,seed);while(r.state==='boon')chooseBoon(r,['damage','slow','crit'].find(id=>r.boonOptions.includes(id)));
+ // Boon policy: a player on Impossible takes a frenzy boon when offered, because a 5x
+ // entrance of heavy heads is the thing most likely to end the run. Hard takes it after
+ // damage and slow. Easy is never offered one.
+ const policy=d==='impossible'?['damage','frenzy100','slow','frenzy50','crit','frenzy25']:d==='hard'?['damage','slow','frenzy100','frenzy50','crit','frenzy25']:['damage','slow','crit'];
+ const r=createRun(save,n-1,d,seed);while(r.state==='boon')chooseBoon(r,policy.find(id=>r.boonOptions.includes(id)));
  let cards=0,frames=0;
  while(!['won','lost'].includes(r.state)&&r.time<maxSeconds&&frames++<200000){
   if(['playing','choice'].includes(r.state)&&(r.state==='choice'||frames%1200===0)&&!validRun(r))throw Error(`Unsavable combat state at ${n} ${d}, ${r.time}s`);

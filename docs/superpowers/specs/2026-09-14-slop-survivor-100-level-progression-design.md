@@ -87,8 +87,10 @@ under card volume. The endless tournament keeps the fixed stride of 4.
 
 Campaign body spacing is derived from a travel budget of `420 + 60 * min(1, (n-1)/30)`
 seconds, so seven minutes at level 1 rising to eight by level 31, with 32 px as the
-floor. Easy runs must land between 240 and 720 active seconds; the floor was 360 before
-the frenzy entrance removed roughly two minutes of waiting from the earliest levels. Hard and Impossible
+floor. Easy runs must land between 180 and 720 active seconds; the floor was 360 before
+the frenzy entrance removed the waiting from the earliest levels, which now run about
+three minutes at level 4. Adding a fourth wave to levels 1 to 10 would restore six-minute
+sessions there with content rather than waiting; that is a product call, not made yet. Hard and Impossible
 lose shields by design, and every breach pushes the snake back, so their ceilings are
 960 seconds for Hard and 900 for Impossible. Impossible is faster, so its fights are
 shorter despite being harder. The floor binds Easy only.
@@ -96,8 +98,12 @@ shorter despite being harder. The floor binds Easy only.
 ### Frenzy entrance
 
 Playtesting found the first minute of every wave was spent watching an empty arena while
-the snake walked in. The snake now enters at **5x speed until three sections have shown
-on the board** that wave, then settles to normal speed. The tournament is unaffected.
+the snake walked in. The snake now enters at **5x the base snake's speed until three sections have shown
+on the board** that wave, then settles to the tier's normal speed. The multiplier is
+relative to the base snake, not to the tier: Easy rushes at 5x, Hard at 4.3x and
+Impossible at 3.5x, so every tier's entrance takes the same time. Stacking 5x on
+Impossible's own 1.42x gave a 7x head charge that made levels 60 to 71 unwinnable. The
+tournament is unaffected.
 
 On Hard and Impossible the starting-bonus screen sometimes offers one frenzy boon, on
 60% and 80% of seeds respectively, weighted toward the weaker effects: Speed Bump
@@ -127,7 +133,7 @@ The three tiers replace Normal, Hard and Hell.
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Easy | 1.00x | 1.00x | 5 | 1 | 2 | 24 s | 1.0x | 1.0x |
 | Hard | 2.20x | 1.16x | 4 | 2 | 1 | 28 s | 2.0x | 2.8x |
-| Impossible | 2.80x | 1.42x | 3 | 3 | 0 | 28 s | 4.0x | 4.5x |
+| Impossible | 2.80x | 1.42x | 3 | 3 | 0 | 28 s | 3.5x | 4.5x |
 
 The rescue chest is the battle chest handed out when no chest has arrived for that many
 seconds. It exists to prevent card droughts, but it also rescues a struggling run, and
@@ -139,7 +145,9 @@ seconds or more tipped Impossible into losses at intended power.
 bimodal: an optimal player either keeps up with the feed or collapses. A heavier head
 reaches the vault with health left, breaches, is pushed back and dies on the second pass,
 which produces shield loss gradually. Impossible's speed of 1.42x does the same from the
-other side and also shortens its fights.
+other side and also shortens its fights. Impossible's head weight was 4.0x before the
+frenzy entrance; the rush adds pressure to a wave's first seconds, and 3.5x restores the
+previous balance.
 
 **What the tiers mean.** Easy is the campaign: an on-curve player wins every level with
 every shield. Hard is a real fight that an on-curve player still clears, with fights a
@@ -546,10 +554,12 @@ least as often as Hard. The graded signal is **feed overrun**, active seconds di
 the level's feed budget: Hard must exceed Easy by 5% and Impossible by 20% at the
 median. Falling behind the feed is exactly the pressure a player feels.
 
-Easy must win every level with every shield. Hard must win every level on the canonical
-seed and lose a shield in at least one level in twenty. Impossible must be won by the bot
-on between 60% and 95% of canonical seeds, must cost a shield in at least 30% of levels, and
-every level including 100 must be winnable within three seeds; retries are reported.
+Easy must win every level with every shield. Hard must win at least 95% of levels on the
+canonical seed, every level within two seeds, and lose a shield in at least one level in
+twenty. Impossible must be won by the bot on between 60% and 95% of canonical seeds, must
+cost a shield in at least 30% of levels, and every level including 100 must be winnable
+within four seeds; retries are reported. The frenzy entrance is why Hard is allowed a
+retry at all: the first seconds of a wave now carry real variance.
 The economy replay credits Impossible rewards at a 70% clear rate and farms Hard. It fails if any Easy encounter
 is unclearable on the curve, if any Hard encounter is clearable with no cards at all,
 or if the required card multiplier for any tier falls outside the band in section 8 by

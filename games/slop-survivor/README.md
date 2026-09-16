@@ -29,7 +29,7 @@ No build step, framework or package dependencies. Use an HTTP server rather than
 
 ## Controls and saves
 
-Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire; a mouse keeps focus fire while it is over the arena. Each wave, Slippy rushes in at 5x speed until three sections are on the board; on Hard and Impossible a starting bonus can slow or remove that rush. Space or the star button activates Market Crash. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
+Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire; a mouse keeps focus fire while it is over the arena. Each wave, Slippy rushes in at 5x the base speed until three sections are on the board; on Hard and Impossible a starting bonus can slow or remove that rush. Space or the star button activates Market Crash. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
 
 Campaign and endless tournament have separate saved attempts. The tournament keeps its three revives, score, arsenal and personal best across reloads. Permanent account bonuses apply to new attempts. No online leaderboard or paid progression is included.
 
@@ -47,4 +47,4 @@ Mobile browser checks cover 320-pixel and 390-pixel portrait layouts, landscape,
 
 Original fan-made game implementation and artwork. No Cell Survivor assets or affiliation claims. Character progression beyond Wojak remains the existing separate backlog in [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).
 
-[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every Easy clear to take four to twelve active minutes, allows Hard up to 16 minutes and Impossible up to 15 because breaches push the snake back, requires Hard to cost shields, and requires Impossible to be lost by the optimal bot on some first attempts while every level stays winnable within three.
+[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every Easy clear to take three to twelve active minutes, allows Hard up to 16 minutes and Impossible up to 15 because breaches push the snake back, requires Hard to cost shields, and requires Impossible to be lost by the optimal bot on some first attempts while every level stays winnable within three.
