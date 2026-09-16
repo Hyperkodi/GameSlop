@@ -8,14 +8,20 @@ import {campaignSpacing,waveMovement,BASE_FEED_SECONDS} from '../../../games/slo
 // ---------- level curve (spec section 2) ----------
 export const EHP = n => Math.exp(0.124 * (n - 1) - 0.000193 * (n - 1) ** 2);
 export const speed = n => 1 + 0.5 * (1 - Math.exp(-(n - 1) / 28));
-export const sections = n => Math.min(64, 24 + n);
+export const sections = n => Math.min(64, 32 + n);
 export const waves = n => (n <= 10 ? 3 : n <= 40 ? 4 : n <= 70 ? 5 : 6);
 
-// More waves means more battle chests, so more cards per run.
-const runBonus = n => (1 + 0.08 * (waves(n) - 3)) * (1 + 0.15 * Math.min(1, n / 60));
+// Battle chests arrive every chestStride kills, with the stride derived from the level's
+// total pieces so card counts stay near 25 to 35 at every level. runBonus is the in-run
+// card advantage relative to level 1, estimated from that card count.
+export const wavePieces = (n, wave) => Math.min(64, sections(n) + (wave - 1) * 3);
+export const totalPieces = n => Array.from({ length: waves(n) }, (_, i) => wavePieces(n, i + 1)).reduce((a, b) => a + b, 0);
+export const chestStride = n => Math.max(4, Math.round(totalPieces(n) / 24));
+export const cardsPerRun = n => totalPieces(n) / chestStride(n) + waves(n) + 4;
+export const runBonus = n => Math.sqrt(cardsPerRun(n) / cardsPerRun(1));
 
 // ---------- difficulties (spec section 3) ----------
-export const DIFFICULTY = { easy: 1.0, hard: 1.9, impossible: 2.8 };
+export const DIFFICULTY = { easy: 1.0, hard: 2.2, impossible: 2.8 };
 
 // ---------- permanent power axes (spec section 5) ----------
 const targetWeaponLevel = n => Math.min(50, Math.max(1, Math.round(n / 2)));
@@ -42,7 +48,7 @@ export const GRADE = { S: 1.3, A: 1.1, B: 0.92, C: 0.78 };
 export const partsCost = (L, grade = 'A') => Math.ceil(6 * Math.pow(1.115, L - 1) * GRADE[grade]);
 export const coinCost = (L, grade = 'A') => Math.round(90 * Math.pow(1.115, L - 1) * GRADE[grade]);
 export const firstClearParts = (n, difficulty) =>
-  Math.round(2 * Math.pow(1.056, n - 1)) * { easy: 1, hard: 2.2, impossible: 4.5 }[difficulty];
+  Math.round(2 * Math.pow(1.056, n - 1)) * { easy: 1, hard: 2.8, impossible: 4.5 }[difficulty];
 
 const cumulativePartsToLevel = (L, grade = 'A') =>
   (6 * GRADE[grade] * (Math.pow(1.115, L - 1) - 1)) / 0.115;
@@ -52,7 +58,7 @@ function main() {
   const marks = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
   console.log(`Campaign entrance: portal; baseline feed target ${BASE_FEED_SECONDS}s, minimum 32px piece spacing.`);
-  console.table(marks.map(n=>{const level={segments:sections(n),waves:waves(n),speed:speed(n)},spacing=campaignSpacing(level);return {level:n,pieceSpacing:+spacing.toFixed(2),travelSeconds:+Array.from({length:level.waves},(_,i)=>Math.min(64,level.segments+3*i)*spacing/(waveMovement(i+1)*level.speed)).reduce((a,b)=>a+b,0).toFixed(1)};}));
+  console.table(marks.map(n=>{const level={number:n,segments:sections(n),waves:waves(n),speed:speed(n)},spacing=campaignSpacing(level);return {level:n,pieceSpacing:+spacing.toFixed(2),travelSeconds:+Array.from({length:level.waves},(_,i)=>Math.min(64,level.segments+3*i)*spacing/(waveMovement(i+1)*level.speed)).reduce((a,b)=>a+b,0).toFixed(1),chestStride:chestStride(n),cardsPerRun:+cardsPerRun(n).toFixed(1),runBonus:+runBonus(n).toFixed(3)};}));
   console.log('=== Level curve and difficulty band (spec section 8) ===');
   console.table(
     marks.map(n => ({
@@ -113,7 +119,9 @@ function main() {
   console.log('\n=== Cores (spec section 8) ===');
   const rankCosts = [8, 22, 55, 130];
   let coreIncome = 0;
-  for (let n = 1; n <= 100; n++) coreIncome += Math.ceil(n / 12) + 1 + (Math.ceil(n / 6) + 2);
+  // Hard cores every 9 levels; Impossible cores counted at a 70% clear rate, the realistic
+  // figure once Impossible is tuned to be lost often.
+  for (let n = 1; n <= 100; n++) coreIncome += Math.ceil(n / 9) + 1 + 0.7 * (Math.ceil(n / 6) + 2);
   const perWeapon = rankCosts.reduce((a, b) => a + b);
   console.log(`rank costs ${rankCosts.join(', ')} = ${perWeapon} per weapon, ${perWeapon * 6} for six`);
   console.log(`income from Hard and Impossible first clears = ${coreIncome}`);

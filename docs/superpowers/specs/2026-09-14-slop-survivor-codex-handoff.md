@@ -1,5 +1,10 @@
 # Codex build prompt: Slop Survivor 100-level progression
 
+Historical brief. The build it describes shipped on 2026-09-15 as PR #1. Numbers that
+changed afterwards live in the design spec, which is authoritative: the section base is
+now `min(64, 32 + n)`, battle chests use a piece-derived stride, and the feed budget ramps
+from 420 to 480 seconds.
+
 Paste everything below this line into Codex as the task brief.
 
 ---

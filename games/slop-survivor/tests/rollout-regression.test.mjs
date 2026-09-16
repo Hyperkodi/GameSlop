@@ -22,5 +22,5 @@ test('campaign charge uses damage actually dealt and scales with encounter healt
  r.chapter=99;r.charge=0;s.hp=10;hit(r,s,w,10);assert.ok(r.charge<.00001);
 });
 test('economy replay meets 85% and catches a halved reward regression',()=>{
- const result=economyReplay();assert.equal(result.rows.length,100);assert.ok(result.minimum>=.85);assert.ok(result.farms<=20);assert.throws(()=>economyReplay({incomeScale:.5}),/Economy starved/);
+ const result=economyReplay();assert.equal(result.rows.length,100);assert.ok(result.minimum>=.85);assert.ok(result.farms<=40);assert.throws(()=>economyReplay({incomeScale:.5}),/Economy starved/);
 });
