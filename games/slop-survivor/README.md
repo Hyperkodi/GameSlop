@@ -29,7 +29,7 @@ No build step, framework or package dependencies. Use an HTTP server rather than
 
 ## Controls and saves
 
-Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire; a mouse keeps focus fire while it is over the arena. Each wave, Slippy rushes in at 5x the base speed until three sections are on the board; on Hard and Impossible a starting bonus can slow or remove that rush. Space or the star button activates Market Crash. The 1x/2x button or the F key doubles the game speed; the choice is remembered. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
+Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire; a mouse keeps focus fire while it is over the arena. Each wave, Slippy rushes in at 5x the base speed until three sections are on the board; on Hard and Impossible a starting bonus can slow or remove that rush. Space or the star button fires your equipped special, once you have bought one in the Foundry. The 1x/2x button or the F key doubles the game speed; the choice is remembered. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
 
 Campaign and endless tournament have separate saved attempts. The tournament keeps its three revives, score, arsenal and personal best across reloads. Permanent account bonuses apply to new attempts. No online leaderboard or paid progression is included.
 

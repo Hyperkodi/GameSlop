@@ -10,6 +10,8 @@ export function intendedAccount(n,difficulty='easy'){
  const level=Math.max(1,Math.min(50,Math.round(n/2))),rank=Math.ceil(level/10);
  for(const id of CORE)if(weaponUnlocked(s,WEAPONS.find(w=>w.id===id))){s.levels[id]=level;s.ranks[id]=rank;}
  for(const [k,t] of Object.entries(FOUNDRY))s.foundry[k]=Math.floor(t.max*Math.min(1,n/95));
+ // Market Crash is bought after level 3 and ranked up at 20 and 50, matching the economy replay.
+ if(n>3){s.specials.owned.crash=n>=50?3:n>=20?2:1;s.specials.equipped='crash';}
  return normalizeSave(s,0);
 }
 export function simulate(n,d,{save=intendedAccount(n,d),seed=20260914+n-1,noCards=false,maxSeconds=1800}={}){

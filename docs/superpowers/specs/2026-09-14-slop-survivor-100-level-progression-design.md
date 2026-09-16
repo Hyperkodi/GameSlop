@@ -312,6 +312,31 @@ become a save-driven value.
 Together the axes are worth **36,000x** at full investment, against the 32,351x health
 growth of the level curve. The remainder is covered by in-run cards.
 
+## 5b. Specials
+
+Market Crash used to be free from the first second and hit every visible section for four
+times one weapon's hit, drawn as a small ring. In play it read as a small explosion that
+often did nothing. Specials are now **bought in the Foundry with coins**, one is equipped
+per run, and each has three ranks. Rank 1 is the purchase; ranks 2 and 3 cost 1.6x and
+2.6x the base price and raise damage to 1.25x and 1.5x while charging 15% and 30% faster.
+
+| Special | Effect | Unlock | Price |
+|---|---|---|---:|
+| Market Crash | 12x best weapon hit to every visible section, 3 s slow, screen shake | Clear level 3 on Easy | 900 |
+| Liquidation Wave | A wall sweeps top to bottom, 6x hit to each section it crosses, snake pushed back 200 px | Clear level 12 | 3,500 |
+| The Halving | Every visible section loses 15% of current health, capped at 8x best hit | Clear level 25 | 9,000 |
+| Hard Fork Bomb | Every visible section spawns two homing fragments at 3x best hit | Clear level 40 | 22,000 |
+
+A special hits three times harder than the old free Market Crash, so it charges a third
+as fast: each firing is a real event, and its total output over a run stays where the
+tiers were tuned. Charging at the old rate made the optimal bot win every Impossible
+level with full shields. A fresh account has no special; the button reads BUY and says
+where to go. A save from
+before specials that has cleared level 3 keeps Market Crash at rank 1 so no player loses
+what they had. The endless tournament keeps its original free Market Crash unchanged. The
+balance harness assumes Market Crash bought after level 3 and ranked at 20 and 50, and
+the economy replay pays for it out of the same coins as everything else.
+
 ## 6. Currencies and chests
 
 | Currency | Scope | Spent on | Main source |

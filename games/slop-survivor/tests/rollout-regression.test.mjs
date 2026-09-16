@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
-import {normalizeSave,defaultSave,validRun,weapon} from '../data.mjs';
+import {normalizeSave,defaultSave,validRun,weapon,SPECIAL_CHARGE} from '../data.mjs';
 import {makeWeapon,createRun,chooseBoon,fire,tick,hit} from '../engine.mjs';
 import {economyReplay} from './economy-harness.mjs';
 test('real v1 engine fixture preserves account and both active run slots',()=>{
@@ -18,7 +18,7 @@ test('all ten weapons resume deterministically with their active effects',()=>{
  }
 });
 test('campaign charge uses damage actually dealt and scales with encounter health',()=>{
- const r=createRun(defaultSave(0));chooseBoon(r,'damage');const w=r.weapons[0];w.crit=0;const s={hp:10,maxHp:10,x:100,y:100};hit(r,s,w,1e9);assert.ok(Math.abs(r.charge-.12)<1e-9);
+ const r=createRun(defaultSave(0));chooseBoon(r,'damage');const w=r.weapons[0];w.crit=0;const s={hp:10,maxHp:10,x:100,y:100};hit(r,s,w,1e9);assert.ok(Math.abs(r.charge-.12*SPECIAL_CHARGE)<1e-9);
  r.chapter=99;r.charge=0;s.hp=10;hit(r,s,w,10);assert.ok(r.charge<.00001);
 });
 test('economy replay meets 85% and catches a halved reward regression',()=>{

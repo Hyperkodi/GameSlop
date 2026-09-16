@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {defaultSave,WEAPONS,FOUNDRY,weapon,weaponUnlocked,upgradeCost,upgradeWeapon,rankCost,rankUp,foundryCost,upgradeFoundry,refine,openChests,syncChests,random,unlockWeapon} from '../data.mjs';
+import {defaultSave,WEAPONS,FOUNDRY,weapon,weaponUnlocked,upgradeCost,upgradeWeapon,rankCost,rankUp,foundryCost,upgradeFoundry,refine,openChests,syncChests,random,unlockWeapon,buySpecial,specialUnlocked,specialRankCost} from '../data.mjs';
 import {completeRun,makeWeapon} from '../engine.mjs';
 import {CORE,intendedAccount} from './campaign-harness.mjs';
 import {effectiveDps} from '../presentation.mjs';
@@ -18,6 +18,8 @@ export function spend(save,n){const target=intendedAccount(n),ids=CORE.filter(id
    else if(level<rank*10){const c=upgradeCost(level,weapon(id).grade);if(save.coins>=c.coins&&save.parts[id]>=c.parts)options.push({cost:c.coins,buy:()=>upgradeWeapon(save,id)});}
   }}
   for(const key of Object.keys(FOUNDRY))if(save.foundry[key]<target.foundry[key]&&save.coins>=foundryCost(save.foundry[key]+1))options.push({cost:foundryCost(save.foundry[key]+1),buy:()=>upgradeFoundry(save,key)});
+  // Market Crash purchase and ranks compete for the same coins as everything else.
+  const crashRank=save.specials.owned.crash||0;if(crashRank<(target.specials.owned.crash||0)&&specialUnlocked(save,'crash')&&save.coins>=specialRankCost('crash',crashRank+1))options.push({cost:specialRankCost('crash',crashRank+1),buy:()=>buySpecial(save,'crash')});
   if(!options.length)break;assert.ok(options.sort((a,b)=>a.cost-b.cost)[0].buy());
  }
 }

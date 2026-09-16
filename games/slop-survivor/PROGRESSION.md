@@ -110,6 +110,10 @@ C/B discovery requires an Easy clear, A requires Hard. S requires Easy discovery
 | Wen Lambo (lambo) | A | 54 | Path sweep | Drive along the snake body path, striking each section once per pass. Gold: Make a return pass along the snake body path. |
 | Flash Loan (flashloan) | S | 80 | Debt burst | Deliver a huge hit, then repay for 2.5 seconds. A target kill forgives the debt. Gold: Forgiving a debt refunds the cooldown for an immediate new cast. |
 
+## Specials
+
+Market Crash, Liquidation Wave, The Halving and Hard Fork Bomb are bought in the Foundry with coins after clearing Easy levels 3, 12, 25 and 40, for 900, 3,500, 9,000 and 22,000 coins. One is equipped per run; ranks 2 and 3 cost 1.6x and 2.6x the price and hit 1.25x and 1.5x harder while charging faster. Specials charge a third as fast as the old free Market Crash because they hit three times harder. A fresh account has no special until it buys one. Saves from before specials that had cleared level 3 keep Market Crash. The tournament keeps its original free Market Crash.
+
 ## Campaign pacing
 
 The snake enters at 5x the base snake's speed until three sections are on the board each wave, then settles to the tier's normal speed, so no time is spent watching an empty arena. Because the rush is relative to the base snake, every tier's entrance takes the same time: 5x on Easy, 4.3x on Hard, 3.5x on Impossible. On Hard and Impossible the starting-bonus screen sometimes offers a frenzy boon (Speed Bump, Circuit Halt or Trading Halt) that slows or removes that rush. The tournament has no frenzy.

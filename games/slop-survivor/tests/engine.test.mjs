@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {WEAPONS,chestTotal,defaultSave,syncChests,openChests,CHEST_INTERVAL,upgradeWeapon,unlockedDifficulty,normalizeSave} from '../data.mjs';
 import {createRun,chooseBoon,chooseUpgrade,makeWeapon,upgradePreview,completeRun,tick,pathPoint,ultimate,reroll} from '../engine.mjs';
-function ready(){const s=defaultSave(100);s.owned=['coin','laser','gas','diamond'];const r=createRun(s,0,'easy',42);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);return {s,r};}
+function ready(){const s=defaultSave(100);s.owned=['coin','laser','gas','diamond'];s.specials={owned:{crash:1},equipped:'crash'};const r=createRun(s,0,'easy',42);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);return {s,r};}
 test('idle storage accrues offline in exact 10 minute increments and caps at 32',()=>{const s=defaultSave(0);assert.equal(syncChests(s,CHEST_INTERVAL-1),0);assert.equal(syncChests(s,CHEST_INTERVAL),1);assert.equal(chestTotal(s),5);syncChests(s,CHEST_INTERVAL*100);assert.equal(chestTotal(s),32);assert.equal(s.chestAt,CHEST_INTERVAL*100);const l=openChests(s,99,CHEST_INTERVAL*100,()=>.5);assert.equal(l.count,32);assert.equal(chestTotal(s),0);assert.equal(syncChests(s,CHEST_INTERVAL*100),0);assert.equal(syncChests(s,CHEST_INTERVAL*101),1);});
 test('clock rollback never duplicates offline rewards',()=>{const s=defaultSave(60000);syncChests(s,0);assert.equal(chestTotal(s),4);assert.equal(s.chestAt,60000);syncChests(s,660000);assert.equal(chestTotal(s),5);});
 test('batch chest claims debit exactly once and award valid shards',()=>{const s=defaultSave(0);const before=s.coins;const l=openChests(s,3,0,()=>.5);assert.equal(l.count,3);assert.equal(s.coins,before+165);assert.equal(chestTotal(s),1);assert.equal(Object.values(l.parts).reduce((a,b)=>a+b),12);assert.equal(openChests(s,32,0,()=>.5).count,1);assert.equal(openChests(s,32,0).count,0);});
@@ -27,6 +27,6 @@ test('damaged or incomplete imported run data is discarded while account progres
 test('unattended breaches can lose a siege without resetting or hanging',()=>{const {r}=ready();r.weapons=[];r.lastChoice=10000;r.headDistance=2100;r.health=1;tick(r,.05);assert.equal(r.state,'lost');assert.equal(r.health,0);});
 
 test('campaign special uses the highest-damage collected weapon',()=>{
- const s=defaultSave(),r=createRun(s,0,'easy',42);chooseBoon(r,'damage');r.state='playing';r.pending=0;r.weapons=[makeWeapon('coin'),makeWeapon('whale')];for(const w of r.weapons)w.crit=0;
- r.segments=[{id:1,hp:10000,maxHp:10000,x:240,y:200,head:true,markedUntil:0}];r.charge=100;ultimate(r);assert.equal(r.segments[0].hp,9160);
+ const s=defaultSave();s.specials={owned:{crash:1},equipped:'crash'};const r=createRun(s,0,'easy',42);chooseBoon(r,'damage');r.state='playing';r.pending=0;r.weapons=[makeWeapon('coin'),makeWeapon('whale')];for(const w of r.weapons)w.crit=0;
+ r.segments=[{id:1,hp:10000,maxHp:10000,x:240,y:200,head:true,markedUntil:0}];r.charge=100;ultimate(r);assert.equal(r.segments[0].hp,10000-210*12);
 });
