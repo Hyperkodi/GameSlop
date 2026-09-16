@@ -126,7 +126,7 @@ export function random(state){let x=state.seed|0;x^=x<<13;x^=x>>>17;x^=x<<5;stat
 export const chestTotal=s=>Object.values(s.chests).reduce((a,b)=>a+b,0);
 export const arsenalSlots=s=>(s.furthest.easy>=65?8:s.furthest.easy>=30?7:6);
 export const highestUnlocked=s=>Math.min(99,s.furthest.easy);
-export function defaultSave(now=Date.now()) {return {version:VERSION,coins:240,levels:Object.fromEntries(WEAPONS.map(w=>[w.id,1])),ranks:Object.fromEntries(WEAPONS.map(w=>[w.id,1])),parts:Object.fromEntries(WEAPONS.map(w=>[w.id,0])),cores:0,blueprints:0,foundry:Object.fromEntries(Object.keys(FOUNDRY).map(k=>[k,0])),furthest:{easy:0,hard:0,impossible:0},owned:['coin'],clears:{},best:{},chests:{rusty:4,reinforced:0,armored:0,vault:0},chestAt:now,deck:['coin'],selected:0,selectedManual:false,difficulty:'easy',settings:{sfx:.35,music:.22,reduced:false},totalKills:0,totalRuns:0,tutorial:false,updatedAt:0,tournamentBest:0,tournamentRuns:0,tournamentRun:null,run:null};}
+export function defaultSave(now=Date.now()) {return {version:VERSION,coins:240,levels:Object.fromEntries(WEAPONS.map(w=>[w.id,1])),ranks:Object.fromEntries(WEAPONS.map(w=>[w.id,1])),parts:Object.fromEntries(WEAPONS.map(w=>[w.id,0])),cores:0,blueprints:0,foundry:Object.fromEntries(Object.keys(FOUNDRY).map(k=>[k,0])),furthest:{easy:0,hard:0,impossible:0},owned:['coin'],clears:{},best:{},chests:{rusty:4,reinforced:0,armored:0,vault:0},chestAt:now,deck:['coin'],selected:0,selectedManual:false,difficulty:'easy',settings:{sfx:.35,music:.22,reduced:false,speed:1},totalKills:0,totalRuns:0,tutorial:false,updatedAt:0,tournamentBest:0,tournamentRuns:0,tournamentRun:null,run:null};}
 export function unlockedChapter(s,index){return Number.isInteger(index)&&index>=0&&index<LEVELS.length&&(index===0||!!s.clears[`${index-1}:easy`]);}
 export function unlockedDifficulty(s,index,id){return DIFFICULTIES.some(d=>d.id===id)&&unlockedChapter(s,index)&&(id==='easy'||!!s.clears[`${index}:${id==='hard'?'easy':'hard'}`]);}
 export function weaponUnlocked(s,w){return w.id==='coin'||s.owned?.includes(w.id)||w.grade!=='S'&&!!s.clears[`${w.discovery-1}:${w.grade==='A'?'hard':'easy'}`];}
@@ -196,7 +196,7 @@ export function normalizeSave(raw,now=Date.now()){
  s.owned=[...new Set(['coin',...(Array.isArray(raw.owned)?raw.owned:[])])].filter(id=>weapon(id));
  s.deck=WEAPONS.filter(w=>weaponUnlocked(s,w)).map(w=>w.id);
  s.selectedManual=raw.selectedManual===true;s.selected=s.selectedManual?num(raw.selected,0,99):highestUnlocked(s);s.difficulty=DIFFICULTIES.some(d=>d.id===raw.difficulty)?raw.difficulty:'easy';
- for(const k of ['sfx','music'])s.settings[k]=Number.isFinite(raw.settings?.[k])?clamp(raw.settings[k],0,1):s.settings[k];s.settings.reduced=raw.settings?.reduced===true;
+ for(const k of ['sfx','music'])s.settings[k]=Number.isFinite(raw.settings?.[k])?clamp(raw.settings[k],0,1):s.settings[k];s.settings.reduced=raw.settings?.reduced===true;s.settings.speed=raw.settings?.speed===2?2:1;
  s.totalKills=num(raw.totalKills,0,1e12);s.totalRuns=num(raw.totalRuns,0,1e9);s.tutorial=raw.tutorial===true;
  s.updatedAt=num(raw.updatedAt,0,Number.MAX_SAFE_INTEGER);s.tournamentBest=num(raw.tournamentBest,0,Number.MAX_SAFE_INTEGER);s.tournamentRuns=num(raw.tournamentRuns,0,1e9);
  for(const slot of ['run','tournamentRun'])if(raw[slot]&&typeof raw[slot]==='object'){

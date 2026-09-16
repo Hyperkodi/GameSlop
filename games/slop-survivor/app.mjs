@@ -126,6 +126,9 @@ document.addEventListener('click',async e=>{
 function updateRefinery(){if(dialog!=='refinery')return;const from=$('#refine-from').value,to=$('#refine-to').value,n=Number($('#refine-count').value),valid=from&&from!==to&&Number.isSafeInteger(n)&&n>0&&save.parts[from]>=3*n;$('#refine-submit').disabled=!valid;$('#refine-preview').textContent=valid?'Spend '+fmt(n*3)+' '+weapon(from).name+' parts to receive '+fmt(n)+' '+weapon(to).name+' parts.':'Choose different weapons and an amount you can afford.';}
  document.addEventListener('input',e=>{if(e.target.id.startsWith('refine-'))updateRefinery();const key=e.target.dataset.setting;if(key){save.settings[key]=key==='reduced'?e.target.checked:+e.target.value;persist();if(key==='sfx')sound.event('upgrade');}});
 $('#settings').onclick=settings;$('#pause').onclick=pause;
+function updateSpeedButton(){const fast=save.settings.speed===2;$('#speed').textContent=fast?'2x':'1x';$('#speed').classList.toggle('fast',fast);$('#speed').setAttribute('aria-label',fast?'Game speed 2x. Press to return to normal speed':'Game speed 1x. Press to play at double speed');}
+function toggleSpeed(){save.settings.speed=save.settings.speed===2?1:2;persist();updateSpeedButton();sound.event('upgrade');}
+$('#speed').onclick=toggleSpeed;updateSpeedButton();
 // One pointer owns the joystick. Action buttons retain independent pointer ownership.
 let stickPointer=null,canvasPointer=null,keys=new Set(),stickX=0,stickY=0;
 const stick=$('#joystick'),thumb=$('#stick-thumb');
@@ -143,6 +146,7 @@ for(const type of ['pointerup','pointercancel','lostpointercapture','pointerleav
 document.addEventListener('keydown',e=>{
  if(e.key==='Tab'&&!$('#modal').hidden){const focusable=[...$('.modal').querySelectorAll('button:not(:disabled),a,input')].filter(x=>!x.hidden);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('.modal'))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}return;}
  if(e.key==='Escape'){if(dialog==='pause'){closeModal();run.state='playing';}else if(run?.state==='playing')pause();else if(dialog==='settings'){closeModal();if(run?.state==='paused')run.state='playing';}return;}
+ if(e.key==='f'||e.key==='F'){if(run&&!$('#battle').hidden){e.preventDefault();toggleSpeed();}return;}
  if(run?.state!=='playing')return;if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','w','a','s','d',' '].includes(e.key)){e.preventDefault();keys.add(e.key);if(e.key===' '&&!e.repeat)ultimate(run);}
 });document.addEventListener('keyup',e=>{keys.delete(e.key);if(!keys.size&&stickPointer===null)releaseInputs();});
 window.addEventListener('blur',()=>{releaseInputs();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopFrames();releaseInputs();pause();persist();void autoSync?.flush();sound.pause();}else{requestFrame();const n=syncChests(save);if(n&&$('#battle').hidden)renderHome();}});window.addEventListener('pagehide',()=>{stopFrames();releaseInputs();if(run?.state==='playing')run.state='paused';persist();void autoSync?.flush();});window.addEventListener('orientationchange',()=>{releaseInputs();pause();});window.addEventListener('resize',releaseInputs);
@@ -158,7 +162,9 @@ function frame(now){
    let kx=(keys.has('ArrowRight')||keys.has('d')?1:0)-(keys.has('ArrowLeft')||keys.has('a')?1:0),ky=(keys.has('ArrowDown')||keys.has('s')?1:0)-(keys.has('ArrowUp')||keys.has('w')?1:0);
    const gp=navigator.getGamepads?.()[0];if(gp){if(Math.hypot(gp.axes[0],gp.axes[1])>.18){kx=gp.axes[0];ky=gp.axes[1];}if(gp.buttons[0]?.pressed)ultimate(run);}
    if(kx||ky){run.manual=true;run.aimX=clamp(run.aimX+kx*dt*240,40,440);run.aimY=clamp(run.aimY+ky*dt*240,85,545);}
-   tick(run,dt);for(const e of run.events){sound.event(e.type,e.weapon);if(e.type==='wave'){clearTimeout(calloutTimer);$('#battle-callout').textContent=`WAVE ${e.wave} · ${bossForChapter(run.chapter).name}`;$('#battle-callout').style.opacity='1';calloutTimer=setTimeout(()=>$('#battle-callout').style.opacity='0',2000);}}
+   // 2x speed steps the simulation twice per frame with the same dt, so the result is
+   // identical to playing at 1x for twice as long. Events from both steps are kept.
+   const events=[];for(let step=0;step<(save.settings.speed===2?2:1)&&run.state==='playing';step++){tick(run,dt);events.push(...run.events);}for(const e of events){sound.event(e.type,e.weapon);if(e.type==='wave'){clearTimeout(calloutTimer);$('#battle-callout').textContent=`WAVE ${e.wave} · ${bossForChapter(run.chapter).name}`;$('#battle-callout').style.opacity='1';calloutTimer=setTimeout(()=>$('#battle-callout').style.opacity='0',2000);}}
    if(run.state==='choice'){showChoices();persist();}else if(run.state==='revive'){showRevive();}else if(['won','lost'].includes(run.state))finish();
   }
   renderer.draw(run,run.time,save.settings.reduced);sound.update(run.state==='playing');uiTime+=dt;if(uiTime>.2){updateHUD();uiTime=0;}saveTime+=dt;if(saveTime>3){persist();saveTime=0;}
