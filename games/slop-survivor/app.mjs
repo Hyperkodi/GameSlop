@@ -136,8 +136,10 @@ $('#ultimate').addEventListener('pointerdown',e=>{e.preventDefault();if(run&&ult
 $('#ultimate').addEventListener('click',e=>{if(e.detail===0&&run&&ultimate(run)){sound.event('ultimate');updateHUD();}});
 $('#battle').addEventListener('contextmenu',e=>e.preventDefault());
 $('#arena').addEventListener('pointerdown',e=>{if(run?.state!=='playing'||canvasPointer!==null)return;e.preventDefault();canvasPointer=e.pointerId;$('#arena').setPointerCapture(e.pointerId);aimCanvas(e);});
-function aimCanvas(e){if(run?.state!=='playing')return;if(e.pointerType!=='mouse'&&e.pointerId!==canvasPointer)return;const rect=$('#arena').getBoundingClientRect();run.aimX=clamp((e.clientX-rect.left)/rect.width*480,35,445);run.aimY=clamp((e.clientY-rect.top)/rect.height*760,80,550);run.manual=true;}
-$('#arena').addEventListener('pointermove',aimCanvas);for(const type of ['pointerup','pointercancel','lostpointercapture','pointerleave'])$('#arena').addEventListener(type,e=>{if(canvasPointer===null||e.pointerId===canvasPointer)releaseInputs();});
+function aimCanvas(e){if(run?.state!=='playing')return;if(e.pointerType!=='mouse'&&e.pointerId!==canvasPointer)return;const rect=$('#arena').getBoundingClientRect();run.aimX=clamp((e.clientX-rect.left)/rect.width*480,35,445);run.aimY=clamp((e.clientY-rect.top)/rect.height*760,80,550);run.manual=true;$('#aim-mode').textContent='FOCUS FIRE';}
+$('#arena').addEventListener('pointermove',aimCanvas);// A mouse keeps focus fire while it stays over the arena; only leaving the arena releases it.
+// Touch and pen still release on lift, because there is no hover to follow.
+for(const type of ['pointerup','pointercancel','lostpointercapture','pointerleave'])$('#arena').addEventListener(type,e=>{if(e.pointerType==='mouse'&&type!=='pointerleave'&&type!=='pointercancel')return;if(canvasPointer===null||e.pointerId===canvasPointer)releaseInputs();});
 document.addEventListener('keydown',e=>{
  if(e.key==='Tab'&&!$('#modal').hidden){const focusable=[...$('.modal').querySelectorAll('button:not(:disabled),a,input')].filter(x=>!x.hidden);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('.modal'))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}return;}
  if(e.key==='Escape'){if(dialog==='pause'){closeModal();run.state='playing';}else if(run?.state==='playing')pause();else if(dialog==='settings'){closeModal();if(run?.state==='paused')run.state='playing';}return;}
