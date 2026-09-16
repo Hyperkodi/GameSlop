@@ -37,9 +37,9 @@ for(let n=1;n<=100;n++)if(full||n===1||n%5===0){
   const need=pressure(n,d),[lo,hi]=bands[d];result.modelCards=+cardsNeeded(n,d).toFixed(3);result.enginePressure=+need.toFixed(3);reports.push(result);console.log(JSON.stringify(result));
   // Easy defines the six to twelve minute session. Harder tiers lose shields, and every
   // breach pushes the snake back, so they are allowed to run longer.
-  // The six to twelve minute session is a campaign target, so the floor binds Easy only.
-  // Impossible feeds in faster at 1.42x and may legitimately finish sooner.
-  const ceiling={easy:720,hard:960,impossible:900}[d],floor=d==='easy'?360:0;
+  // The session-length target binds Easy only. The frenzy entrance removed about two
+  // minutes of waiting from the earliest levels, so the Easy floor is four minutes.
+  const ceiling={easy:720,hard:960,impossible:900}[d],floor=d==='easy'?240:0;
   if(result.result!=='won'||result.seconds<floor||result.seconds>ceiling||need<lo*.75||need>hi*1.25){console.log(`FAIL: level ${n} ${d} ${result.result} ${result.seconds}s pressure ${need.toFixed(2)} vs ${lo} to ${hi}`);process.exitCode=1;}
  }
  const noCards=simulate(n,'hard',{noCards:true});console.log(JSON.stringify({...noCards,check:'hard-without-cards'}));if(noCards.result!=='lost')process.exitCode=1;

@@ -1,15 +1,19 @@
 import {CAMPAIGN_ENTRY,waveMovement} from './campaign-pacing.mjs';
 import {encounterPhase} from './world.mjs';
 import {drawCards,applyCard,preview} from './upgrades.mjs';
-import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth,chestStride} from './data.mjs';
+import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth,chestStride,FRENZY_SPEED,FRENZY_SECTIONS,frenzyReduction} from './data.mjs';
 export const W=480,H=760;
 export {pathPoint} from './snake.mjs';
 import {pathPoint,groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,aimPoint,onBoard} from './snake.mjs';
 export function makeWeapon(id,level=1,boons=[],rank=1,foundry={}){const base=weapon(id);return {id,level,rank,damage:base.damage*1.135**(level-1)*1.12**(rank-1)*1.08**(foundry.ordnance||0)*(boons.includes('damage')?1.25:1),cooldown:base.cooldown*(1-.0055*(foundry.overclock||0))*(boons.includes('rapid')?.85:1),crit:Math.min(.85,base.crit+.01*(foundry.precision||0)+(boons.includes('crit')?.1:0)),mult:base.mult+.02*(foundry.precision||0),pierce:base.type==='beam'?2:base.type==='disc'?3:0,count:['swarm','paper'].includes(base.type)?3:1,radius:base.radius||0,chains:base.type==='oracle'?3:4,slow:.2,burnTime:3,legendary:false,timer:0,tier:1,upgrades:0,totalDamage:0,specialRanks:0,guaranteedCrit:id==='sniper',ramp:0,printerTarget:0,lastFireTime:0,shieldCharge:0,casts:0,debtUntil:0,debtTarget:0};}
+// Ordinary boons always; on Hard and Impossible a frenzy boon joins the pool some of the
+// time (60% and 80%), weighted toward the weaker reductions, at a seeded position so it can
+// land on the first screen. Deterministic per run seed.
+export function boonOptionsFor(difficulty,seed){const ids=BOONS.filter(b=>!b.frenzy).map(b=>b.id);if(difficulty==='easy')return ids;const rng={seed:(Math.imul(seed,2654435761)^0x9e3779b9)>>>0||1};random(rng);const chance=difficulty==='impossible'?.8:.6;if(random(rng)>=chance)return ids;const roll=random(rng),pick=roll<.5?'frenzy25':roll<.85?'frenzy50':'frenzy100';ids.splice(Math.floor(random(rng)*3),0,pick);return ids;}
 export function createRun(save,chapter=0,difficulty='easy',seed=Date.now()){
  if(!unlockedDifficulty(save,chapter,difficulty))throw new Error('Level or difficulty is locked');
  const d=DIFFICULTIES.find(x=>x.id===difficulty),health=d.shields+Math.floor(save.foundry.vault/8);
- return {version:VERSION,rules:2,mode:'campaign',chapter,difficulty,seed:(seed>>>0)||1,time:0,state:'boon',wave:0,segments:[],bullets:[],effects:[],numbers:[],weapons:[],deck:WEAPONS.filter(w=>weaponUnlocked(save,w)).map(w=>w.id),baseLevels:{...save.levels},baseRanks:{...save.ranks},foundry:{...save.foundry},slots:arsenalSlots(save),boons:[],boonOptions:BOONS.map(b=>b.id),boonsLeft:DIFFICULTIES.find(d=>d.id===difficulty).boons,choices:[],pending:0,headDistance:180,health,maxHealth:health,score:0,kills:0,waveKills:0,nextChest:3,castId:0,charge:0,slowUntil:0,slowAmount:0,aimX:240,aimY:130,manual:false,heroX:240,heroY:640,events:[],resultApplied:false,rerolls:d.rerolls,lastChoice:0};
+ return {version:VERSION,rules:2,mode:'campaign',chapter,difficulty,seed:(seed>>>0)||1,time:0,state:'boon',wave:0,segments:[],bullets:[],effects:[],numbers:[],weapons:[],deck:WEAPONS.filter(w=>weaponUnlocked(save,w)).map(w=>w.id),baseLevels:{...save.levels},baseRanks:{...save.ranks},foundry:{...save.foundry},slots:arsenalSlots(save),boons:[],boonOptions:boonOptionsFor(difficulty,(seed>>>0)||1),boonsLeft:DIFFICULTIES.find(d=>d.id===difficulty).boons,choices:[],pending:0,headDistance:180,health,maxHealth:health,score:0,kills:0,waveKills:0,nextChest:3,castId:0,charge:0,slowUntil:0,slowAmount:0,aimX:240,aimY:130,manual:false,heroX:240,heroY:640,events:[],resultApplied:false,rerolls:d.rerolls,lastChoice:0};
 }
 export function createTournamentRun(save,seed=Date.now()){
  const r=createRun(save,0,DIFFICULTIES[0].id,seed);r.mode='tournament';r.revivesUsed=0;return r;
@@ -26,7 +30,7 @@ export function endTournament(r){
 function runWeapon(r,id){const w=makeWeapon(id,r.baseLevels[id],r.boons,r.baseRanks?.[id]||1,r.foundry);if(r.mode==='tournament')w.endless=true;return w;}
 export function chooseBoon(r,id){if(r.state!=='boon'||!r.boonOptions.includes(id)||r.boons.includes(id))return false;r.boons.push(id);r.boonsLeft--;r.boonOptions=r.boonOptions.filter(x=>x!==id);if(r.boonsLeft<=0){if(r.boons.includes('health'))r.health=r.maxHealth=Math.min(10,r.maxHealth+2);r.weapons=[runWeapon(r,'coin')];r.state='playing';spawnWave(r);r.pending=1;offerChoice(r,true);}return true;}
 export function spawnWave(r){
- r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=r.mode==='tournament'?640:CAMPAIGN_ENTRY;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;r.rootUntil=0;r.rootTargets=[];
+ r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=r.mode==='tournament'?640:CAMPAIGN_ENTRY;r.entered=0;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;r.rootUntil=0;r.rootTargets=[];
  const endless=r.mode==='tournament';const n=endless?Math.min(64,25+(r.wave-1)*3):Math.min(64,c.segments+(r.wave-1)*3);
  r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000*(endless?1:d.headWeight||1):260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,spacing:endless?32:c.pieceSpacing,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
  r.snakeLayout=undefined;groupSections(r);
@@ -136,7 +140,11 @@ export function tick(r,dt){
  if(r.state!=='playing')return;groupSections(r);dt=clamp(dt,0,.05);r.time+=dt;r.events=[];
  const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);
  if(r.rootTargets?.length&&!r.segments.some(s=>s.hp>0&&r.rootTargets.includes(s.id)))r.rootUntil=0;
- advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):waveMovement(r.wave))*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1));
+ // Frenzy: the snake rushes in at FRENZY_SPEED until FRENZY_SECTIONS sections have shown
+ // on the board this wave, so the player is not left waiting for it to arrive.
+ if(r.mode!=='tournament'){r.entered=Math.max(r.entered||0,r.segments.filter(sectionVisible).length);}
+ r.frenzy=r.mode!=='tournament'&&(r.entered||0)<FRENZY_SECTIONS?1+(FRENZY_SPEED-1)*(1-frenzyReduction(r.boons)):1;
+ advanceSnake(r,dt,(r.mode==='tournament'?Math.min(140,11+r.wave*2):waveMovement(r.wave))*c.speed*d.speed*(r.boons.includes('slow')?.85:1)*(r.slowUntil>r.time?1-r.slowAmount:1)*encounterPhase(r).speed*(r.rootUntil>r.time?0:1)*r.frenzy);
  for(const s of r.segments){s.flash=Math.max(0,s.flash-dt);if(s.slipStacks>0&&s.slipUntil<=r.time){s.slipStacks--;s.slipUntil=r.time+1;}if(s.burn>0){s.burn=Math.max(0,s.burn-dt);const amount=s.burnDps*dt*(s.markedUntil>r.time?1.25:1)*(1+.08*(s.slipStacks||0));s.hp-=amount;r.charge=Math.min(100,r.charge+amount*.012/(r.mode==='tournament'?1:encounterHealth(r.chapter+1)));const w=r.weapons.find(w=>w.id===s.burnWeapon);if(w)w.totalDamage+=amount;}if(s.hp>0&&(s.regen||!s.head&&encounterPhase(r).id==='mend'))s.hp=Math.min(s.maxHp,s.hp+s.maxHp*(encounterPhase(r).id==='mend'?.009:.006)*dt);}
  const t=target(r);if(t){if(!r.manual){const p=aimPoint(t,r.heroX,r.heroY);r.aimX=p.x;r.aimY=p.y;}for(const w of r.weapons){w.timer=Math.max(0,w.timer-dt);if(w.debtUntil>r.time){const debtor=r.segments.find(s=>s.id===w.debtTarget&&s.hp>0);if(!debtor){w.debtUntil=0;w.debtTarget=0;w.timer=w.legendary?0:Math.max(0,w.timer-2.5);}else continue;}if(w.timer<=0){w.timer=w.cooldown;fire(r,w,t);}}}
  for(const b of r.bullets){b.age+=dt;b.life-=dt;const w=r.weapons.find(w=>w.id===b.weapon);if(!w)continue;

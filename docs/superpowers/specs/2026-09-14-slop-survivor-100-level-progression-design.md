@@ -87,10 +87,23 @@ under card volume. The endless tournament keeps the fixed stride of 4.
 
 Campaign body spacing is derived from a travel budget of `420 + 60 * min(1, (n-1)/30)`
 seconds, so seven minutes at level 1 rising to eight by level 31, with 32 px as the
-floor. Easy runs must land between 360 and 720 active seconds. Hard and Impossible
+floor. Easy runs must land between 240 and 720 active seconds; the floor was 360 before
+the frenzy entrance removed roughly two minutes of waiting from the earliest levels. Hard and Impossible
 lose shields by design, and every breach pushes the snake back, so their ceilings are
 960 seconds for Hard and 900 for Impossible. Impossible is faster, so its fights are
-shorter despite being harder. The 360 second floor binds Easy only.
+shorter despite being harder. The floor binds Easy only.
+
+### Frenzy entrance
+
+Playtesting found the first minute of every wave was spent watching an empty arena while
+the snake walked in. The snake now enters at **5x speed until three sections have shown
+on the board** that wave, then settles to normal speed. The tournament is unaffected.
+
+On Hard and Impossible the starting-bonus screen sometimes offers one frenzy boon, on
+60% and 80% of seeds respectively, weighted toward the weaker effects: Speed Bump
+(frenzy 25% slower), Circuit Halt (50% slower) or Trading Halt (no frenzy). These are
+useful on late levels where a 5x entrance of heavy sections is dangerous in itself. Easy
+never offers them.
 
 ### Acts, arenas and bosses
 
