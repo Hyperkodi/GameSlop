@@ -21,7 +21,11 @@ export function spend(save,n){const target=intendedAccount(n),ids=CORE.filter(id
   if(!options.length)break;assert.ok(options.sort((a,b)=>a.cost-b.cost)[0].buy());
  }
 }
-export function economyReplay({incomeScale=1,maxFarms=20}={}){
+// Impossible is tuned to be lost often, so the replay credits its rewards only 70% of the
+// time and farms Hard, which a player on the curve can actually clear.
+// A route needing more than maxTotalFarms repeat clears counts as starvation: the player
+// could grind through, but the design promises they should not have to.
+export function economyReplay({incomeScale=1,maxFarms=40,maxTotalFarms=40,impossibleClearRate=.7}={}){
  const save=defaultSave(0),rngState={seed:301519},rng=()=>random(rngState),rows=[];let elapsed=0,farms=0;
  const reward=(n,d)=>{const ids=CORE.filter(id=>weaponUnlocked(save,weapon(id))),before=save.coins,parts={...save.parts};
   completeRun(save,{mode:'campaign',state:'won',chapter:n-1,difficulty:d,weapons:ids.map(id=>({id})),score:0,kills:0,time:600,resultApplied:false});
@@ -31,10 +35,10 @@ export function economyReplay({incomeScale=1,maxFarms=20}={}){
  openChests(save,32,0,rng);
  for(let n=1;n<=100;n++){
   spend(save,n);let repeats=0,initial=powerRatio(save,n);
-  while(powerRatio(save,n)<.85&&n>1&&repeats<maxFarms){reward(n-1,'impossible');repeats++;farms++;spend(save,n);}
-  const ratio=powerRatio(save,n);assert.ok(ratio>=.85,`Economy starved before level ${n}: ${ratio.toFixed(3)}, ${repeats} repeats`);
+  while(powerRatio(save,n)<.85&&n>1&&repeats<maxFarms){reward(n-1,'hard');repeats++;farms++;spend(save,n);}
+  const ratio=powerRatio(save,n);assert.ok(ratio>=.85,`Economy starved before level ${n}: ${ratio.toFixed(3)}, ${repeats} repeats`);assert.ok(farms<=maxTotalFarms,`Economy starved: ${farms} repeat clears by level ${n}, more than ${maxTotalFarms}`);
   rows.push({level:n,ratio:+ratio.toFixed(3),beforeFarming:+initial.toFixed(3),repeats,coins:save.coins,coreLevels:CORE.map(id=>save.levels[id]).join('/'),foundry:{...save.foundry}});
-  for(const d of ['easy','hard','impossible'])reward(n,d);
+  reward(n,'easy');reward(n,'hard');if(rng()<impossibleClearRate)reward(n,'impossible');
   // Unlock eligible S weapons with earned plans; this expands idle drops honestly.
   for(const w of WEAPONS)if(w.grade==='S')unlockWeapon(save,w.id);
  }

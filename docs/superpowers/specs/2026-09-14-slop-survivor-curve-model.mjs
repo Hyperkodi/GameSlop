@@ -21,7 +21,7 @@ export const cardsPerRun = n => totalPieces(n) / chestStride(n) + waves(n) + 4;
 export const runBonus = n => Math.sqrt(cardsPerRun(n) / cardsPerRun(1));
 
 // ---------- difficulties (spec section 3) ----------
-export const DIFFICULTY = { easy: 1.0, hard: 1.9, impossible: 2.8 };
+export const DIFFICULTY = { easy: 1.0, hard: 2.2, impossible: 2.8 };
 
 // ---------- permanent power axes (spec section 5) ----------
 const targetWeaponLevel = n => Math.min(50, Math.max(1, Math.round(n / 2)));
@@ -48,7 +48,7 @@ export const GRADE = { S: 1.3, A: 1.1, B: 0.92, C: 0.78 };
 export const partsCost = (L, grade = 'A') => Math.ceil(6 * Math.pow(1.115, L - 1) * GRADE[grade]);
 export const coinCost = (L, grade = 'A') => Math.round(90 * Math.pow(1.115, L - 1) * GRADE[grade]);
 export const firstClearParts = (n, difficulty) =>
-  Math.round(2 * Math.pow(1.056, n - 1)) * { easy: 1, hard: 2.2, impossible: 4.5 }[difficulty];
+  Math.round(2 * Math.pow(1.056, n - 1)) * { easy: 1, hard: 2.8, impossible: 4.5 }[difficulty];
 
 const cumulativePartsToLevel = (L, grade = 'A') =>
   (6 * GRADE[grade] * (Math.pow(1.115, L - 1) - 1)) / 0.115;
@@ -119,7 +119,9 @@ function main() {
   console.log('\n=== Cores (spec section 8) ===');
   const rankCosts = [8, 22, 55, 130];
   let coreIncome = 0;
-  for (let n = 1; n <= 100; n++) coreIncome += Math.ceil(n / 12) + 1 + (Math.ceil(n / 6) + 2);
+  // Hard cores every 9 levels; Impossible cores counted at a 70% clear rate, the realistic
+  // figure once Impossible is tuned to be lost often.
+  for (let n = 1; n <= 100; n++) coreIncome += Math.ceil(n / 9) + 1 + 0.7 * (Math.ceil(n / 6) + 2);
   const perWeapon = rankCosts.reduce((a, b) => a + b);
   console.log(`rank costs ${rankCosts.join(', ')} = ${perWeapon} per weapon, ${perWeapon * 6} for six`);
   console.log(`income from Hard and Impossible first clears = ${coreIncome}`);

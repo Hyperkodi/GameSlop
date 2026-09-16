@@ -5,14 +5,14 @@ Working branch: `codex/slop-survivor-complete`. Base: `slop-survivor-progression
 ## Results
 
 - 152 unit and regression tests passed, zero failures.
-- 300 of 300 campaign encounters won with a six-weapon core at the intended permanent level/rank and Foundry curve. Easy and Hard won every level on the canonical seed. Impossible level 74 lost its canonical seed and won its first alternate seed with full shields; no other level needed a retry.
+- 300 of 300 campaign encounters won with a six-weapon core at the intended permanent level/rank and Foundry curve. Easy and Hard won every level on the canonical seed. Impossible won 86 of 100 on the canonical seed; the other 14 won on an alternate seed (levels 79 and 90 needed a second alternate). Impossible is tuned to be lost by a person often; every level stays winnable.
 - All 100 Hard controls with no battle cards lost.
 - Every sampled active battle state passed save validation, including choices and periodic in-flight checks.
 - Actual spawned health at every level matches the encounter curve within 1%, with at most 64 body pieces per wave.
 - Both the source model and the pressure index reconstructed from engine HP/permanent stats stay within the allowed difficulty-band tolerance.
-- The tiers differ in the fight, not only in the win column. Median feed overrun (active seconds over the level's feed budget) is 1.033 on Easy, 1.321 on Hard and 1.377 on Impossible. Impossible cost at least one shield in 8% of encounters, including level 100, which won with two shields left. Hard and Easy kept every shield.
-- Cards per run range from 27 to 47, median 35, at every level. Before the piece-derived chest stride they ranged from 28 at level 1 to 101 at level 80.
-- Economy minimum is 85.4% of intended core power before entering a level. Fourteen repeat clears were needed across the route. Halving rewards fails the starvation regression.
+- The tiers differ in the fight, not only in the win column. Median feed overrun (active seconds over the level's feed budget) is 1.033 on Easy, 1.358 on Hard and 1.352 on Impossible. Hard cost at least one shield in 10% of levels and Impossible in 38%. Easy kept every shield everywhere. Hard is 2.2x health at 1.16x speed with a double-health head; Impossible is 2.8x at 1.42x with a quadruple-health head.
+- Cards per run range from 28 to 46, median 35, at every level. Before the piece-derived chest stride they ranged from 28 at level 1 to 101 at level 80.
+- Economy minimum is 85.3% of intended core power before entering a level, with Impossible rewards credited at a 70% clear rate and farming done on Hard. Twenty-six repeat clears were needed across the route, within the bound of forty. Halving rewards fails the starvation regression. Hard pays 2.8x and grants cores every nine levels to fund this.
 - Fresh and advanced browser checks passed: 320/390 portrait, 844 by 390 landscape, all tabs, purchasing, tier chests, live rendering, and offline reload with all 24 sprites. No page errors or horizontal overflow were observed.
 - Transparent alpha was verified for all ten new WebP sprites. The assets are 32 to 43 KB each. All 24 procedural weapon drawings are distinct.
 
@@ -26,7 +26,7 @@ Economy uses actual reward and purchase functions, sequential Easy/Hard/Impossib
 
 ## Pacing validation
 
-Every Easy encounter passes the 360-to-720-second assertion; Hard and Impossible are allowed 840 and 960 seconds because every breach pushes the snake back. Active combat ranges from 389 to 939 seconds, with a 576-second median. Easy tops out at 602 seconds, Hard at 825 and Impossible at 939. Another 63 encounters at every fifth level plus level 1 pass using alternate seeds (20260915 + level). Card-reading time is excluded.
+Every Easy encounter passes the 360-to-720-second assertion; Hard is allowed 960 seconds and Impossible 900 because every breach pushes the snake back, and the 360 floor binds Easy only. Active combat ranges from 389 to 910 seconds, with a 571-second median. Easy tops out at 602 seconds, Hard at 910 and Impossible at 817. Another 63 encounters at every fifth level plus level 1 pass using alternate seeds (20260915 + level). Card-reading time is excluded.
 
 Campaign snakes enter at the portal. A shared formula derives body spacing from a travel budget of seven minutes at level 1 rising to eight by level 31, with the original 32-pixel minimum. Levels carry 33 to 64 base pieces, so level 1 spacing is 54 pixels rather than the 80 of the first build. Movement, health and wave-count formulas are unchanged. Trap roots release when their victims die. There is no waiting state or minimum victory timer. The model prints the geometry derivation; focused tests verify recoil, save resumption and unchanged tournament geometry.
 

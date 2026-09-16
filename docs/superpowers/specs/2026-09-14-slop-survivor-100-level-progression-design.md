@@ -89,7 +89,8 @@ Campaign body spacing is derived from a travel budget of `420 + 60 * min(1, (n-1
 seconds, so seven minutes at level 1 rising to eight by level 31, with 32 px as the
 floor. Easy runs must land between 360 and 720 active seconds. Hard and Impossible
 lose shields by design, and every breach pushes the snake back, so their ceilings are
-840 and 960 seconds.
+960 seconds for Hard and 900 for Impossible. Impossible is faster, so its fights are
+shorter despite being harder. The 360 second floor binds Easy only.
 
 ### Acts, arenas and bosses
 
@@ -109,11 +110,11 @@ maintainable.
 
 The three tiers replace Normal, Hard and Hell.
 
-| Tier | Health | Speed | Shields | Boons | Rerolls | Rescue chest | Rewards |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Easy | 1.00x | 1.00x | 5 | 1 | 2 | 24 s | 1.0x |
-| Hard | 1.90x | 1.10x | 4 | 2 | 1 | 28 s | 2.2x |
-| Impossible | 2.80x | 1.22x | 3 | 3 | 0 | 28 s | 4.5x |
+| Tier | Health | Speed | Shields | Boons | Rerolls | Rescue chest | Head weight | Rewards |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Easy | 1.00x | 1.00x | 5 | 1 | 2 | 24 s | 1.0x | 1.0x |
+| Hard | 2.20x | 1.16x | 4 | 2 | 1 | 28 s | 2.0x | 2.8x |
+| Impossible | 2.80x | 1.42x | 3 | 3 | 0 | 28 s | 4.0x | 4.5x |
 
 The rescue chest is the battle chest handed out when no chest has arrived for that many
 seconds. It exists to prevent card droughts, but it also rescues a struggling run, and
@@ -121,10 +122,24 @@ it rescues it more the longer the fight drags on. A slightly longer timer on the
 tiers is the lever that made them bite without making them unwinnable. Timers of 32
 seconds or more tipped Impossible into losses at intended power.
 
-Impossible is set at 2.80x rather than 3.60x because level 100 Impossible must be
-beatable by a maxed account. At 2.80x it needs a 2.62x in-run card multiplier, which a
-strong run reaches. At 3.60x it needed 3.37x, which was luck-dependent to the point of
-being unreliable.
+**Head weight** multiplies only the head's health. Health multipliers alone proved
+bimodal: an optimal player either keeps up with the feed or collapses. A heavier head
+reaches the vault with health left, breaches, is pushed back and dies on the second pass,
+which produces shield loss gradually. Impossible's speed of 1.42x does the same from the
+other side and also shortens its fights.
+
+**What the tiers mean.** Easy is the campaign: an on-curve player wins every level with
+every shield. Hard is a real fight that an on-curve player still clears, with fights a
+third longer than Easy and the optimal bot losing shields in roughly one level in ten.
+Impossible is meant to be damn near impossible for a person: the optimal harness bot
+wins most levels on its first attempt but not all, loses shields in about half, and every
+level is winnable within three attempts. A person will win far less often than the bot.
+
+Hard started at 1.90x and 1.10x. At those values the optimal harness bot never lost a
+shield whatever the head weight, so Hard was raised to 2.20x and 1.16x, the first
+combination that cost it shields while still winning every level. Impossible stays at
+2.80x health; its bite comes from speed and head weight instead, because raising its
+health flipped random levels to losses without making the survivors sweat.
 
 Impossible also forces all three section traits on regardless of the level's own
 rotation.
@@ -315,18 +330,22 @@ Parts awarded for a first clear of level `n` on Easy:
 parts(n) = round(2 * 1.056^(n-1))
 ```
 
-Hard multiplies by 2.2 and Impossible by 4.5. The growth rate of 1.056 is deliberate:
+Hard multiplies by 2.8 and Impossible by 4.5. Hard's multiplier rose from 2.2 when
+Impossible was tuned to be lost often: a player on the curve is expected to clear about
+70% of Impossible levels, and the economy replay funds the core build at that rate by
+farming Hard rather than Impossible. The growth rate of 1.056 is deliberate:
 weapon level cost grows at 1.115 per weapon level and the intended weapon level is
 `n/2`, so `1.115^0.5 = 1.056` keeps income and cost locked together for the whole
 campaign.
 
 Coins from a first clear follow the same growth: `round(60 * 1.056^(n-1))` on Easy,
-with the same 2.2 and 4.5 multipliers. Over the campaign that supplies 1,910,000 coins
+with the same 2.8 and 4.5 multipliers. Over the campaign that supplies 1,910,000 coins
 against the 1,435,000 demand in section 5, a ratio of 1.33 before chest coins. The
 surplus is what funds weapons beyond the core six.
 
-Cores come only from the harder tiers. Hard first clear gives `ceil(n/12) + 1`,
-Impossible gives `ceil(n/6) + 2`.
+Cores come only from the harder tiers. Hard first clear gives `ceil(n/9) + 1`,
+Impossible gives `ceil(n/6) + 2`. Hard's share rose from every 12 levels to every 9 for
+the same reason as its reward multiplier.
 
 Repeat clears award 25% of the first-clear value, which is what makes farming a lower
 level a real option when a player is stuck.
@@ -371,20 +390,20 @@ progress `n/95`, and the arsenal slots of that level.
 
 | Level | Health vs L1 | Sections | Waves | Weapon level | Rank | Easy | Hard | Impossible |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 1 | 33 | 3 | 1 | 1 | 0.97 | 1.85 | 2.73 |
-| 10 | 3.01 | 42 | 3 | 5 | 1 | 0.87 | 1.65 | 2.43 |
-| 20 | 10 | 52 | 4 | 10 | 1 | 0.91 | 1.72 | 2.53 |
-| 30 | 31 | 62 | 4 | 15 | 2 | 0.88 | 1.67 | 2.47 |
-| 40 | 94 | 64 | 4 | 20 | 2 | 1.05 | 1.99 | 2.93 |
-| 50 | 274 | 64 | 5 | 25 | 3 | 1.06 | 2.01 | 2.96 |
-| 60 | 768 | 64 | 5 | 30 | 3 | 1.21 | 2.30 | 3.39 |
-| 70 | 2,074 | 64 | 5 | 35 | 4 | 1.10 | 2.09 | 3.08 |
-| 80 | 5,386 | 64 | 6 | 40 | 4 | 1.17 | 2.23 | 3.28 |
-| 90 | 13,457 | 64 | 6 | 45 | 5 | 1.08 | 2.06 | 3.04 |
-| 100 | 32,351 | 64 | 6 | 50 | 5 | 1.22 | 2.32 | 3.43 |
+| 1 | 1 | 33 | 3 | 1 | 1 | 0.97 | 2.14 | 2.73 |
+| 10 | 3.01 | 42 | 3 | 5 | 1 | 0.87 | 1.91 | 2.43 |
+| 20 | 10 | 52 | 4 | 10 | 1 | 0.91 | 1.99 | 2.53 |
+| 30 | 31 | 62 | 4 | 15 | 2 | 0.88 | 1.94 | 2.47 |
+| 40 | 94 | 64 | 4 | 20 | 2 | 1.05 | 2.30 | 2.93 |
+| 50 | 274 | 64 | 5 | 25 | 3 | 1.06 | 2.33 | 2.96 |
+| 60 | 768 | 64 | 5 | 30 | 3 | 1.21 | 2.66 | 3.39 |
+| 70 | 2,074 | 64 | 5 | 35 | 4 | 1.10 | 2.42 | 3.08 |
+| 80 | 5,386 | 64 | 6 | 40 | 4 | 1.17 | 2.58 | 3.28 |
+| 90 | 13,457 | 64 | 6 | 45 | 5 | 1.08 | 2.39 | 3.04 |
+| 100 | 32,351 | 64 | 6 | 50 | 5 | 1.22 | 2.69 | 3.43 |
 
 Swept across all 100 levels rather than only the rows above, the required multiplier
-stays inside 0.78 to 1.22 on Easy, 1.49 to 2.32 on Hard, and 2.20 to 3.43 on
+stays inside 0.78 to 1.22 on Easy, 1.72 to 2.69 on Hard, and 2.20 to 3.43 on
 Impossible, against a health curve that grows by a factor of 32,351 over the same span.
 These bands moved up from the first draft because the model's card allowance was
 corrected to the piece-derived chest stride; the earlier draft assumed far fewer late
@@ -400,22 +419,23 @@ intended, but not on a mediocre run. A player who neglects
 upgrades falls off this line immediately, because their own multiplier drops out of
 the denominator: that is the mechanism by which later levels force upgrades.
 
-### The economy balances at 0.90
+### The economy balances at 0.97
 
 Parts income from first clears against the cost of keeping six weapons on the intended
 level:
 
 | Level | Easy clear | All three tiers | Cumulative income | Six-weapon cost | Ratio |
 |---:|---:|---:|---:|---:|---:|
-| 10 | 3 | 23 | 192 | 188 | 1.02 |
-| 20 | 6 | 46 | 539 | 573 | 0.94 |
-| 40 | 17 | 131 | 2,148 | 2,380 | 0.90 |
-| 60 | 50 | 385 | 6,953 | 7,746 | 0.90 |
-| 80 | 148 | 1,140 | 21,237 | 23,684 | 0.90 |
-| 100 | 440 | 3,388 | 63,664 | 71,017 | 0.90 |
+| 10 | 3 | 25 | 208 | 188 | 1.11 |
+| 20 | 6 | 50 | 581 | 573 | 1.01 |
+| 40 | 17 | 141 | 2,316 | 2,380 | 0.97 |
+| 60 | 50 | 415 | 7,495 | 7,746 | 0.97 |
+| 80 | 148 | 1228 | 22,891 | 23,684 | 0.97 |
+| 100 | 440 | 3652 | 68,624 | 71,017 | 0.97 |
 
-The ratio locks at 0.90 from level 40 onward. First clears fund 90% of a six-weapon
-core build. The last 10%, everything spent on weapons seven through twenty-four, and
+The ratio locks at 0.97 from level 40 onward, assuming every tier is cleared. At the
+realistic 70% Impossible clear rate the effective figure is close to the original 0.90.
+First clears fund roughly nine tenths of a six-weapon core build. The last 10%, everything spent on weapons seven through twenty-four, and
 the Refinery's conversion loss all come from idle chests and repeat farming. With 24
 weapons the tail is deliberately larger than any player will fund: the Refinery at
 3 to 1 is what lets a player concentrate scattered income into the build they actually
@@ -513,11 +533,11 @@ least as often as Hard. The graded signal is **feed overrun**, active seconds di
 the level's feed budget: Hard must exceed Easy by 5% and Impossible by 20% at the
 median. Falling behind the feed is exactly the pressure a player feels.
 
-Easy and Hard must win every level on the canonical seed. Impossible is meant to sit on
-a knife edge, so a canonical-seed loss there is retried on up to two alternate seeds
-and the retry is reported; the level fails only if none of the three wins. In the first
-full sweep after tuning, level 74 was the only level that needed this. Level 100
-Impossible must win, and did, with two shields left. It fails if any Easy encounter
+Easy must win every level with every shield. Hard must win every level on the canonical
+seed and lose a shield in at least one level in twenty. Impossible must be won by the bot
+on between 60% and 95% of canonical seeds, must cost a shield in at least 30% of levels, and
+every level including 100 must be winnable within three seeds; retries are reported.
+The economy replay credits Impossible rewards at a 70% clear rate and farms Hard. It fails if any Easy encounter
 is unclearable on the curve, if any Hard encounter is clearable with no cards at all,
 or if the required card multiplier for any tier falls outside the band in section 8 by
 more than 25%. That last check is what stops a later tuning change from quietly

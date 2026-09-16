@@ -28,7 +28,7 @@ export function chooseBoon(r,id){if(r.state!=='boon'||!r.boonOptions.includes(id
 export function spawnWave(r){
  r.wave++;const c=CHAPTERS[r.chapter],d=DIFFICULTIES.find(x=>x.id===r.difficulty);r.headDistance=r.mode==='tournament'?640:CAMPAIGN_ENTRY;r.waveKills=0;r.nextChest=3;r.bullets=[];r.slowUntil=0;r.slowAmount=0;r.rootUntil=0;r.rootTargets=[];
  const endless=r.mode==='tournament';const n=endless?Math.min(64,25+(r.wave-1)*3):Math.min(64,c.segments+(r.wave-1)*3);
- r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000:260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,spacing:endless?32:c.pieceSpacing,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
+ r.segments=Array.from({length:n},(_,i)=>{const head=i===0;const armor=(endless?r.wave>=3:c.traits.armor||r.difficulty==='impossible')&&i%4===2;const regen=(endless?r.wave>=5:c.traits.regen||r.difficulty==='impossible')&&i%5===3;const volatile=(endless?r.wave>=7:c.traits.volatile||r.difficulty==='impossible')&&i%5===1;const hp=Math.min(1e12,(head?1000*(endless?1:d.headWeight||1):260+i*3)*c.hp*d.hp*(endless?(1+(r.wave-1)*1.2+(r.wave-1)**2*.15)*1.12**Math.min(140,Math.max(0,r.wave-6)):1+(r.wave-1)*1.6));return {id:++r.castId,hp,maxHp:hp,spacing:endless?32:c.pieceSpacing,head,armor,regen,volatile,x:0,y:0,angle:0,flash:0,burn:0,burnDps:0,burnWeapon:'burn',markedUntil:0};});
  r.snakeLayout=undefined;groupSections(r);
  // Traits belong to health pools, not each of the four decorative body pieces.
  // Keep their original frequency instead of making every grouped section armored.
@@ -176,8 +176,8 @@ export function completeRun(save,r){
  const parts={},amount=win?Math.round(firstClearParts(n,r.difficulty)*(first?1:.25)):0;
  // Rewards are a total budget, distributed across the weapons actually used this run.
  const pool=[...new Set(r.weapons.length?r.weapons.map(w=>w.id):['coin'])];for(let i=0;i<amount;i++){const id=pool[i%pool.length];parts[id]=(parts[id]||0)+1;save.parts[id]++;}
- let cores=0,blueprints=0,chests=0,overflowLoot=null;
- if(first){if(r.difficulty==='hard')cores=Math.ceil(n/12)+1;if(r.difficulty==='impossible'){cores=Math.ceil(n/6)+2;if(n%4===0)blueprints++;}
+ const diff=DIFFICULTIES.find(x=>x.id===r.difficulty);let cores=0,blueprints=0,chests=0,overflowLoot=null;
+ if(first){if(diff.coreDiv)cores=Math.ceil(n/diff.coreDiv)+diff.coreAdd;if(r.difficulty==='impossible'&&n%4===0)blueprints++;
   if(r.difficulty==='hard'&&WEAPONS.some(w=>w.grade==='S'&&w.discovery===n))blueprints+=10;
   if(r.difficulty==='easy'&&n%10===0){blueprints+=3;if(chestTotal(save)>=32)overflowLoot=openChests(save,1,save.chestAt,()=>random(r));addChest(save,'vault');chests++;}
  }
