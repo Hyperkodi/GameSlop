@@ -1,0 +1,43 @@
+/* Keep the entire defense field visible, with controls in the lower apron. */
+.vent-group{pointer-events:auto;align-self:flex-end;margin-bottom:22px}
+#vent{min-width:54px;min-height:48px;border:1px solid #8ea3a9;border-radius:12px;background:#213747;color:#e9efda;font-size:11px;font-weight:900;touch-action:none}
+#vent small{display:block;margin-top:3px;color:#9cbcc6}
+#ultimate .special-hotkey{position:absolute;top:-3px;right:-3px;z-index:2;display:grid;place-items:center;width:25px;height:25px;border:2px solid #fff0bb;border-radius:6px;background:#ffd46b;color:#17263d;font:bold 14px monospace;box-shadow:0 2px #71521f;pointer-events:none}
+@media(hover:none){#ultimate .special-hotkey{display:none}}
+.display-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 16px;padding:10px 14px;background:#263747;border:1px solid #ffd46b88;border-radius:12px;color:#f9edce;font-size:13px}
+.fullscreen-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 16px;border:2px solid #ffe598;border-radius:10px;background:#ffd46b;color:#17263d;font-size:13px;font-weight:900;box-shadow:0 3px #71521f;cursor:pointer;touch-action:manipulation}
+.fullscreen-button:hover{background:#ffe99b}.fullscreen-button:focus-visible{outline:3px solid white;outline-offset:3px}
+.battle-hud>div:first-child{flex:1;min-width:0;padding-right:6px}.battle-menu-actions{flex-shrink:0;align-items:center}
+.battle-fullscreen{flex-direction:column;gap:0;padding:3px 5px;min-width:55px;min-height:44px;line-height:1}
+.battle-fullscreen>span{font-size:24px}.battle-fullscreen small{font-size:8px;margin-top:2px;white-space:nowrap}
+.battle-hud .battle-menu-actions .icon-button{min-width:36px;min-height:44px}
+@media(max-width:380px){.battle-hud strong{font-size:14px}.display-bar{font-size:11px;padding:8px}.fullscreen-button{font-size:12px;padding-inline:10px}.battle-fullscreen{padding-inline:4px}.brand{font-size:13px}}
+#vent:disabled{opacity:.4}
+.touch-controls{bottom:4.5%}
+.battle-score{bottom:1.6%}
+.battle-hud{pointer-events:none}
+.battle-menu-actions{pointer-events:auto}
+@media(min-width:751px) and (min-height:601px){.arena-shell{aspect-ratio:560/760}.battle-layout{max-width:1150px}}
+@media(orientation:portrait) and (max-width:750px){.arena-shell{width:100%;aspect-ratio:auto}.touch-controls{left:5%;right:5%;bottom:4.5%}.vent-group{margin-left:auto;margin-right:14px}.battle-hud strong{font-size:17px}}
+@media(orientation:landscape) and (max-height:600px){
+ .arena-shell{width:calc((100dvh - 8px)*.72);min-width:0;aspect-ratio:auto}.battle-layout{padding:0;gap:24px}.run-panel{display:block;width:170px;margin:0 75px 0 0}
+ .touch-controls{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:7%}.vent-group{position:fixed;right:max(24px,env(safe-area-inset-right));top:16%;margin:0}
+ #joystick{width:94px;height:94px}#stick-thumb{left:28px;top:28px}.battle-hud{top:2%}
+}
+
+@media(orientation:landscape) and (max-height:600px) and (max-width:700px){.run-panel{display:none}.arena-shell{width:calc((100dvh - 8px)*.72)}}
+
+/* Only three compact controls occupy the top of the battle screen. */
+.playing .topbar{display:none}
+.playing #battle{height:100dvh}
+.battle-hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));right:auto;width:auto;padding:0;margin:0;border:0;border-radius:0;background:none;box-shadow:none;z-index:20;flex-wrap:nowrap}
+.battle-hud>div:not(.battle-menu-actions){display:none}
+.battle-hud .battle-menu-actions{gap:8px;padding:0}
+.battle-hud .battle-menu-actions>button.icon-button,.battle-hud .battle-menu-actions>button.fullscreen-button{position:relative;display:grid;place-items:center;flex:none;width:36px;height:36px;min-width:36px;min-height:36px;padding:0;border:1px solid #b5c6dd88;border-radius:9px;background:#17263dea;color:#fff1d2;box-shadow:0 2px 5px #0005;font-size:18px;line-height:1;touch-action:manipulation}
+.battle-hud .battle-menu-actions>button::after{content:'';position:absolute;inset:-4px}
+.battle-hud .battle-menu-actions #speed{font-size:12px}
+.battle-hud .battle-menu-actions #speed.fast{background:#ffd46b;color:#17263d;border-color:#ffe598}
+.battle-hud .battle-fullscreen>span{font-size:21px}
+.battle-hud .battle-fullscreen small{display:none}
+.battle-hud .battle-menu-actions>button:hover{background:#354966}
+.battle-hud .battle-menu-actions>button:focus-visible{outline:2px solid #ffd46b;outline-offset:3px}
