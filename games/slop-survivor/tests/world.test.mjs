@@ -4,7 +4,7 @@ import {CHAPTERS,defaultSave,unlockedDifficulty,normalizeSave} from '../data.mjs
 import {bossForChapter,arenaForChapter,encounterPhase} from '../world.mjs';
 import {pathPoint,updatePositions} from '../snake.mjs';
 import {createRun,chooseBoon,chooseUpgrade,tick,makeWeapon,completeRun} from '../engine.mjs';
-function ready(chapter){const save=defaultSave(100);for(let i=0;i<chapter;i++)save.clears[`${i}:easy`]=true;const r=createRun(save,chapter,'easy',42);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;return {save,r};}
+function ready(chapter){const save=defaultSave(100);for(let i=0;i<chapter;i++)save.clears[`${i}:easy`]=true;const r=createRun(save,chapter,'easy',42);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;for(const snake of r.snakes)snake.distance=700;updatePositions(r);return {save,r};}
 test('five boss identities and fifteen chapters retain progressive campaign gates',()=>{
  assert.equal(CHAPTERS.length,100);assert.equal(new Set(CHAPTERS.map((_,i)=>bossForChapter(i).name)).size,5);
  assert.deepEqual([39,49,19].map(arenaForChapter),['canyon','marina','citadel']);

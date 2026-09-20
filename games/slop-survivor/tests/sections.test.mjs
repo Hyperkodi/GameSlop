@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {defaultSave,normalizeSave,validRun,LEVELS} from '../data.mjs';
-import {createRun,chooseBoon,chooseUpgrade,tick,makeWeapon,spawnWave} from '../engine.mjs';
+import {createRun,chooseBoon,chooseUpgrade,tick,makeWeapon,spawnWave} from './legacy-engine.mjs';
 import {groupSections,updatePositions,sectionSpan,sectionDistance} from '../snake.mjs';
 function ready(){const save=defaultSave(100),r=createRun(save,0,'easy',77);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.weapons=[];r.pending=0;r.lastChoice=10000;r.headDistance=640;r.segments.forEach(s=>s.spacing=32);updatePositions(r);return {save,r};}
 function settle(r){for(let i=0;i<300&&r.segments.some(s=>s.retreat>0);i++){r.pending=0;r.state='playing';tick(r,.01);}assert.ok(r.segments.every(s=>s.retreat===0));}

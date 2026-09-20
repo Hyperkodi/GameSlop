@@ -1,7 +1,7 @@
 import {updatePositions} from '../snake.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {WEAPONS,CHAPTERS,UPGRADE_RARITIES,defaultSave,normalizeSave,validRun,weaponUnlocked} from '../data.mjs';
-import {createRun,chooseBoon,chooseUpgrade,makeWeapon,offerChoice,tick,completeRun} from '../engine.mjs';
+import {createRun,chooseBoon,chooseUpgrade,makeWeapon,offerChoice,tick,completeRun} from './legacy-engine.mjs';
 import {rollRarity,drawCards,applyCard,preview} from '../upgrades.mjs';
 function account(){const s=defaultSave();for(let i=0;i<CHAPTERS.length;i++)s.clears[i+':easy']=s.clears[i+':hard']=true;s.owned=WEAPONS.map(w=>w.id);return s;}
 function playing(id='coin'){const s=account(),r=createRun(s,0,'easy',731);chooseBoon(r,'damage');r.weapons=[makeWeapon(id)];r.pending=0;r.choices=[];r.state='playing';r.lastChoice=1000;r.headDistance=640;r.segments.forEach(s=>s.spacing=32);updatePositions(r);return {s,r,w:r.weapons[0]};}

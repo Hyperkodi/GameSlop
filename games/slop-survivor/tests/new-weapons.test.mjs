@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {WEAPONS,LEGENDARY,defaultSave,validRun,normalizeSave,weaponUnlocked,unlockWeapon} from '../data.mjs';
-import {createRun,chooseBoon,makeWeapon,fire,hit,tick} from '../engine.mjs';
+import {createRun,chooseBoon,makeWeapon,fire,hit,tick} from './legacy-engine.mjs';
 import {updatePositions} from '../snake.mjs';
 import {applyCard} from '../upgrades.mjs';
 function scene(id,legendary=false){const s=defaultSave(0),r=createRun(s,0,'easy',42);chooseBoon(r,'damage');r.state='playing';r.choices=[];r.pending=0;r.lastChoice=1e6;r.rootUntil=1e6;const w=makeWeapon(id);w.legendary=legendary;w.crit=0;r.weapons=[w];r.headDistance=640;r.segments=r.segments.slice(0,3);r.segments.forEach(s=>s.spacing=32);r.segments.forEach(s=>{s.hp=s.maxHp=1e7;s.armor=s.regen=s.volatile=false;});updatePositions(r);return {r,w,t:r.segments[0]};}

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {VERSION,LEVELS,ACT_ANCHORS,WEAPONS,DIFFICULTIES,defaultSave,normalizeSave,validRun,migratedLevel,migratedChapter,encounterHealth,rawPool,upgradeCost,upgradeWeapon,rankUp,rankCost,upgradeFoundry,refine,openChests,syncChests,chestTotal,CHEST_INTERVAL,arsenalSlots,highestUnlocked,BASE_POOL} from '../data.mjs';
-import {createRun,chooseBoon,spawnWave,makeWeapon} from '../engine.mjs';
+import {createRun,chooseBoon,spawnWave,makeWeapon} from './legacy-engine.mjs';
 import {AutoSync} from '../autosync.mjs';
 const openSave=()=>{const s=defaultSave(0);for(let i=0;i<100;i++)for(const d of DIFFICULTIES)s.clears[`${i}:${d.id}`]=true;return normalizeSave(s,0);};
 function active(){const s=openSave();const r=createRun(s,99,'impossible',42);while(r.state==='boon')chooseBoon(r,r.boonOptions[0]);return r;}

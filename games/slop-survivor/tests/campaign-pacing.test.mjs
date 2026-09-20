@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {LEVELS,defaultSave,validRun,normalizeSave,weaponUnlocked,weapon} from '../data.mjs';
 import {campaignSpacing,waveMovement,feedSeconds} from '../campaign-pacing.mjs';
-import {createRun,createTournamentRun,chooseBoon,spawnWave,tick,makeWeapon,fire} from '../engine.mjs';
+import {createRun,createTournamentRun,chooseBoon,spawnWave,tick,makeWeapon,fire} from './legacy-engine.mjs';
 import {sectionSpan,closeSectionGaps,updatePositions} from '../snake.mjs';
 import {intendedAccount} from './campaign-harness.mjs';
 test('all levels derive bounded spacing and a consistent entrance travel budget',()=>{

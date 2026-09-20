@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {defaultSave,normalizeSave,validRun,SPECIALS,SPECIAL_RANKS,specialRankCost,specialUnlocked,buySpecial,equipSpecial} from '../data.mjs';
-import {createRun,createTournamentRun,chooseBoon,tick,ultimate,makeWeapon} from '../engine.mjs';
+import {createRun,createTournamentRun,chooseBoon,tick,ultimate,makeWeapon} from './legacy-engine.mjs';
 import {updatePositions,sectionVisible} from '../snake.mjs';
 
 function cleared(n){const s=defaultSave(0);for(let i=0;i<n;i++)s.clears[`${i}:easy`]=true;return s;}

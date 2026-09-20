@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {defaultSave,BOONS,DIFFICULTIES,FRENZY_SPEED,FRENZY_SECTIONS,frenzyReduction,validRun} from '../data.mjs';
-import {createRun,createTournamentRun,chooseBoon,tick,boonOptionsFor} from '../engine.mjs';
+import {createRun,createTournamentRun,chooseBoon,tick,boonOptionsFor} from './legacy-engine.mjs';
 
 function unlocked(){const s=defaultSave(0);s.clears['0:easy']=true;s.clears['0:hard']=true;return s;}
 function playing(difficulty,boon='damage',seed=7){const r=createRun(unlocked(),0,difficulty,seed);while(r.state==='boon')chooseBoon(r,r.boonOptions.find(id=>id===boon)||r.boonOptions[0]);r.pending=0;r.choices=[];r.state='playing';return r;}

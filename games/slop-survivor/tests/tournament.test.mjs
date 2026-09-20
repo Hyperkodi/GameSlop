@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {defaultSave,normalizeSave,validRun} from '../data.mjs';
-import {createRun,createTournamentRun,chooseBoon,chooseUpgrade,tick,spawnWave,reviveTournament,endTournament,completeRun,makeWeapon,offerChoice} from '../engine.mjs';
+import {createRun,createTournamentRun,chooseBoon,chooseUpgrade,tick,spawnWave,reviveTournament,endTournament,completeRun,makeWeapon,offerChoice} from './legacy-engine.mjs';
 import {applyCard,nextDamage,preview} from '../upgrades.mjs';
 function ready(){const s=defaultSave(),r=createTournamentRun(s,123);chooseBoon(r,'damage');chooseUpgrade(r,r.choices[0].id);r.events=[];return {s,r};}
 function breach(r){r.health=1;r.headDistance=2100;r.pending=0;r.lastChoice=r.time+100;tick(r,.05);}

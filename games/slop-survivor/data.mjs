@@ -15,11 +15,11 @@ export const LEGENDARY = {
 export const WEAPONS = [
  {id:'coin',name:'Mint Condition',tag:'COIN CANNON',icon:'coin',color:'#ffd276',damage:14,cooldown:.26,crit:.10,mult:2,speed:540,type:'bolt',unlock:0,description:'Rapid-fire minted coins. Reliable, precise and gloriously excessive.',special:'pierce',specialName:'Double spend',specialText:'Coins pierce one additional segment.'},
  {id:'laser',name:'Liquidator',tag:'PIERCING BEAM',icon:'laser',color:'#78f8d7',damage:34,cooldown:.9,crit:.08,mult:2.2,type:'beam',unlock:0,description:'A concentrated margin-call beam burns through aligned segments.',special:'pierce',specialName:'Margin call',specialText:'Beam pierces two additional segments.'},
- {id:'gas',name:'Gas Fees',tag:'AREA EXPLOSIVES',icon:'gas',color:'#f8a86a',damage:80,cooldown:2.4,crit:.12,mult:1.8,speed:350,type:'bomb',unlock:0,radius:65,description:'Lob volatile gas canisters. The whole neighborhood pays.',special:'radius',specialName:'Network congestion',specialText:'Explosion radius increases by 35%.'},
+ {id:'gas',name:'Gas Fees',tag:'AREA EXPLOSIVES',icon:'gas',color:'#f8a86a',damage:80,cooldown:2.4,crit:.12,mult:1.8,speed:350,type:'bomb',unlock:0,radius:65,description:'Call in an explosive canister from above. Lead moving targets to catch them in the blast.',special:'radius',specialName:'Network congestion',specialText:'Explosion radius increases by 35%.'},
  {id:'diamond',name:'Diamond Hands',tag:'RETURNING BLADES',icon:'diamond',color:'#a5c9ff',damage:27,cooldown:1.15,crit:.18,mult:2.3,speed:320,type:'disc',unlock:0,description:'Faceted diamond blades slice outward and return for a second pass.',special:'count',specialName:'Never selling',specialText:'Launch one additional diamond blade.'},
  {id:'chain',name:'Block Lightning',tag:'CHAIN REACTION',icon:'chain',color:'#c2a5ff',damage:29,cooldown:1.8,crit:.15,mult:2,type:'chain',unlock:1,description:'Lightning validates its way across neighboring segments.',special:'chain',specialName:'More validators',specialText:'Lightning jumps to two more targets.'},
- {id:'rug',name:'Rug Pull',tag:'SLOWING FIELD',icon:'rug',color:'#ed9dc7',damage:21,cooldown:3.2,crit:.10,mult:2,type:'field',unlock:2,radius:105,description:'An enchanted rug unrolls beneath Slippy and drags him back.',special:'slow',specialName:'Liquidity lock',specialText:'Rug slows Slippy an extra 10 percentage points.'},
- {id:'burn',name:'Burn Address',tag:'DAMAGE OVER TIME',icon:'burn',color:'#ff795e',damage:32,cooldown:1.4,crit:.10,mult:1.9,type:'burn',unlock:3,radius:63,description:'Send Slippy to the burn address. Fire keeps dealing damage.',special:'burn',specialName:'Supply shock',specialText:'Burn duration increases by 2 seconds.'},
+ {id:'rug',name:'Rug Pull',tag:'SLOWING FIELD',icon:'rug',color:'#ed9dc7',damage:21,cooldown:3.2,crit:.10,mult:2,type:'field',unlock:2,radius:105,description:'Lay a rug for 2.7 seconds. It damages nearby sections and slows each snake by 20% only while its head or body touches the carpet.',special:'slow',specialName:'Liquidity lock',specialText:'Snakes touching the rug are slowed an extra 10 percentage points.'},
+ {id:'burn',name:'Napalm Strike',tag:'INCENDIARY AIR SUPPORT',icon:'burn',color:'#ff795e',damage:32,cooldown:1.4,crit:.10,mult:1.9,type:'burn',unlock:3,radius:63,description:'Mark a landing zone. Napalm drops from above and leaves a burning field. Lead the snake.',special:'burn',specialName:'Supply shock',specialText:'Burn duration increases by 2 seconds.'},
  {id:'whale',name:'Whale Drop',tag:'ORBITAL IMPACT',icon:'whale',color:'#85daff',damage:210,cooldown:5.2,crit:.06,mult:2.5,type:'meteor',unlock:4,radius:100,description:'An enormous golden whale falls from orbit. A very bearish event.',special:'radius',specialName:'Market impact',specialText:'Impact radius increases by 35%.'},
  {id:'satellite',name:'Hash Satellite',tag:'ORBITAL HP SHREDDER',color:'#9ceaff',damage:65,cooldown:3.1,crit:.09,mult:2,type:'satellite',unlock:5,radius:85,description:'An orbiting hash cannon shaves 1.5% of current segment health, capped at 4× its hit damage.',special:'radius',specialName:'Orbital coverage',specialText:'Strike radius increases by 35%.'},
  {id:'swarm',name:'MEV Swarm',tag:'HOMING ATTACK BOTS',color:'#adff70',damage:24,cooldown:1.4,crit:.18,mult:2.1,type:'swarm',speed:330,unlock:6,description:'Three predatory trading bots independently home in on different targets.',special:'count',specialName:'Bot farm',specialText:'Launch one additional homing bot.'},
@@ -97,7 +97,7 @@ export const DIFFICULTIES = [
  {id:'hard',name:'Hard',hp:2.2,speed:1.16,reward:2.8,boons:2,shields:4,rerolls:1,chestTimer:28,headWeight:2,coreDiv:9,coreAdd:1,color:'#f5bb66'},
  {id:'impossible',name:'Impossible',hp:2.8,speed:1.42,reward:4.5,boons:3,shields:3,rerolls:0,chestTimer:28,headWeight:3.5,coreDiv:6,coreAdd:2,color:'#fd8c86'}
 ];
-const roster={coin:['C',0,'Single target'],rug:['C',4,'Control'],gas:['B',9,'Burst area'],chain:['B',14,'Chain'],laser:['A',16,'Pierce line'],burn:['B',18,'Damage over time'],diamond:['A',21,'Multi-pass'],swarm:['B',23,'Homing multi'],whale:['S',26,'Burst nuke'],fork:['A',31,'Splitting'],satellite:['S',44,'Percent current health'],dragon:['A',46,'Head hunter'],vortex:['S',58,'Zone control'],oracle:['S',68,'Support amplifier']};
+const roster={coin:['C',0,'Single target'],rug:['C',4,'Control'],gas:['B',1,'Air support'],chain:['B',14,'Chain'],laser:['A',16,'Pierce line'],burn:['B',3,'Napalm air support'],diamond:['A',21,'Multi-pass'],swarm:['B',23,'Homing multi'],whale:['S',26,'Burst nuke'],fork:['A',31,'Splitting'],satellite:['S',44,'Percent current health'],dragon:['A',46,'Head hunter'],vortex:['S',58,'Zone control'],oracle:['S',68,'Support amplifier']};
 for(const w of WEAPONS)if(roster[w.id]){[w.grade,w.discovery,w.class]=roster[w.id];}
 export const GRADE_FACTOR={S:1.30,A:1.10,B:.92,C:.78};
 // Specials are bought in the Foundry with coins once a level is cleared on Easy. One is
@@ -130,9 +130,9 @@ export const BOONS = [
  {id:'rapid',name:'Fast Finality',description:'All weapons have 15% shorter cooldowns.',icon:'chain'},
  // Frenzy boons appear only on Hard and Impossible, and not every time. They soften the
  // 5x entrance rush that runs until three sections are on the board.
- {id:'frenzy25',name:'Speed Bump',description:'The entrance frenzy is 25% slower.',icon:'rug',frenzy:.25},
- {id:'frenzy50',name:'Circuit Halt',description:'The entrance frenzy is 50% slower.',icon:'rug',frenzy:.5},
- {id:'frenzy100',name:'Trading Halt',description:'No entrance frenzy at all this run.',icon:'rug',frenzy:1}
+ {id:'frenzy25',name:'Speed Bump',description:'Snake speed surges are 25% gentler.',icon:'rug',frenzy:.25},
+ {id:'frenzy50',name:'Circuit Halt',description:'Snake speed surges are 50% gentler.',icon:'rug',frenzy:.5},
+ {id:'frenzy100',name:'Trading Halt',description:'Snakes keep a steady speed without random surges.',icon:'rug',frenzy:1}
 ];
 export const FRENZY_SPEED=5,FRENZY_SECTIONS=3;
 export const frenzyReduction=boons=>Math.max(0,...boons.map(id=>BOONS.find(b=>b.id===id)?.frenzy||0));
@@ -184,12 +184,17 @@ function validCombatState(r){
  const number=(v,min=-1e12,max=1e12)=>Number.isFinite(v)&&v>=min&&v<=max;
  const optional=(o,keys,min=-1e12,max=1e12)=>keys.every(k=>o[k]===undefined||number(o[k],min,max));
  const ids=xs=>Array.isArray(xs)&&xs.length<=200&&xs.every(x=>Number.isSafeInteger(x)&&x>=0);
+ if(r.combatVersion!==undefined&&r.combatVersion!==3)return false;
+ if(r.combatVersion===3){
+  if((r.chestStep!==undefined&&(!Number.isInteger(r.chestStep)||!number(r.chestStep,12,30)))||!number(r.heat,0,1)||typeof r.overheated!=='boolean'||!number(r.ventUntil,0))return false;
+  if(r.wave>0&&(!Number.isSafeInteger(r.routeSeed)||!number(r.routeSeed,0,1e9)||!Array.isArray(r.snakes)||r.snakes.length<1||r.snakes.length>4||new Set(r.snakes.map(s=>s?.id)).size!==r.snakes.length||!r.snakes.every(s=>s&&Number.isInteger(s.id)&&number(s.id,0,3)&&number(s.distance,-6400,5000)&&number(s.phase,0,7)&&number(s.speed,.5,2)&&Number.isInteger(s.species)&&number(s.species,0,3))||!r.segments.every(s=>r.snakes.some(n=>n.id===s.snakeId)&&Number.isInteger(s.species)&&number(s.species,0,3))))return false;
+ }
  if(!Array.isArray(r.weapons)||!Array.isArray(r.deck)||!Array.isArray(r.segments)||!Array.isArray(r.effects)||!Array.isArray(r.bullets)||!Array.isArray(r.numbers))return false;
  if(r.rootTargets!==undefined&&!ids(r.rootTargets))return false;
  if(new Set(r.weapons.map(w=>w?.id)).size!==r.weapons.length||new Set(r.deck).size!==r.deck.length)return false;
  if(!r.weapons.every(w=>w&&Number.isInteger(w.level)&&number(w.level,1,50)&&optional(w,['rank'],1,5)))return false;
- if(!r.segments.every(s=>s&&optional(s,['spacing'],32,100)&&optional(s,['distance','markedUntil','slipUntil'])&&(!s.points||Array.isArray(s.points)&&s.points.length<=100&&s.points.every(p=>p&&number(p.x)&&number(p.y)&&number(p.angle)))))return false;
- if(!r.effects.every(e=>e&&optional(e,['x','y','x2','y2','angle','start','distance'])&&optional(e,['r'],0,4000)&&(!['trap','lambo'].includes(e.type)||e.weapon===e.type)&&
+ if(!r.segments.every(s=>s&&optional(s,['spacing'],r.combatVersion===3?24:32,100)&&optional(s,['distance','markedUntil','slipUntil'])&&(!s.points||Array.isArray(s.points)&&s.points.length<=100&&s.points.every(p=>p&&number(p.x)&&number(p.y)&&number(p.angle)))))return false;
+ if(!r.effects.every(e=>e&&optional(e,['x','y','x2','y2','angle','start','distance'])&&optional(e,['r'],0,4000)&&optional(e,['slow'],0,.6)&&(!['trap','lambo'].includes(e.type)||e.weapon===e.type)&&
   (e.type!=='lambo'||number(e.start,-6400,10000)&&[-1,1].includes(e.direction)&&typeof e.returning==='boolean'&&ids(e.hits))&&
   (e.type!=='trap'||e.secondary===undefined||typeof e.secondary==='boolean')))return false;
  if(!r.bullets.every(b=>b&&ids(b.hits)&&optional(b,['factor'],0,100)&&optional(b,['r'],0,100)&&optional(b,['targetX','targetY','launchX','launchY','turnAt','targetId','ignoreId','generation','pierce'])))return false;
@@ -216,6 +221,10 @@ export function normalizeSave(raw,now=Date.now()){
  s.owned=[...new Set(['coin',...(Array.isArray(raw.owned)?raw.owned:[])])].filter(id=>weapon(id));
  s.deck=WEAPONS.filter(w=>weaponUnlocked(s,w)).map(w=>w.id);
  s.selectedManual=raw.selectedManual===true;s.selected=s.selectedManual?num(raw.selected,0,99):highestUnlocked(s);s.difficulty=DIFFICULTIES.some(d=>d.id===raw.difficulty)?raw.difficulty:'easy';
+ // Legacy chapter-to-level mapping can skip past the first uncleared level.
+ // Repair both freshly migrated and previously converted accounts before launch.
+ if(!unlockedChapter(s,s.selected)){s.selected=highestUnlocked(s);s.selectedManual=false;}
+ if(!unlockedDifficulty(s,s.selected,s.difficulty))s.difficulty='easy';
  for(const k of ['sfx','music'])s.settings[k]=Number.isFinite(raw.settings?.[k])?clamp(raw.settings[k],0,1):s.settings[k];s.settings.reduced=raw.settings?.reduced===true;s.settings.speed=raw.settings?.speed===2?2:1;
  s.totalKills=num(raw.totalKills,0,1e12);s.totalRuns=num(raw.totalRuns,0,1e9);s.tutorial=raw.tutorial===true;
  s.updatedAt=num(raw.updatedAt,0,Number.MAX_SAFE_INTEGER);s.tournamentBest=num(raw.tournamentBest,0,Number.MAX_SAFE_INTEGER);s.tournamentRuns=num(raw.tournamentRuns,0,1e9);

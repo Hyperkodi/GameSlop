@@ -1,4 +1,6 @@
-import {LEVELS} from './data.mjs';
+import {LEVELS,frenzyReduction} from './data.mjs';
+import {isActionRun,routePoint} from './encounters.mjs';
+import {snakeSlowFactor} from './rug-field.mjs';
 // One health pool covers four body pieces. Distances run from tail to head.
 export const PIECE_SPACING=32, SECTION_PIECES=4, RETREAT_SPEED=260;
 export function pathPoint(d,chapter=0){
@@ -33,6 +35,15 @@ export function groupSections(r){
  r.segments=groups;r.snakeLayout=2;updatePositions(r);
 }
 export function updatePositions(r){
+ if(isActionRun(r)&&r.snakes){
+  for(const snake of r.snakes){let distance=snake.distance;
+   for(const s of r.segments.filter(s=>s.snakeId===snake.id)){
+    s.distance=distance+(s.retreat||0);const length=sectionSpan(s)-(s.spacing||PIECE_SPACING);
+    const count=Math.ceil(length/6);s.points=Array.from({length:count+1},(_,i)=>{const d=s.distance-(count?i*length/count:0),p=routePoint(r,d,snake.id),sway=Math.sin(d*.045-r.time*4+snake.phase)*1.8+Math.sin(d*.071+r.time*2.2)*.6;return {...p,x:p.x-Math.sin(p.angle)*sway,y:p.y+Math.cos(p.angle)*sway};});
+    Object.assign(s,routePoint(r,s.distance-length/2,snake.id));distance-=sectionSpan(s);
+   }
+  }r.headDistance=r.snakes[0]?.distance||0;return;
+ }
  let distance=r.headDistance;
  for(const s of r.segments){
   s.distance=distance+(s.retreat||0);
@@ -43,12 +54,24 @@ export function updatePositions(r){
  }
 }
 export function advanceSnake(r,dt,speed){
+ if(isActionRun(r)&&r.snakes){
+  for(const snake of r.snakes){const body=r.segments.filter(s=>s.snakeId===snake.id);if(!body.length)continue;
+   if(body.some(s=>s.retreat>0)){for(const s of body)s.retreat=Math.max(0,(s.retreat||0)-RETREAT_SPEED*dt);}
+   else {const pulse=1+(1-frenzyReduction(r.boons||[]))*(.14*Math.sin(r.time*1.7+snake.phase)+.07*Math.sin(r.time*3.1+snake.phase*2));snake.distance+=dt*speed*snake.speed*pulse*snakeSlowFactor(r,body);}
+  }updatePositions(r);return;
+ }
  const retracting=r.segments.some(s=>s.retreat>0);
  if(retracting)for(const s of r.segments)s.retreat=Math.max(0,(s.retreat||0)-RETREAT_SPEED*dt);
- else r.headDistance+=dt*speed;
+ else r.headDistance+=dt*speed*snakeSlowFactor(r,r.segments);
  updatePositions(r);
 }
 export function closeSectionGaps(r,deadIds){
+ if(isActionRun(r)&&r.snakes){
+  for(const snake of r.snakes){let behind=0;const body=r.segments.filter(s=>s.snakeId===snake.id);
+   for(let i=body.length-1;i>=0;i--){const s=body[i];if(deadIds.has(s.id))behind+=sectionSpan(s);else s.retreat=(s.retreat||0)+behind;}
+   snake.distance-=behind;
+  }r.segments=r.segments.filter(s=>!deadIds.has(s.id));updatePositions(r);return;
+ }
  // Keep the tail in place. Only the sections AHEAD of a break move backward.
  const old=r.segments;let behind=0;
  for(let i=old.length-1;i>=0;i--){const s=old[i];if(deadIds.has(s.id))behind+=sectionSpan(s);else s.retreat=(s.retreat||0)+behind;}

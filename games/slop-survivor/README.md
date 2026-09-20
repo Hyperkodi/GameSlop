@@ -1,6 +1,10 @@
-# Slop Survivor: The Serpent Siege
+# Wojak Survivor: The Serpent Siege
 
-A mobile browser defense game. Wojak defends the vault against Slippy and four recurring bosses. The v2 campaign has **100 levels, three difficulties and 24 weapons**. Each attempt starts with Mint Condition and builds a fresh arsenal from battle chests.
+A mobile browser defense game. The v3 action update adds fast curved serpents, six encounter styles, four-snake sieges, manual aiming and heat management. The campaign has **100 levels, three difficulties and 24 weapons**. Each attempt starts with Mint Condition and builds a fresh arsenal from battle chests.
+
+Version 3.2 names the game **Wojak Survivor**, keeps serpent heads upright with horizontal mirroring, and gives all 100 levels distinct routes built from ten movement patterns. Opening speed is 27% lower than v3.1; level-based speed growth is capped at 16%. Gold fullscreen buttons are visible on the home screen and battle HUD. Saved progress keeps its existing storage keys; ongoing waves retain their geometry until the next wave.
+
+Rug Pull now slows only snakes whose living head or body touches the unrolled carpet. Each snake resumes normal speed when it leaves or the rug expires. Its base slow is 20%; overlapping rugs use the strongest slow, and Market Crash retains its stronger global slow. A SLOWED marker identifies affected snakes.
 
 ## Run and verify
 
@@ -9,8 +13,7 @@ From `games/slop-survivor`:
 ```sh
 npm start                     # http://localhost:8193
 npm test                      # deterministic unit and regression tests
-node tests/balance.mjs         # 63 encounters, no-card checks, 100-level economy
-node tests/balance.mjs --full  # all 300 encounters and 100 Hard no-card controls
+node tests/action-harness.mjs --report # active aim versus idle/parked fire
 node tests/economy-harness.mjs # detailed purchase and farming replay
 ```
 
@@ -29,7 +32,9 @@ No build step, framework or package dependencies. Use an HTTP server rather than
 
 ## Controls and saves
 
-Weapons fire automatically. Use the thumb joystick, mouse, arrow keys or WASD to focus fire; a mouse keeps focus fire while it is over the arena. Each wave, Slippy rushes in at 5x the base speed until three sections are on the board; on Hard and Impossible a starting bonus can slow or remove that rush. Space or the star button fires your equipped special, once you have bought one in the Foundry. The 1x/2x button or the F key doubles the game speed; the choice is remembered. Escape or the pause button pauses. Switching applications pauses and saves. Settings include independent music/effects volume and reduced effects.
+Hold the thumb joystick off center, hold the mouse button over the arena, or hold arrow keys / WASD to aim and fire. Hover does not fire. Release to cool the cannon; R or the Vent button cools faster but interrupts firing for 1.15 seconds. Overheating locks fire until you release or vent. Glowing sections take 65% extra damage. Lead moving targets and delayed airstrikes. E, Space or the star button activates your equipped special. F toggles 1x/2x speed; Escape pauses. Blur, app switching and rotation safely release inputs.
+
+Explosive air support unlocks after Easy level 1; Napalm Strike after Easy level 3. The character keeps a single rotating cannon; airstrikes, summoned effects and drones have separate origins. Each snake has an independent route, speed variation, health and recoil.
 
 Campaign and endless tournament have separate saved attempts. The tournament keeps its three revives, score, arsenal and personal best across reloads. Permanent account bonuses apply to new attempts. No online leaderboard or paid progression is included.
 
@@ -37,14 +42,14 @@ Local progress saves automatically. Telegram Mini App launches also synchronize 
 
 ## Art and offline play
 
-All 24 weapons have original procedural icons and illustrated sprites. The ten expansion sprites were generated individually as transparent PNG masters and converted to WebP. [ART-PROMPTS.md](ART-PROMPTS.md) records the exact prompts and selected source files. Existing character art and generic weapon poses remain in use. The service worker caches every runtime module and sprite.
+All 24 weapons have original procedural icons and illustrated sprites. The ten expansion sprites were generated individually as transparent PNG masters and converted to WebP. [ART-PROMPTS.md](ART-PROMPTS.md) records the exact prompts and selected source files. The player uses an articulated cannon aimed at its actual muzzle direction. Four new serpent heads share a transparent atlas, with runtime body waves, breathing, fins and directional turns. [ACTION-UPDATE.md](ACTION-UPDATE.md) records the new art and exact generation prompt. The service worker caches every runtime module and sprite.
 
 Mobile browser checks cover 320-pixel and 390-pixel portrait layouts, landscape, purchases, live combat rendering, saved progression and an offline reload. These checks use Chromium emulation, not physical iPhone or Galaxy hardware. Device-clock-based saves are not a server-authoritative competitive system.
 
 ## Verification and design decisions
 
-[VERIFICATION.md](VERIFICATION.md) records the baseline, final tests, campaign sweep, economy assumptions and passing pacing checks. [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md) explains resolved brief contradictions and engine fixes. The analytical model in `docs/superpowers/specs/2026-09-14-slop-survivor-curve-model.mjs` remains the source of the target difficulty band; actual engine victories are tested separately.
+[ACTION-UPDATE.md](ACTION-UPDATE.md) records v3 verification. [VERIFICATION.md](VERIFICATION.md) records the historical v2 baseline and pacing checks. [IMPLEMENTATION-NOTES.md](IMPLEMENTATION-NOTES.md) explains resolved brief contradictions and engine fixes. The older analytical feed-time model and `tests/balance.mjs` are historical v2 tools; their automatic-fire assumptions do not apply to v3. Use the action harness for current combat. Existing v2 combat regression suites explicitly use `tests/legacy-engine.mjs`, while action tests exercise the shipped rules.
 
 Original fan-made game implementation and artwork. No Cell Survivor assets or affiliation claims. Character progression beyond Wojak remains the existing separate backlog in [CHARACTER-BACKLOG.md](CHARACTER-BACKLOG.md).
 
-[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) maps the full brief to implementation and verification. The full 300-encounter sweep requires every Easy clear to take three to twelve active minutes, allows Hard up to 16 minutes and Impossible up to 15 because breaches push the snake back, requires Hard to cost shields, and requires Impossible to be lost by the optimal bot on some first attempts while every level stays winnable within three.
+[REQUIREMENTS-AUDIT.md](REQUIREMENTS-AUDIT.md) preserves the older brief audit. Its long automatic-fire pacing targets are superseded by the v3 action update.

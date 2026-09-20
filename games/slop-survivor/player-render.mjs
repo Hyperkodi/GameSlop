@@ -1,5 +1,6 @@
 import {drawArt,getArt,artReady} from './illustrated.mjs';
 import {poseAsset,BAKED_WEAPONS} from './player-poses.mjs';
+import {isActionRun,firingPoint} from './encounters.mjs';
 
 const transform=(p,x,y,angle)=>({x:x+p[0]*Math.cos(angle)-p[1]*Math.sin(angle),y:y+p[0]*Math.sin(angle)+p[1]*Math.cos(angle)});
 function sleeve(c,shoulder,hand,far=false){
@@ -17,6 +18,14 @@ function back(c){
  c.save();c.beginPath();c.moveTo(-56,-56);c.lineTo(10,-56);c.lineTo(10,-25);c.lineTo(9,-10);c.lineTo(6,-7);c.lineTo(8,18);c.lineTo(56,18);c.lineTo(56,56);c.lineTo(-56,56);c.closePath();c.clip();drawArt(c,'rear-coin-0',0,0,112);c.restore();
 }
 export function drawPlayer(c,r,pose,reduced=false){
+ if(isActionRun(r)){
+  const {angle}=firingPoint(r);c.save();c.translate(r.heroX,r.heroY);c.save();c.scale(.78,.78);back(c);c.restore();
+  const grip={x:Math.cos(angle)*12,y:-16+Math.sin(angle)*12};sleeve(c,{x:-9,y:-1},grip,true);sleeve(c,{x:9,y:-1},grip);hand(c,grip,angle);
+  c.translate(0,-16);c.rotate(angle);c.fillStyle='#121b29';c.strokeStyle='#90a6b4';c.lineWidth=1.5;
+  c.beginPath();c.roundRect(-5,-6,32,12,3);c.fill();c.stroke();c.fillStyle='#e7b54e';c.fillRect(5,-4,12,8);c.fillStyle='#364c5b';c.fillRect(23,-3,8,6);
+  if(pose.active&&!reduced&&r.time% .26<.075){c.fillStyle='#ffeaaa';c.beginPath();c.moveTo(31,-4);c.lineTo(42,0);c.lineTo(31,4);c.fill();}
+  c.restore();return true;
+ }
  const {weapon:id}=pose;
  if(BAKED_WEAPONS.has(id)){
   const frame=reduced?(pose.active?3:0):pose.frame;

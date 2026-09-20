@@ -1,4 +1,5 @@
 // Presentation only: weapon ownership, damage, cooldowns and saves stay in the engine.
+import {isActionRun,firingPoint} from './encounters.mjs';
 export const BAKED_WEAPONS=new Set(['coin','laser','gas']);
 export const WEAPON_POSES={
  coin:{duration:.30,muzzle:[24,-26],action:'Short two-handed recoil'},
@@ -27,12 +28,13 @@ export const WEAPON_POSES={
  flashloan:{duration:.40,muzzle:[18,-23],action:'Trigger the loan clock'}
 };
 export const poseAsset=(weapon,frame=0)=>`rear-${WEAPON_POSES[weapon]?weapon:'coin'}-${Math.max(0,Math.min(3,frame|0))}`;
-export function muzzlePoint(r,weapon,aspect=1){const [x,y]=(WEAPON_POSES[weapon]||WEAPON_POSES.coin).muzzle;return {x:r.heroX+x,y:r.heroY+y*aspect};}
+export function muzzlePoint(r,weapon,aspect=1){if(isActionRun(r))return firingPoint(r);const [x,y]=(WEAPON_POSES[weapon]||WEAPON_POSES.coin).muzzle;return {x:r.heroX+x,y:r.heroY+y*aspect};}
 
 export class WeaponPosePlayer{
  constructor(){this.reset(null);}
  reset(run){this.run=run;this.weapon='coin';this.started=-Infinity;this.seen=-Infinity;this.pending=new Map();}
  update(run){
+  if(isActionRun(run)){if(this.run!==run)this.reset(run);if(run.events?.some(e=>e.type==='fire'&&e.weapon==='coin'))this.started=run.time;return {weapon:'coin',frame:0,active:run.manual&&!run.overheated&&run.ventUntil<=run.time,elapsed:run.time-this.started,duration:.3};}
   if(this.run!==run||run.time<this.seen)this.reset(run);
   const now=run.time,owned=new Set(run.weapons.map(w=>w.id));
   if(!owned.has(this.weapon)){this.weapon=owned.values().next().value||'coin';this.started=-Infinity;}
