@@ -204,7 +204,7 @@ function frame(now){
 }
 icoAll();setInterval(()=>{const n=syncChests(save);if(n){persist();if($('#battle').hidden&&$('#modal').hidden)renderHome();}updateVault();},1000);
 // Read-only diagnostics for local QA; no progression cheats in the player interface.
-window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.5'};
+window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.6'};
 
 async function boot(){
  $('#app').inert=true;$('#page').innerHTML='<div class="info-card"><h2>Getting your progress ready…</h2><p>Your adventure will continue automatically.</p></div>';

@@ -6,7 +6,7 @@ import {drawPlayer} from './player-render.mjs';
 import {WeaponPosePlayer,poseAsset,muzzlePoint} from './player-poses.mjs';
 import {bossForChapter,arenaForChapter,encounterPhase} from './world.mjs';
 import {WEAPON_ART,artUrl,getArt,artReady,drawArt,drawActor,skinForChapter,prepareChapterArt,preparePlayerArt} from './illustrated.mjs';
-import {sectionPoints} from './snake.mjs';
+import {sectionPoints,sectionInView} from './snake.mjs';
 import {CHAPTERS,weapon} from './data.mjs';
 const TAU=Math.PI*2;
 
@@ -63,7 +63,7 @@ export function drawSerpentHead(c,image,cell,angle,breathe=1){
 }
 
 export class Renderer{
- constructor(canvas){this.canvas=canvas;this.c=canvas.getContext('2d',{alpha:false});this.headSprite=new Image();this.headSprite.src='./assets/slippy-cartoon.webp';this.heroSprite=new Image();this.heroSprite.src='./assets/illustrated/rear-coin-0.webp';this.back=document.createElement('canvas');this.back.width=480;this.back.height=760;this.chapter=-1;this.playerPose=new WeaponPosePlayer();this.bestiary=new Image();this.bestiary.src='./assets/serpent-bestiary.png';}
+ constructor(canvas){this.canvas=canvas;this.c=canvas.getContext('2d',{alpha:false});this.headSprite=new Image();this.headSprite.src='./assets/slippy-cartoon.webp';this.heroSprite=new Image();this.heroSprite.src='./assets/illustrated/rear-coin-0.webp';this.back=document.createElement('canvas');this.back.width=480;this.back.height=760;this.chapter=-1;this.playerPose=new WeaponPosePlayer();this.bestiary=new Image();this.bestiary.src='./assets/serpent-heads-cartoon.png';}
  makeBackground(ch){const c=this.back.getContext('2d');prepareChapterArt(ch);const backdrop=getArt(`arena-${arenaForChapter(ch)}`);if(artReady(backdrop)){c.drawImage(backdrop,0,0,480,760);c.fillStyle='#0f162630';c.fillRect(34,70,412,516);this.chapter=ch;this.backdropReady=true;return;}this.backdropReady=false;
  const floors=['#3b4864','#454562','#3f5266','#514553','#424d60','#494262'];
  c.fillStyle=floors[ch%floors.length];c.fillRect(0,0,480,760);
@@ -84,7 +84,7 @@ export class Renderer{
  // Four-piece health sections share a continuous, unoutlined body surface.
  for(let i=r.segments.length-1;i>=0;i--){
   const s=r.segments[i],points=sectionPoints(s);
-  if(!points.some(p=>p.x>-50&&p.x<530&&p.y>60&&p.y<660))continue;
+  if(!sectionInView(s))continue;
   const species=SPECIES[s.species||0],action=isActionRun(r),color=action?species.color:bossForChapter(ch).color;
   if(!s.head){
    const route=points.map(p=>[p.x,p.y]);
