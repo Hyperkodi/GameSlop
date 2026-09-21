@@ -24,6 +24,7 @@ const fmt=compactNumber,clock=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60))
 const icon=(id,cls='')=>`<img src="${iconUrl(id)}" alt="" class="${cls}">`;
 const icoAll=()=>document.querySelectorAll('img[data-icon]').forEach(i=>i.src=iconUrl(i.dataset.icon));
 function persist(){
+ document.documentElement.classList.toggle('reduced-effects',!!save.settings.reduced);
  if(run&&['playing','paused','choice','boon','revive'].includes(run.state))save[run.mode==='tournament'?'tournamentRun':'run']=run;
  const body=JSON.stringify(save);if(body!==savedBody){save.updatedAt=Math.max(Date.now(),(save.updatedAt||0)+1);savedBody=JSON.stringify(save);autoSync?.changed();}
  try{localStorage.setItem(KEY,savedBody);storageOK=true;}catch{storageOK=false;}
@@ -203,7 +204,7 @@ function frame(now){
 }
 icoAll();setInterval(()=>{const n=syncChests(save);if(n){persist();if($('#battle').hidden&&$('#modal').hidden)renderHome();}updateVault();},1000);
 // Read-only diagnostics for local QA; no progression cheats in the player interface.
-window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.4'};
+window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.5'};
 
 async function boot(){
  $('#app').inert=true;$('#page').innerHTML='<div class="info-card"><h2>Getting your progress ready…</h2><p>Your adventure will continue automatically.</p></div>';
