@@ -1,4 +1,5 @@
 import {CAMPAIGN_ENTRY,waveMovement} from './campaign-pacing.mjs';
+import {sectionBalls} from './dragon-body.mjs';
 import {encounterPhase} from './world.mjs';
 import {isActionRun,firingPoint,weakSection,advanceHeat,routePoint} from './encounters.mjs';
 import {spawnActionWave,actionSpeed,breachAction} from './action-combat.mjs';
@@ -6,7 +7,7 @@ import {drawCards,applyCard,preview} from './upgrades.mjs';
 import {VERSION,WEAPONS,CHAPTERS,DIFFICULTIES,BOONS,weapon,clamp,random,unlockedDifficulty,weaponUnlocked,arsenalSlots,firstClearParts,firstClearCoins,addChest,chestTotal,openChests,highestUnlocked,encounterHealth,chestStride,FRENZY_SPEED,FRENZY_SECTIONS,frenzyReduction,SPECIALS,SPECIAL_RANKS,SPECIAL_CHARGE} from './data.mjs';
 export const W=480,H=760;
 export {pathPoint} from './snake.mjs';
-import {pathPoint,groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,aimPoint,onBoard} from './snake.mjs';
+import {pathPoint,groupSections,updatePositions,advanceSnake,closeSectionGaps,sectionPoints,sectionVisible,sectionDistance,sectionHit,aimPoint,onBoard} from './snake.mjs';
 export function makeWeapon(id,level=1,boons=[],rank=1,foundry={}){const base=weapon(id);return {id,level,rank,damage:base.damage*1.135**(level-1)*1.12**(rank-1)*1.08**(foundry.ordnance||0)*(boons.includes('damage')?1.25:1),cooldown:base.cooldown*(1-.0055*(foundry.overclock||0))*(boons.includes('rapid')?.85:1),crit:Math.min(.85,base.crit+.01*(foundry.precision||0)+(boons.includes('crit')?.1:0)),mult:base.mult+.02*(foundry.precision||0),pierce:base.type==='beam'?2:base.type==='disc'?3:0,count:['swarm','paper'].includes(base.type)?3:1,radius:base.radius||0,chains:base.type==='oracle'?3:4,slow:.2,burnTime:3,legendary:false,timer:0,tier:1,upgrades:0,totalDamage:0,specialRanks:0,guaranteedCrit:id==='sniper',ramp:0,printerTarget:0,lastFireTime:0,shieldCharge:0,casts:0,debtUntil:0,debtTarget:0};}
 // Ordinary boons always; on Hard and Impossible a frenzy boon joins the pool some of the
 // time (60% and 80%), weighted toward the weaker reductions, at a seeded position so it can
@@ -150,7 +151,7 @@ export function ultimate(r){if(r.state!=='playing'||r.charge<100)return false;
  r.charge=0;r.events.push({type:'ultimate',special:id});return true;}
 function removeDead(r){
  const dead=r.segments.filter(s=>s.hp<=0);if(!dead.length)return;
- for(const s of dead){r.kills+=s.pieces||1;r.waveKills+=s.pieces||1;r.score+=s.head?350:70*(s.pieces||1);for(const p of sectionPoints(s).filter((_,i)=>i%4===0))fx(r,{type:'burst',x:p.x,y:p.y,r:s.head?45:24,color:CHAPTERS[r.chapter].color,life:.5});if(s.volatile){const w=r.mode==='tournament'?r.weapons[0]:r.weapons.reduce((best,w)=>w.damage>best.damage?w:best);area(r,w,s.x,s.y,70,w.damage*2);}r.events.push({type:'kill'});}
+ for(const s of dead){r.kills+=s.pieces||1;r.waveKills+=s.pieces||1;r.score+=s.head?350:70*(s.pieces||1);for(const p of (isActionRun(r)&&!s.head?sectionBalls(s):sectionPoints(s).filter((_,i)=>i%4===0)))fx(r,{type:'burst',x:p.x,y:p.y,r:s.head?45:24,color:CHAPTERS[r.chapter].color,life:.5});if(s.volatile){const w=r.mode==='tournament'?r.weapons[0]:r.weapons.reduce((best,w)=>w.damage>best.damage?w:best);area(r,w,s.x,s.y,70,w.damage*2);}r.events.push({type:'kill'});}
  const ids=new Set(dead.map(s=>s.id));closeSectionGaps(r,ids);
  while(r.waveKills>=r.nextChest){r.pending++;r.nextChest+=isActionRun(r)?(r.chestStep||12):r.mode==='tournament'?4:chestStride(CHAPTERS[r.chapter]);}
 }
@@ -174,7 +175,7 @@ export function tick(r,dt){
   if(b.type==='dragon'){b.trail=(b.trail||0)+dt;if(b.trail>.2){b.trail=0;hazard(r,w,b.x,b.y,25,1.2+w.burnTime*(w.legendary?.4:.2),w.damage*.15,'fire');}}
 
   if(b.type==='bomb'&&Math.hypot(b.x-b.targetX,b.y-b.targetY)<17){area(r,w,b.x,b.y,w.radius);fx(r,{type:'blast',x:b.x,y:b.y,r:w.radius,color:b.color,life:.5});if(w.legendary)hazard(r,w,b.x,b.y,w.radius,3,w.damage*.2,'fire');b.life=0;}
-  else for(const s of r.segments){if(!visible(s)||s.id===b.ignoreId||b.type==='fragment'&&b.age<.06||b.hits.includes(s.id)||sectionDistance(s,b.x,b.y)>(isActionRun(r)?12:20)+b.r)continue;b.hits.push(s.id);if(b.type==='bomb'){area(r,w,b.x,b.y,w.radius);fx(r,{type:'blast',x:b.x,y:b.y,r:w.radius,color:b.color,life:.5});if(w.legendary)hazard(r,w,b.x,b.y,w.radius,3,w.damage*.2,'fire');b.life=0;break;}if(b.type==='dragon'){area(r,w,b.x,b.y,w.radius);for(const nearby of r.segments)if(visible(nearby)&&sectionDistance(nearby,b.x,b.y)<w.radius)ignite(nearby,w);fx(r,{type:'fire',x:b.x,y:b.y,r:w.radius,color:b.color,life:1});b.life=0;break;}
+  else for(const s of r.segments){if(!visible(s)||s.id===b.ignoreId||b.type==='fragment'&&b.age<.06||b.hits.includes(s.id)||!sectionHit(s,b.x,b.y,b.r))continue;b.hits.push(s.id);if(b.type==='bomb'){area(r,w,b.x,b.y,w.radius);fx(r,{type:'blast',x:b.x,y:b.y,r:w.radius,color:b.color,life:.5});if(w.legendary)hazard(r,w,b.x,b.y,w.radius,3,w.damage*.2,'fire');b.life=0;break;}if(b.type==='dragon'){area(r,w,b.x,b.y,w.radius);for(const nearby of r.segments)if(visible(nearby)&&sectionDistance(nearby,b.x,b.y)<w.radius)ignite(nearby,w);fx(r,{type:'fire',x:b.x,y:b.y,r:w.radius,color:b.color,life:1});b.life=0;break;}
    hit(r,s,w,w.damage*(b.factor||1)*(b.type==='disc'&&b.returning&&w.legendary?2:1));if(b.type==='fork'||b.type==='fragment'&&w.legendary&&b.generation<2)splitFork(r,w,b,s);if(b.hits.length>b.pierce){b.life=0;break;}}
  }
  r.bullets=r.bullets.filter(b=>b.life>0&&b.x>-50&&b.x<530&&b.y>-100&&b.y<750).slice(-240);

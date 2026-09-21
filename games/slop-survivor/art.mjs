@@ -1,5 +1,6 @@
 import {isRug,rugSlowAmount} from './rug-field.mjs';
 import {drawRug} from './rug-render.mjs';
+import {drawDragonSection} from './dragon-body.mjs';
 import {isActionRun,SPECIES,weakSection,encounterFor} from './encounters.mjs';
 import {compactNumber} from './presentation.mjs';
 import {drawPlayer} from './player-render.mjs';
@@ -81,12 +82,13 @@ export class Renderer{
  for(let i=r.health;i<r.maxHealth;i++){c.fillStyle='#061820dd';c.fillRect(232+(i-(r.maxHealth-1)/2)*18,694,17,18);}
  for(const e of r.effects)if(isRug(e))drawRug(c,e,reduced);
  const rugged=new Set((r.snakes||[]).filter(n=>rugSlowAmount(r,r.segments.filter(s=>s.snakeId===n.id))>0).map(n=>n.id));
- // Four-piece health sections share a continuous, unoutlined body surface.
+ // Each action body health pool is three balls, without a surrounding capsule.
  for(let i=r.segments.length-1;i>=0;i--){
   const s=r.segments[i],points=sectionPoints(s);
   if(!sectionInView(s))continue;
   const species=SPECIES[s.species||0],action=isActionRun(r),color=action?species.color:bossForChapter(ch).color;
-  if(!s.head){
+  if(!s.head&&action)drawDragonSection(c,s,species,t,reduced,spriteAspect);
+  if(!s.head&&!action){
    const route=points.map(p=>[p.x,p.y]);
    const palettes=[['#ffc542','#e9a832'],['#85d9cc','#61bdad'],['#a4daf4','#79bada'],['#ffa573','#e58554'],['#b8b8f2','#9393d3'],['#e4a8df','#c988c4']];
    const tone=color;
@@ -115,7 +117,9 @@ export class Renderer{
   if(action&&weakSection(r,s)){c.strokeStyle=species.accent;c.lineWidth=2;c.beginPath();c.arc(x,y,17+(reduced?0:Math.sin(t*6)*2),0,TAU);c.stroke();}
   const txt=compactNumber(Math.max(0,s.hp));
   const width=Math.max(38,c.measureText(String(txt)).width+14);
-  round(c,x-width/2,y-10,width,20,5,'#252232e6');c.fillStyle='#ffffff';c.fillText(txt,x,y);
+  if(action&&!s.head){c.lineWidth=3;c.strokeStyle='#162033';c.lineJoin='round';c.strokeText(txt,x,y);}
+  else round(c,x-width/2,y-10,width,20,5,'#252232e6');
+  c.fillStyle='#ffffff';c.fillText(txt,x,y);
   if(s.hp<s.maxHp){round(c,x-20,y+12,40,4,2,'#172c2b');round(c,x-20,y+12,40*Math.max(0,s.hp/s.maxHp),4,2,'#b9f478');}
   if(s.slipStacks){for(let stack=0;stack<s.slipStacks;stack++)ellipse(c,x+(stack-(s.slipStacks-1)/2)*5,y-25,1.8,1.8,'#8dffe0');c.fillStyle='#8dffe0';c.font='bold 10px sans-serif';c.fillText('SLIP '+s.slipStacks,x,y-17);}
   if(s.regen)drawIcon(c,'shield',x-width/2-9,y,16);if(s.volatile)drawIcon(c,'gas',x+width/2+9,y,17);

@@ -1,4 +1,4 @@
-import {encounterFor,isActionRun} from './encounters.mjs';
+import {encounterFor,isActionRun,SPECIES} from './encounters.mjs';
 import {random} from './data.mjs';
 import {updatePositions,sectionPoints} from './snake.mjs';
 import {isRug} from './rug-field.mjs';
@@ -10,7 +10,7 @@ export function spawnActionWave(r,c,d){
  r.heat=Math.min(r.heat||0,.35);r.overheated=false;r.waveStarted=r.time;
  const count=encounter.count,n=Math.max(41,Math.min(73,c.segments+12+(r.wave-1)*4)),perSnake=Math.max(21,Math.ceil(n/count));
  r.chestStep=Math.max(12,Math.ceil(perSnake*count/4));r.nextChest=r.chestStep;
- r.snakes=Array.from({length:count},(_,id)=>({id,distance:-id*120,phase:random(r)*6.28,speed:.94+random(r)*.12,species:(r.chapter+id+r.wave-1)%4}));
+ r.snakes=Array.from({length:count},(_,id)=>({id,distance:-id*120,phase:random(r)*6.28,speed:.94+random(r)*.12,species:(r.chapter+id+r.wave-1)%SPECIES.length}));
  // Share the encounter health budget across snakes instead of multiplying it by four.
  const total=r.waveMaxHp/(r.mode==='tournament'?1:d.hp)*(r.mode==='tournament'?1:r.difficulty==='impossible'?1.8:r.difficulty==='hard'?1.35:1),weight=count*(1000+(perSnake-1)*300);
  r.segments=[];
