@@ -41,3 +41,24 @@
 .battle-hud .battle-fullscreen small{display:none}
 .battle-hud .battle-menu-actions>button:hover{background:#354966}
 .battle-hud .battle-menu-actions>button:focus-visible{outline:2px solid #ffd46b;outline-offset:3px}
+
+/* Tier-specific chest illustrations replace the shared inventory glyph. */
+.chest-tier .chest-art{display:block;width:168px;height:144px;max-width:100%;object-fit:contain;margin:0 0 12px;padding:0;background:none;border:0;border-radius:0;box-shadow:none}
+@media(max-width:750px){.chest-tier .chest-art{width:132px;height:116px}.chest-tier h2{font-size:clamp(20px,4.8vw,30px);overflow-wrap:anywhere}}
+
+/* Illustrated resources explain how permanent chest rewards are used. */
+[data-kind=loot] .loot{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+[data-kind=loot] .reward-card{display:flex;align-items:center;gap:12px;min-width:0;padding:14px;text-align:left;border-radius:12px}
+[data-kind=loot] .reward-card img{width:72px;height:72px;flex:none;object-fit:contain;background:none;border:0;padding:0;box-shadow:none}
+[data-kind=loot] .reward-card span{min-width:0}
+[data-kind=loot] .reward-card b,[data-kind=loot] .reward-card strong,[data-kind=loot] .reward-card small{display:block}
+[data-kind=loot] .reward-card b{font-size:16px;line-height:1.3}
+[data-kind=loot] .reward-card strong{font-size:13px;margin-top:4px}
+[data-kind=loot] .reward-card small{font-size:12px;line-height:1.4;font-weight:600;margin-top:6px;color:#35485a}
+[data-kind=loot] .reward-coins{background:#ffe5a0;box-shadow:inset 0 3px #fff3cf}
+[data-kind=loot] .reward-core{background:#e1cdf6;box-shadow:inset 0 3px #f1e7ff}
+[data-kind=loot] .reward-blueprint{background:#c4e7f6;box-shadow:inset 0 3px #e7f7ff}
+[data-kind=loot] .reward-empty{background:#e4e2dc;box-shadow:inset 0 3px #f6f4ef}
+[data-kind=loot] .loot-parts-heading{font-size:17px;color:#21384a;margin:20px 0 8px}
+[data-kind=loot] .modal-actions{flex-wrap:wrap}
+@media(max-width:500px){[data-kind=loot] .loot{grid-template-columns:1fr}[data-kind=loot] .reward-card{padding:10px}[data-kind=loot] .reward-card img{width:60px;height:60px}[data-kind=loot] .modal-actions>button{width:100%}}

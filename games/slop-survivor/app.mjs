@@ -1,6 +1,6 @@
 import {upgradeCombat} from './action-combat.mjs';
 import {vent,isActionRun,encounterFor,routeStyleFor} from './encounters.mjs';
-import {armoryView,foundryView,vaultView,refineryView,specialsView} from './home-view.mjs';
+import {armoryView,foundryView,vaultView,refineryView,specialsView,lootView} from './home-view.mjs';
 import {compactNumber} from './presentation.mjs';
 import {bossForChapter,arenaForChapter} from './world.mjs';
 import {AutoSync} from './autosync.mjs';
@@ -100,7 +100,7 @@ document.addEventListener('click',async e=>{
  if(b.dataset.equipSpecial){if(equipSpecial(save,b.dataset.equipSpecial)){sound.event('upgrade');persist();renderHome();}return;}
  if(b.dataset.unlock){if(unlockWeapon(save,b.dataset.unlock)){sound.event('upgrade');renderHome();}return;}
  if(b.dataset.upgrade){if(upgradeWeapon(save,b.dataset.upgrade)){sound.event('upgrade');toast(weapon(b.dataset.upgrade).name+' permanently upgraded.');renderHome();}return;}
- if(b.dataset.open){const loot=openChests(save,+b.dataset.open,Date.now(),Math.random,b.dataset.tier||null);persist();renderHome();sound.event('chest');modal(`<span class="eyebrow">${loot.count} IDLE CHEST${loot.count===1?'':'S'} OPENED</span><h2 id="modal-title">A healthy return.</h2><p>These rewards are permanent. Put them to work in the Armory.</p><div class="loot"><div>${icon('coin')}<b>+${fmt(loot.coins)} coins</b></div><div><b>+${loot.cores} cores</b></div><div><b>+${loot.blueprints} blueprints</b></div>${Object.entries(loot.parts).map(([id,n])=>`<div>${icon(id)}<span>${weapon(id).name}<br><b>+${n} parts</b></span></div>`).join('')}</div><div class="modal-actions"><button class="secondary" data-action="close">Back to vault</button><button class="primary" data-action="loot-armory">Upgrade weapons →</button></div>`,'loot');return;}
+ if(b.dataset.open){const loot=openChests(save,+b.dataset.open,Date.now(),Math.random,b.dataset.tier||null);persist();renderHome();sound.event('chest');modal(lootView(loot,icon),'loot');return;}
  if(b.dataset.boon){if(chooseBoon(run,b.dataset.boon)){persist();if(run.state==='boon')showBoon();else if(run.state==='choice')showChoices();else closeModal();updateHUD(true);}return;}
  if(b.dataset.choice){if(chooseUpgrade(run,b.dataset.choice)){sound.event('upgrade');persist();updateHUD(true);if(run.state==='choice')showChoices();else closeModal();}return;}
  const action=b.dataset.action;
@@ -203,7 +203,7 @@ function frame(now){
 }
 icoAll();setInterval(()=>{const n=syncChests(save);if(n){persist();if($('#battle').hidden&&$('#modal').hidden)renderHome();}updateVault();},1000);
 // Read-only diagnostics for local QA; no progression cheats in the player interface.
-window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.3'};
+window.slopSurvivor={snapshot:()=>JSON.parse(JSON.stringify({run,save,storageOK,dialog})),version:'3.2.4'};
 
 async function boot(){
  $('#app').inert=true;$('#page').innerHTML='<div class="info-card"><h2>Getting your progress ready…</h2><p>Your adventure will continue automatically.</p></div>';
