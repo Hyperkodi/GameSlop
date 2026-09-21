@@ -1,0 +1,9 @@
+# Cartoon serpent heads
+
+Generated using built-in image generation. Saved unchanged with transparency at [assets/serpent-heads-cartoon.png](assets/serpent-heads-cartoon.png).
+
+The atlas has four equal cells: green thorn, orange fire, cyan storm, purple cobra. Heads remain upright and mirror horizontally with travel direction.
+
+Prompt:
+
+Create ONE production-ready game sprite atlas: a square transparent PNG divided into an invisible, precisely equal 2-by-2 grid. Each quadrant contains one cartoon serpent/dragon HEAD ONLY, no neck or body, centered with 12 percent transparent padding inside its own quadrant. All four heads face RIGHT in the same clean side/three-quarter profile, horizontal muzzle, upright eyes. Bold smooth very thick dark navy outlines, SIMPLE flat cel shading with just 2 or 3 large color shapes, oversized expressive cream eyes with dark pupils, rounded snouts, one or two big ivory fangs, mischievous hostile arcade-enemy expressions. Cute chunky proportions with strong readable silhouettes, readable at just 48 pixels per head. TOP LEFT: lime green thorn viper, two simple leaf-shaped horns, yellow-green cheeks. TOP RIGHT: orange-red fire dragon with two short charcoal horns, amber cheeks. BOTTOM LEFT: bright cyan/teal storm dragon with one large blue fin on the back of its head, light cyan cheeks. BOTTOM RIGHT: purple cobra dragon with a broad violet hood, pink cheek accents. Same head scale and outline thickness across all four cells. Fill approximately 76 percent of each quadrant. Keep every pixel of each head inside its own cell. Genuine transparent alpha background everywhere else. NO grid lines, frames, labels, text, scenery, realism, scales, small spikes, intricate texture, glowing particles, gradients, fine detail or external shadows. This replaces over-detailed heads in a small-screen arcade game; prioritize big eyes, clean shapes and flat bright colors.

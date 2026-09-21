@@ -18,6 +18,9 @@ export function pathPoint(d,chapter=0){
 }
 export const sectionSpan=s=>(s.pieces||1)*(s.spacing||PIECE_SPACING);
 export const sectionPoints=s=>s.points?.length?s.points:[s];
+// Rendering follows the canvas edge, not the inset combat targeting area.
+// Include sprite/stroke overhang so entering sections never pop into view.
+export const sectionInView=s=>sectionPoints(s).some(p=>p.x>-50&&p.x<530&&p.y>-50&&p.y<810);
 export const onBoard=p=>p.x>22&&p.x<458&&p.y>75&&p.y<610;
 export const sectionVisible=s=>s.hp>0&&sectionPoints(s).some(onBoard);
 export function sectionDistance(s,x,y){let nearest=Infinity;for(const p of sectionPoints(s)){const dx=p.x-x,dy=p.y-y;nearest=Math.min(nearest,dx*dx+dy*dy);}return Math.sqrt(nearest);}
