@@ -42,6 +42,15 @@
 .battle-hud .battle-menu-actions>button:hover{background:#354966}
 .battle-hud .battle-menu-actions>button:focus-visible{outline:2px solid #ffd46b;outline-offset:3px}
 
+/* Only unlocked, coloured Armory artwork moves; card text stays still. */
+@keyframes armory-weapon-idle{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes armory-weapon-sway{0%,100%{transform:translateY(-2px) rotate(3deg)}50%{transform:translateY(2px) rotate(-3deg)}}
+.weapon-card:not(.locked) .weapon-top>img{animation:var(--armory-motion,armory-weapon-idle) var(--armory-duration,3.6s) ease-in-out var(--armory-delay,0s) infinite;transform-origin:50% 60%}
+.weapon-card:nth-child(3n+2){--armory-duration:4.2s;--armory-delay:-1.4s}
+.weapon-card:nth-child(3n){--armory-motion:armory-weapon-sway;--armory-duration:4.6s;--armory-delay:-2.3s}
+.weapon-card.locked .weapon-top>img,.reduced-effects .weapon-card .weapon-top>img{animation:none;transform:none}
+@media(prefers-reduced-motion:reduce){.weapon-card:not(.locked) .weapon-top>img{animation:none;transform:none}}
+
 /* Tier-specific chest illustrations replace the shared inventory glyph. */
 .chest-tier .chest-art{display:block;width:168px;height:144px;max-width:100%;object-fit:contain;margin:0 0 12px;padding:0;background:none;border:0;border-radius:0;box-shadow:none}
 @media(max-width:750px){.chest-tier .chest-art{width:132px;height:116px}.chest-tier h2{font-size:clamp(20px,4.8vw,30px);overflow-wrap:anywhere}}
