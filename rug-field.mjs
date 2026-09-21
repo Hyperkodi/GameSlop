@@ -1,4 +1,5 @@
 // Shared by rendering and collision: only the unrolled carpet can catch a snake.
+import {sectionBalls} from './dragon-body.mjs';
 export const isRug=e=>e.type==='hazard'&&e.style==='rug'||e.type==='field'&&(e.weapon==='rug'||!e.weapon&&e.color==='#ed9dc7');
 export function rugBounds(e){
  const width=e.r*1.8,height=e.r*1.12,unroll=Math.min(1,Math.max(0,(e.max-e.life)/.32));
@@ -8,8 +9,9 @@ export function rugBounds(e){
 export function rugTouches(e,section){
  if(e.life<=0||section.hp<=0)return false;
  const b=rugBounds(e);if(b.unroll<=0)return false;
- const radius=section.head?18:10;
- return (section.points?.length?section.points:[section]).some(p=>{
+ const balls=section.snakeId!==undefined&&!section.head?sectionBalls(section):null;
+ return (balls||(section.points?.length?section.points:[section])).some(p=>{
+  const radius=p.radius??(section.head?18:10);
   const dx=Math.max(b.left-p.x,0,p.x-b.right),dy=Math.max(b.top-p.y,0,p.y-b.bottom);
   return dx*dx+dy*dy<=radius*radius;
  });

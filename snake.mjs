@@ -1,6 +1,7 @@
 import {LEVELS,frenzyReduction} from './data.mjs';
 import {isActionRun,routePoint} from './encounters.mjs';
 import {snakeSlowFactor} from './rug-field.mjs';
+import {ballHit} from './dragon-body.mjs';
 // One health pool covers four body pieces. Distances run from tail to head.
 export const PIECE_SPACING=32, SECTION_PIECES=4, RETREAT_SPEED=260;
 export function pathPoint(d,chapter=0){
@@ -24,6 +25,7 @@ export const sectionInView=s=>sectionPoints(s).some(p=>p.x>-50&&p.x<530&&p.y>-50
 export const onBoard=p=>p.x>22&&p.x<458&&p.y>75&&p.y<610;
 export const sectionVisible=s=>s.hp>0&&sectionPoints(s).some(onBoard);
 export function sectionDistance(s,x,y){let nearest=Infinity;for(const p of sectionPoints(s)){const dx=p.x-x,dy=p.y-y;nearest=Math.min(nearest,dx*dx+dy*dy);}return Math.sqrt(nearest);}
+export function sectionHit(s,x,y,padding=0){return s.snakeId!==undefined&&!s.head?ballHit(s,x,y,padding):sectionDistance(s,x,y)<=(s.snakeId!==undefined?12:20)+padding;}
 export function aimPoint(s,x,y){return sectionPoints(s).filter(onBoard).reduce((a,p)=>!a||Math.hypot(p.x-x,p.y-y)<Math.hypot(a.x-x,a.y-y)?p:a,null)||s;}
 export function groupSections(r){
  if(r.snakeLayout===2)return;

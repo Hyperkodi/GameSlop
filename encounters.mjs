@@ -8,10 +8,10 @@ export const ENCOUNTERS = [
  {id:'swarm',name:'Viper Swarm',count:3,speed:1.04,turns:4.1}
 ];
 export const SPECIES=[
- {name:'Thorn Viper',color:'#91bc35',accent:'#ddff79',cell:0},
- {name:'Cindermaw',color:'#b65330',accent:'#ffb35c',cell:1},
- {name:'Storm Eel',color:'#278fad',accent:'#80f3ff',cell:2},
- {name:'Void Cobra',color:'#794ba9',accent:'#f498ff',cell:3}
+ {name:'Thorn Viper',color:'#91bc35',accent:'#ddff79',cell:0,body:{shade:'#426727',light:'#ddff79',pattern:'leaf'}},
+ {name:'Cindermaw',color:'#e86730',accent:'#ffd16b',cell:1,body:{shade:'#873321',light:'#ffd16b',pattern:'ember'}},
+ {name:'Storm Eel',color:'#25b5cf',accent:'#adf7ff',cell:2,body:{shade:'#17617c',light:'#adf7ff',pattern:'bolt'}},
+ {name:'Void Cobra',color:'#9a5cce',accent:'#f4b4ff',cell:3,body:{shade:'#4e287e',light:'#f4b4ff',pattern:'diamond'}}
 ];
 export function encounterFor(chapter,wave=1,mode='campaign') {
  if(mode==='tournament')return ENCOUNTERS[wave>10?[4,5,1,3][wave%4]:Math.floor((wave-1)/2)];
