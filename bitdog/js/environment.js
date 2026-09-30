@@ -52,7 +52,12 @@
     const sx=clamp(reverse?sw-local*2-4:local*2,0,sw-4),y=ground(x),dx=x-origin;
     g.save();g.translate(reverse?dx+2.1:dx,y);if(reverse)g.scale(-1,1);
     g.drawImage(groundArt,sx,0,4,sh,0,0,2.1,H-y+3);
-    g.drawImage(groundArt,sx,sh-80,4,80,0,H-y,2.1,364);g.restore();
+    // Fade the deep foreground into soil rather than stretching the last
+    // texture row into long streaks when the mobile camera raises the path.
+    const deep=g.createLinearGradient(0,H-y-32,0,H-y+48);
+    deep.addColorStop(0,levelId===3?'#68675e00':'#76502d00');
+    deep.addColorStop(1,levelId===3?'#68675e':'#76502d');
+    g.fillStyle=deep;g.fillRect(0,H-y-32,2.1,396);g.restore();
    }
    groundChunks.set(block,canvas);
    if(groundChunks.size>5)groundChunks.delete(groundChunks.keys().next().value);
