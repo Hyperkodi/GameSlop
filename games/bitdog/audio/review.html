@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BitDog audio room</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#faf4e6;color:#35412f;font:15px/1.6 system-ui}main{max-width:1120px;margin:auto;padding:35px 24px 70px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:40px;letter-spacing:-1.5px;margin:10px 0}h2{font-size:21px}p{color:#758164;max-width:800px}a{color:#56713f}small{font-size:10px;letter-spacing:2px}.music,article{padding:20px;border:1px solid #d7dbc7;border-radius:12px;background:#fff9ec}.music{margin:15px 0}.music h2{margin:0}.music p{margin:6px 0 0;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:25px 0}article h2{margin:0;font-size:16px}audio{width:100%;margin-top:10px}footer{display:flex;flex-wrap:wrap;gap:20px;font-size:12px}@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:550px){.grid{grid-template-columns:1fr}header{align-items:start;flex-direction:column}h1{font-size:32px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div><small>GAMESLOP / BITDOG</small><h1>The sound of zoomies.</h1></div><a href="../">Play the game ↗</a></header>
+  <p>Eight level songs and the actual game sound effects. The game mixes pawfalls and ambience beneath the action.</p>
+  <div id="music"></div>
+  <h2>Sound effects</h2>
+  <div class="grid" id="effects"></div>
+  <footer><a href="CREDITS.md">Credits and processing notes</a><a href="campaign-generation.json">New ElevenLabs prompts</a><a href="generation.json">Original ElevenLabs prompts</a><a href="campaign-verification.json">Audio file checks</a></footer>
+</main>
+<script>
+const license='https://creativecommons.org/licenses/by/4.0/';
+const songs=[
+  ['Satoshi Park','Funky Chunk','funky-chunk.mp3','USUAN1500054'],
+  ['Harvest Hustle','Fretless','fretless.mp3','USUAN1500074'],
+  ['Electric Avenue','Electro Cabello','electro-cabello.mp3','USUAN1400048'],
+  ['Mushroom Moonwood','Flutey Funk','flutey-funk.mp3','USUAN1100519'],
+  ['Snowball Summit','Cold Funk','cold-funk.mp3','USUAN1100499'],
+  ['Cloudburst Carnival','Acid Trumpet','acid-trumpet.mp3','USUAN1100339'],
+  ['Moon Cheese Chase','Space Jazz','space-jazz.mp3','USUAN2100030'],
+  ['The Impossible Backyard','Funkorama','funkorama.mp3','USUAN1100474']
+];
+const effects={
+  'paw-grass':'Padded paws on grass','paw-wood':'Padded paws on wood',land:'Soft landing',jump:'Jump',roll:'Grass roll',boost:'Zoomies launch',
+  'bump-a':'Wooden bump A','bump-b':'Wooden bump B',smash:'Crate splinters',coin:'Coin pickup',fetch:'Big Bitcoin',splash:'Pond entry',water:'Shallow paddling',tag:'BIT tag jingle',throw:'Descending coin whistle',star:'Distant sparkle',win:'Happy delivery',timeout:'Try-again huff',ambient:'Park ambience',
+  'intro-gallop-v3':'Opening: continuous gallop on grass',spring:'Archived: spring branch',leaves:'Orchard: rolling through leaves',electric:'Electric charge','wire-hum':'Powered cable hum',zap:'Junction zap','paw-stone':'Padded paws on paving','intro-gallop-electric':'Opening: continuous gallop on paving',
+  mushroom:'Mushroom spring',snowgrow:'Snowball gathering',snowshed:'Snowball shedding',snowbreak:'Soft snow barricade',umbrella:'Umbrella opening',gust:'Wind gust',gravity:'Gravity pocket','paw-snow':'Padded paws on snow','paw-moon':'Padded paws on moon dust','intro-gallop-snow':'Opening: continuous gallop on snow','intro-gallop-wood':'Opening: continuous gallop on boardwalk','intro-gallop-moon':'Opening: continuous gallop on moon dust','snow-roll':'Snowball rolling','umbrella-wind':'Umbrella in the wind'
+};
+function player(src){const audio=document.createElement('audio');audio.controls=true;audio.preload='none';audio.src=src;return audio;}
+for(const [level,title,file,isrc] of songs){
+  const section=document.createElement('section');section.className='music';
+  const heading=document.createElement('h2');heading.textContent=level+': '+title;
+  const credit=document.createElement('p');credit.append('Kevin MacLeod · ');
+  const source=document.createElement('a');source.href='https://incompetech.com/music/royalty-free/index.html?isrc='+isrc;source.textContent='Official track page';credit.append(source,' · ');
+  const terms=document.createElement('a');terms.href=license;terms.textContent='CC BY 4.0';credit.append(terms);
+  section.append(heading,credit,player(file));document.getElementById('music').append(section);
+}
+for(const [name,label] of Object.entries(effects)){
+  const card=document.createElement('article'),title=document.createElement('h2');title.textContent=label;
+  card.append(title,player((name==='throw'?'throw-v3':name)+'.mp3'));document.getElementById('effects').append(card);
+}
+document.addEventListener('play',event=>{for(const audio of document.querySelectorAll('audio'))if(audio!==event.target)audio.pause();},true);
+</script>
+</body>
+</html>

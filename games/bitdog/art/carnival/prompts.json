@@ -1,0 +1,40 @@
+{
+  "generator": "Built-in ImageGen",
+  "assets": [
+    {
+      "key": "carnival",
+      "prompt": "Use case: stylized-concept. Production game background for BitDog, polished warm hand-painted animated-feature illustration, rich appealing detail, coherent light and materials. SINGLE VERY WIDE 3:1 continuous side-scrolling panorama, no panels. Scene viewed side-on with horizon horizontal; route runs left to right, never a path toward vanishing point. No dog, no people, no readable text, no logos, no UI. All distant buildings and trees firmly rooted. Lower 30 percent quiet low-contrast continuous ground, no obstacles at playable foreground scale. Keep rich scenic detail above and beyond the gameplay plane. Full bleed opaque image. Cloudburst Carnival, a whimsical mountaintop fair above a sea of peach clouds, pastel striped tents, a distant ferris wheel and bunting, visibly supported wooden terraces on rocky summits. Clear lavender blue air behind gameplay, softly detailed cloud banks below. Lower third a quiet wooden fairground terrace shown side-on; no foreground rail obstructing gameplay."
+    },
+    {
+      "key": "carnival",
+      "kind": "boardwalk",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog, polished warm painterly animated-feature illustration. TRANSPARENT background with actual alpha; no checkerboard, no colored or white matte, no ground plane outside the object, no cast shadow reaching far. No dog, people, text, UI. Full object framed with 5 percent transparentmargin. Believable construction, clean crisp silhouette that reads at mobile scale, natural materials, warm upper-left light and deliberate dark/light edge. A single broad elevated wooden carnival boardwalk platform with stout supporting posts and triangular braces standing on complete stone footings. Wide continuous horizontal plank top, three-quarter side view showing shallow top surface. Both ends exposed and readable for jumping on. Four loadbearing wooden posts reach samegroundline. Cream-and-red fabric trim onlyunderdeck. NO handrail, NO ladder across top, NO rope intersecting walking surface."
+    },
+    {
+      "key": "umbrella",
+      "file": "carnival/umbrella",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One fully open jaunty red-and-cream striped umbrella with curved wooden handle and thin dark centralshaft. Side-on view. Semicirclecanopy top occupiesupperhalf, shaft extendsbelow, hook handle nearbottom. Wholeumbrella only, no dog or hand. Warm red fabric, pale cream contrastingpanels, clear darkrim."
+    },
+    {
+      "key": "luggage",
+      "file": "carnival/luggage",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One squat closed vintage teal blue circus traveling trunk obstacle, rounded leathercorners, brass clasps, sturdy leatherhandles, white cream trim, no labels. Full trunk singleitem ontransparentbackground. Three-quarter sideview with visiblelidtop. Clear boldsilhouette."
+    },
+    {
+      "key": "luggage",
+      "file": "carnival/luggage",
+      "prompt": "Use case: background-extraction. EDIT TARGET existing isolated game prop. Preserve the exact object's shape, materials, colors, perspective, positioning and detail. Remove ALL the diffuse colored aura, halo, bloom, ambientlight haze and shadowcloud outside the solid object, also in any holes. ONLY the solid painted object remains opaque. Outside it is perfectly transparent alpha zero, including center hole if present. Crisp antialiased edges. No new background, no checkerboard, no black fill or matte. Preserve all object detail. This is a production transparent PNG game sprite."
+    },
+    {
+      "key": "boardwalk",
+      "file": "carnival/boardwalk",
+      "prompt": "Edit target: existing carnival boardwalk game sprite. Replace camera projection with a true SIDE-ELEVATION platform, exactly horizontal left-to-right front plank top and bottom. Very shallow three-quarter top strip, only 3 percent imageheight; all four supporting postfeet on SAME HORIZONTAL BASELINE. Broad width, low height, approximately4:1 width-toheight overall. Stonefootings, stoutposts and diagonalbraces. Preserve warm painterlywood,cream-and-red fabrictrim UNDERdeck. Completeobject inframe with generousmargins. TRANSPARENT background actualalpha and absolutely NO coloredhalo, no ambientglow, no shadowcloud beyondobject. Bare transparentemptyspace betweenlegs. No rail, no text, no people."
+    },
+    {
+      "key": "sandbag",
+      "file": "carnival/sandbag-v1.png",
+      "prompt": "Use case: stylized-concept. ONE isolated BitDog productiongame sprite, polished warm painterly animatedfeature illustration. Truealpha TRANSPARENT background, wholeobject inframe withtransparentmargin. Strongcleanreadable silhouette at80pixels, slightlythreequarter sideview withtopvisible, believablematerials, deliberate light/darkedge. NO scenery, groundplane, people,dog,text,logos,UI, extraobjects. No bloom or halo. ONE broad squat tied CANVAS SANDBAG used to anchor a circus tent, creamtan coarsecanvas with thick red ropetiedfirmlyaroundit andvisibleknot. Soft low broad lumpy silhouette, closed top, heavygroundcontact. No crate, no suitcase, no box, no labels."
+    }
+  ],
+  "preparation": "Lossless authored-pixel crop for tiles/ground only; original PNG alpha preserved"
+}

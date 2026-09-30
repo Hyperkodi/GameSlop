@@ -1,0 +1,30 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "effects": [
+    {
+      "name": "spring",
+      "file": "spring.mp3",
+      "request": {
+        "text": "One springy living tree branch bending under a dog then releasing: warm short elastic wood creak followed by a soft leaf flutter and brief airy swish. Gentle playful natural material Foley, immediate onset, close dry premium animated film recording. No metallic twang, cartoon boing, electronic tones, ticking, voice or music.",
+        "duration_seconds": 0.8,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "684093bedc04227ce67f3a4771948af561c56353cdde8f7ee9be6bbce0731b03"
+    },
+    {
+      "name": "leaves",
+      "file": "leaves.mp3",
+      "request": {
+        "text": "A fluffy golden retriever rolls through a pile of dry orchard leaves: one warm soft crunchy leafy whoosh, leaves scattering lightly and settling. Detailed natural textured foliage Foley, close dry premium recording, immediate onset. No footsteps, clicks, electronic sounds, speech or music.",
+        "duration_seconds": 1.3,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "3f87bca3be6a59bea5618e8a7c05bb09b728886dff20f646bb864e610e0cf825"
+    }
+  ]
+}

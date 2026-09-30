@@ -1,0 +1,21 @@
+{
+  "provider": "Replicate",
+  "model": "kwaivgi/kling-v3-video",
+  "mode": "pro",
+  "duration": 4,
+  "prompt": "Animate this exact golden retriever in a smooth joyful gallop to the RIGHT for the entire 4-second shot. The camera tracks at the dog's speed, keeping his torso and head at the same screen position and size, with the snowy alpine foothills and a packed-snow trail moving steadily to the LEFT. True fluid quadruped gallop with coherent successive paw contacts, foreleg reach, compression, hind-leg push and airborne extension. Natural modest vertical motion only; NO hopping or large body bounces. Keep the black nose, muzzle, eyes and ears fully formed and visible in EVERY frame. Consistent head, torso and limb proportions, exactly four legs. Preserve the approved golden retriever identity, black leather collar and round gold tag reading BIT. Face remains sharply readable; mouth stays happily open. Ears and tail flow gently. Full body, nose, tail and paws stay within frame at all times, generous margins. Maintain the same warm painted game-art style, snowy alpine foothills and a packed-snow trail and original color palette. One uninterrupted side-tracking shot, no camera shake, zoom or cuts. No owner or additional dog. No speed lines across the face, no afterimages, no ghost limbs, no morphing. Smooth professional character animation. No audio. Preserve this exact level scenery and its ground surface. No new objects. Keep the round gold collar tag with BIT lettering. The image contains ONE frame; no panels or borders.",
+  "negative_prompt": "missing nose, disappearing face, deformed muzzle, ghosting, double exposure, extra limbs, extra dogs, facial morphing, anatomy changes, flickering, stop motion, stuttering, teleporting, camera shake, zoom, scene cuts, text overlays, watermark, owner face visible, collar missing",
+  "generate_audio": false,
+  "reference": "sprint-reference-v1.jpg",
+  "id": "dy6wy29ynxrmt0d0xx28td3r84",
+  "status": "succeeded",
+  "error": null,
+  "output": "https://replicate.delivery/xezq/VxG1W1rfRNy6XSn6uO2Vw0fxykiftNJFC3vtzH17PDpin9kuA/tmpe2o3mvdj.mp4",
+  "metrics": {
+    "model_variant": "pro",
+    "predict_time": 130.969198872,
+    "total_time": 131.010665452,
+    "video_output_duration_seconds": 4,
+    "with_audio": false
+  }
+}

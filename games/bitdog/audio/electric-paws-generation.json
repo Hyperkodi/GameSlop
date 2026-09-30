@@ -1,0 +1,30 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "effects": [
+    {
+      "name": "paw-stone",
+      "file": "paw-stone.mp3",
+      "request": {
+        "text": "One soft padded paw contact from a large golden retriever onto smooth old paving stones, subtle nail brush and low rounded body weight, close realistic premium animal Foley, gentle not clicky, no shoes, no tapping ticks, no music or voices.",
+        "duration_seconds": 0.6,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "d42a787fc39ef14e16eced75602bd12ab34a372cb3ea6fba7c74f6066db33225"
+    },
+    {
+      "name": "intro-gallop-electric",
+      "file": "intro-gallop-electric.mp3",
+      "request": {
+        "text": "Continuous realistic large golden retriever galloping joyfully across smooth old paving stones for 3.3 seconds. Soft grouped padded paw impacts with body weight, subtle nail scuffs, little collar jingle and quiet breath. Organic four-legged cadence with flowing overlapping contacts, professional animated film animal Foley. No repeated metronome ticks, no hard clicking, no horse hooves, no human shoes, no barks, no music, no speech.",
+        "duration_seconds": 3.3,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "03de49e3168cf9077a2c423abaac0af1196cbd17666af0a3c9c296292fad2765"
+    }
+  ]
+}

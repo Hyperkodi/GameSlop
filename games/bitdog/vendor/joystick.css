@@ -1,0 +1,6 @@
+.slop-joystick{position:relative;display:block;box-sizing:border-box;width:var(--joystick-size,144px);height:var(--joystick-size,144px);flex-shrink:0;touch-action:none;user-select:none;-webkit-user-select:none;border:2px solid #8ba45b;border-radius:50%;background:radial-gradient(circle,#293b1d 0 38%,#131d10 40% 66%,#344426 68%);box-shadow:inset 0 0 14px #0008;cursor:grab}
+.slop-joystick:before{content:'';position:absolute;inset:15%;border:1px solid #baff6133;border-radius:50%;pointer-events:none}
+.slop-joystick-thumb{position:absolute;left:50%;top:50%;width:42%;height:42%;border:2px solid #c9ec93;border-radius:50%;background:radial-gradient(circle at 35% 25%,#98b96c,#4a622f);box-shadow:0 4px 10px #0008;transform:translate(calc(-50% + var(--stick-x,0px)),calc(-50% + var(--stick-y,0px)));pointer-events:none;transition:transform .1s}
+.slop-joystick.active{border-color:#baff61}.slop-joystick.active .slop-joystick-thumb{transition:none}
+@media(forced-colors:active){.slop-joystick,.slop-joystick-thumb{border-color:ButtonText;background:Canvas}}
+@media(prefers-reduced-motion:reduce){.slop-joystick-thumb{transition:none}}

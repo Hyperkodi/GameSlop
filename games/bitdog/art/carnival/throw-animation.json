@@ -1,0 +1,21 @@
+{
+  "provider": "Replicate",
+  "model": "kwaivgi/kling-v3-video",
+  "mode": "pro",
+  "duration": 5,
+  "prompt": "One continuous 5-second animated shot from this exact reference. CRITICAL: keep this low locked camera framing unchanged throughout; the owner's head and neck remain ABOVE the top edge and NEVER enter the picture. No zoom out, no tilt up, no reframing. Only his torso, hands, trousers and shoes are visible. The golden retriever is the central subject: preserve its complete black nose, expressive face, golden fur, black leather collar and gold BIT tag exactly. First 2 seconds: owner gently raises and lowers the gold Bitcoin in his right hand, dog attentively follows it with its eyes and a subtle head tilt, tail wags softly. During 2-3.6 seconds the owner smoothly swings his right arm backward beside his hip, keeping his torso upright and feet planted. At 3.7 seconds he smoothly swings his right arm forward and upward and releases the Bitcoin UP AND TO THE RIGHT beyond the seated dog into the distant sky. Coin leaves the hand exactly once. Dog remains sitting and looks up-right after it. Final second the empty right hand follows through and settles. Do not bend down: owner head must stay completely outside the frame. Warm polished painted animated-film style, fluid anatomy, continuous movement with smooth arcs and natural timing. Preserve the exact cloudside carnival on a firmly supported wooden boardwalk with colorful tents and bunting. No camera movement, no scene cut, no extra character or object. No text or sound. Preserve this exact level scenery and its ground surface. No new objects. Keep the round gold collar tag with BIT lettering. The image contains ONE frame; no panels or borders.",
+  "negative_prompt": "missing nose, disappearing face, deformed muzzle, ghosting, double exposure, extra limbs, extra dogs, facial morphing, anatomy changes, flickering, stop motion, stuttering, teleporting, camera shake, zoom, scene cuts, text overlays, watermark, owner face visible, collar missing",
+  "generate_audio": false,
+  "reference": "throw-reference-v1.jpg",
+  "id": "p81pek2hqxrmw0d0xx2sp73kfm",
+  "status": "succeeded",
+  "error": null,
+  "output": "https://replicate.delivery/xezq/zW6lbIlfqDxenkXDl2UX8gbdfDTlArwajBQeqgEleertNtn0F/tmp5sv5nazg.mp4",
+  "metrics": {
+    "model_variant": "pro",
+    "predict_time": 130.063028757,
+    "total_time": 130.096149201,
+    "video_output_duration_seconds": 5,
+    "with_audio": false
+  }
+}

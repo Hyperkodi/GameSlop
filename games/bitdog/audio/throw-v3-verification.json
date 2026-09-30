@@ -1,0 +1,30 @@
+{
+  "duration": 3.15,
+  "monotonicallyDescending": true,
+  "samples": [
+    {
+      "seconds": 0.2,
+      "dominantHz": 1867
+    },
+    {
+      "seconds": 0.7,
+      "dominantHz": 1358
+    },
+    {
+      "seconds": 1.2,
+      "dominantHz": 992
+    },
+    {
+      "seconds": 1.7,
+      "dominantHz": 725
+    },
+    {
+      "seconds": 2.2,
+      "dominantHz": 525
+    },
+    {
+      "seconds": 2.7,
+      "dominantHz": 383
+    }
+  ]
+}

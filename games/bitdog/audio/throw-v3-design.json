@@ -1,0 +1,15 @@
+{
+  "method": "offline pure sine synthesis, per user request",
+  "duration": 3.15,
+  "startHz": 2200,
+  "endHz": 300,
+  "curve": "exponential downward, monotonic",
+  "attackSeconds": 0.018,
+  "fadeSeconds": 0.55,
+  "releaseAt": 2.94,
+  "endsAt": 6.09,
+  "starAt": 6.35,
+  "star": "unchanged",
+  "source": "source/throw-v3.wav",
+  "rejectedTake": "throw-v2.mp3 (ElevenLabs take drifted upward near the end)"
+}

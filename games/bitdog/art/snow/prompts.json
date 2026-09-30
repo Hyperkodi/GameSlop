@@ -1,0 +1,40 @@
+{
+  "generator": "Built-in ImageGen",
+  "assets": [
+    {
+      "key": "snow",
+      "prompt": "Use case: stylized-concept. Production game background for BitDog, polished warm hand-painted animated-feature illustration, rich appealing detail, coherent light and materials. SINGLE VERY WIDE 3:1 continuous side-scrolling panorama, no panels. Scene viewed side-on with horizon horizontal; route runs left to right, never a path toward vanishing point. No dog, no people, no readable text, no logos, no UI. All distant buildings and trees firmly rooted. Lower 30 percent quiet low-contrast continuous ground, no obstacles at playable foreground scale. Keep rich scenic detail above and beyond the gameplay plane. Full bleed opaque image. Snowball Summit, a playful alpine valley in crisp winter afternoon with distant pine forest, blue lavender mountains, rounded snowdrifts and warm little distant chalets. Rich blue shadow banks behind the gameplay area give a golden retriever contrast. Quiet pale-blue snow lower third, no large foreground trees."
+    },
+    {
+      "key": "snow",
+      "kind": "snowbank",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog, polished warm painterly animated-feature illustration. TRANSPARENT background with actual alpha; no checkerboard, no colored or white matte, no ground plane outside the object, no cast shadow reaching far. No dog, people, text, UI. Full object framed with 5 percent transparentmargin. Believable construction, clean crisp silhouette that reads at mobile scale, natural materials, warm upper-left light and deliberate dark/light edge. A single very broad packed snowbank ramp with blue ice core. Low rounded trapezoid hill with a broad slightly raised plateau and smooth curved slopes BOTH ENDS meeting ground. Width three timesheight. Snowysofttop, dark blue rockbase, embedded icy stone strata. Fullshape with no cropping. Clear blue silhouette edge."
+    },
+    {
+      "key": "snowbarrier",
+      "file": "snow/snowbarrier",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One compact low barrier made of three rounded blocks of soft packed white snow, friendly snow fort wall. A solid squat obstacle with icyblue loweredge, fluffy pale upperedge, chunky recognizableprofile. Side threequarterview. No surroundingground."
+    },
+    {
+      "key": "snowShell",
+      "file": "snow/snow-shell",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One round fluffy snowball SHELL OVERLAY for the body of a side-view running dog. A thick incomplete ring of soft white clumpy snow with a broad fully transparent opening in upper-right quadrant for dog's head and a fully transparent centralbodyopening. Shape reads snowy rollingball. Slight bluish selfshadow, no dog visible, noground. Truealpha inhole andoutside."
+    },
+    {
+      "key": "snowbarrier",
+      "file": "snow/snowbarrier",
+      "prompt": "Use case: background-extraction. EDIT TARGET existing isolated game prop. Preserve the exact object's shape, materials, colors, perspective, positioning and detail. Remove ALL the diffuse colored aura, halo, bloom, ambientlight haze and shadowcloud outside the solid object, also in any holes. ONLY the solid painted object remains opaque. Outside it is perfectly transparent alpha zero, including center hole if present. Crisp antialiased edges. No new background, no checkerboard, no black fill or matte. Preserve all object detail. This is a production transparent PNG game sprite."
+    },
+    {
+      "key": "snowShell",
+      "file": "snow/snow-shell",
+      "prompt": "Use case: background-extraction. EDIT TARGET existing isolated game prop. Preserve the exact object's shape, materials, colors, perspective, positioning and detail. Remove ALL the diffuse colored aura, halo, bloom, ambientlight haze and shadowcloud outside the solid object, also in any holes. ONLY the solid painted object remains opaque. Outside it is perfectly transparent alpha zero, including center hole if present. Crisp antialiased edges. No new background, no checkerboard, no black fill or matte. Preserve all object detail. This is a production transparent PNG game sprite."
+    },
+    {
+      "key": "iceRock",
+      "file": "snow/ice-rock-v1.png",
+      "prompt": "Use case: stylized-concept. ONE isolated BitDog productiongame sprite, polished warm painterly animatedfeature illustration. Truealpha TRANSPARENT background, wholeobject inframe withtransparentmargin. Strongcleanreadable silhouette at80pixels, slightlythreequarter sideview withtopvisible, believablematerials, deliberate light/darkedge. NO scenery, groundplane, people,dog,text,logos,UI, extraobjects. No bloom or halo. ONE compact darkblue icy granite BOULDER with an irregular peaked angular silhouette and two large sharp ridges, small patches of white snow on upperleftface. Visiblyhardrock, no snowblocks, no snowwall. Broadgroundbase, boldblueoutline."
+    }
+  ],
+  "preparation": "Lossless authored-pixel crop for tiles/ground only; original PNG alpha preserved"
+}

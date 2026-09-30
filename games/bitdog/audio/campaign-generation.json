@@ -1,0 +1,170 @@
+[
+  {
+    "name": "mushroom",
+    "file": "mushroom.mp3",
+    "request": {
+      "text": "A large soft mushroom cap compresses with a warm rubbery woody squeeze then springs upward with an airy organic boing. One playful premium animated-film Foley action, round and gentle, no cartoon slide whistle, no electronic beep, no music.",
+      "duration_seconds": 0.85,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "0b09c1322b3858685d1b7c148ebd2d3c533f54ceea4f80277638f54b1d8f12f8"
+  },
+  {
+    "name": "snowgrow",
+    "file": "snowgrow.mp3",
+    "request": {
+      "text": "Soft powder snow gathering around a rolling dog: a gentle fluffy crunchy swish growing fuller and rounder then settling. Premium detailed close Foley, warm playful texture, no impact pain, no voices or music.",
+      "duration_seconds": 1.1,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "e2e08657003772c7675c52cd4d5e3f55086ba49130a61b28af6db21f5e405e2a"
+  },
+  {
+    "name": "snowshed",
+    "file": "snowshed.mp3",
+    "request": {
+      "text": "A fluffy snowball shell gently bursts into powder as a dog leaps out: soft airy poof and delicate snow grains settling. Premium animated film Foley, one light release, no explosion, no voices or music.",
+      "duration_seconds": 0.7,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "172a20334dd8c199f4c004d20006df46f00f80b468d18bb619aabc7005685b4c"
+  },
+  {
+    "name": "snowbreak",
+    "file": "snowbreak.mp3",
+    "request": {
+      "text": "A rolling fluffy snowball pushes through one low soft packed-snow wall: deep cushioned crunch and a flowing shower of powder. Playful realistic premium Foley, no metal, glass, harsh impact or music.",
+      "duration_seconds": 0.85,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "ddb3ce7ee889c4596577b92037f17324ef57a175c27a90a51ae44374571f97b2"
+  },
+  {
+    "name": "umbrella",
+    "file": "umbrella.mp3",
+    "request": {
+      "text": "A small fabric umbrella pops open above a dog: tactile soft fabric unfurl with a gentle wooden rib flex, followed by a little wind catching cloth. One premium animated-film Foley action, no sharp tick, no music or voice.",
+      "duration_seconds": 0.85,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "064bdb070f87981956196ce103e141176d15543d54841c98dd6ad70c9f359945"
+  },
+  {
+    "name": "gust",
+    "file": "gust.mp3",
+    "request": {
+      "text": "One gentle rising current of air lifts an open fabric umbrella: silky wind swell and delicate fluttering canvas. Smooth premium animated-film sound design, light and friendly, no storm, no whistle, no voices or music.",
+      "duration_seconds": 1.1,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "b0d5711821e805e4ca055f3f35d130d8ef220d20d7b19aca31ed413b8ebbcca8"
+  },
+  {
+    "name": "gravity",
+    "file": "gravity.mp3",
+    "request": {
+      "text": "A friendly low-gravity bubble changes to normal weight: a rounded soft downward magnetic woosh with a quiet glassy chime resolving warmly. Premium cinematic magical Foley, no sci-fi alarm, no harsh bass, no 8-bit tones, no music.",
+      "duration_seconds": 1.0,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "48a247542b93e6299b4d5c2d016901c36597c87d4a0367996f288792b785d77d"
+  },
+  {
+    "name": "paw-snow",
+    "file": "paw-snow.mp3",
+    "request": {
+      "text": "One large golden retriever paw softly presses into fresh packed snow. A padded low crunch and powder scuff, rounded detailed animal Foley, not a shoe or hoof, no sharp clicks, no music.",
+      "duration_seconds": 0.6,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "6d3b49474670c503682a3669750d0b5554060ded9163fe1f2d390b6bfaeaa0f5"
+  },
+  {
+    "name": "paw-moon",
+    "file": "paw-moon.mp3",
+    "request": {
+      "text": "One large golden retriever paw makes a soft padded contact on fine dusty sand, subtle granular scuff with rounded body weight. Gentle close animal Foley, no hard clicking, no music or voice.",
+      "duration_seconds": 0.6,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "8a137ba2bc74abb5c4e955da9516c10f4b17f123e202c645b4590050df19e00a"
+  },
+  {
+    "name": "intro-gallop-snow",
+    "file": "intro-gallop-snow.mp3",
+    "request": {
+      "text": "Continuous large golden retriever galloping across packed snow for 3.3 seconds. Natural grouped four-legged padded contacts, soft snow crunch and powder scuffs, quiet breathing and very subtle collar jingle. Flowing overlapping real animal Foley, no repeated metronome ticks, no horse hooves, no hard clicks, no music, no barking.",
+      "duration_seconds": 3.3,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "b707d19e67d472e495fae8a884ff9176742f233908970d66f431dcd1353f090f"
+  },
+  {
+    "name": "intro-gallop-wood",
+    "file": "intro-gallop-wood.mp3",
+    "request": {
+      "text": "Continuous large golden retriever galloping joyfully along a wooden carnival boardwalk for 3.3 seconds. Natural grouped four-legged padded contacts with warm low wooden resonance and paw scuffs, quiet breath and subtle collar jingle. Organic flowing animal Foley, no repeated metronome ticks, no sharp clicks, no horse hooves, no music or voices.",
+      "duration_seconds": 3.3,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "ef88dffeb45157c0c1d7f69f774e29fd161268da22e983e071703c5ea5f67bde"
+  },
+  {
+    "name": "intro-gallop-moon",
+    "file": "intro-gallop-moon.mp3",
+    "request": {
+      "text": "Continuous golden retriever running in joyful bounding strides across fine dusty moon sand for 3.3 seconds. Soft grouped paw contacts and granular scuffs, slightly airy magical motion, quiet panting and faint collar jingle. Warm premium animated-film animal Foley, no repeated single ticks, no horse hooves, no alarm, music or speech.",
+      "duration_seconds": 3.3,
+      "loop": false,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "165e38b2cd66e20ed55e6f0751adca6138fd25259568ae4dc712cac63a23a777"
+  },
+  {
+    "name": "snow-roll",
+    "file": "snow-roll.mp3",
+    "request": {
+      "text": "Seamless continuous loop of a fluffy snowball gently rolling over packed powder: quiet rounded crunchy swish and soft granular friction. Smooth consistent low texture, no pulses, no impacts, no music or voices.",
+      "duration_seconds": 2.0,
+      "loop": true,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "9aeb4cbf19a5317c15eb7a0a5e2f77a29dc3b073a2c39a2040b21f243fdf7aee"
+  },
+  {
+    "name": "umbrella-wind",
+    "file": "umbrella-wind.mp3",
+    "request": {
+      "text": "Seamless continuous gentle air rushing past stretched umbrella fabric with soft flowing cloth flutter. Quiet warm airy texture, steady and smooth, no rhythmic pulses, no whistle, no strong storm, no music or voices.",
+      "duration_seconds": 2.0,
+      "loop": true,
+      "prompt_influence": 0.55,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sourceSha256": "ebd821413f02825b090c2a78f058f0636b06ae0e76ec075e203a43ea313eda04"
+  }
+]
