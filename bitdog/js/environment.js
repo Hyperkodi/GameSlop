@@ -41,7 +41,8 @@
   }
   function drawPOV(W,H){if(!ok(pov))return false;const scale=Math.max(W/pov.naturalWidth,H/pov.naturalHeight),w=pov.naturalWidth*scale,h=pov.naturalHeight*scale;c.drawImage(pov,(W-w)/2,(H-h)/2,w,h);return true;}
   function groundChunk(block,H,ground){
-   if(groundChunks.has(block)){const cached=groundChunks.get(block);groundChunks.delete(block);groundChunks.set(block,cached);return cached;}
+   const cacheKey=block+':'+H;
+   if(groundChunks.has(cacheKey)){const cached=groundChunks.get(cacheKey);groundChunks.delete(cacheKey);groundChunks.set(cacheKey,cached);return cached;}
    const canvas=document.createElement('canvas'),g=canvas.getContext('2d');
    canvas.width=groundChunkWidth+4;canvas.height=H+364;
    const origin=block*groundChunkWidth-2,sw=groundArt.naturalWidth,sh=groundArt.naturalHeight,period=sw/2;
@@ -59,7 +60,7 @@
     deep.addColorStop(1,levelId===3?'#68675e':'#76502d');
     g.fillStyle=deep;g.fillRect(0,H-y-32,2.1,396);g.restore();
    }
-   groundChunks.set(block,canvas);
+   groundChunks.set(cacheKey,canvas);
    if(groundChunks.size>5)groundChunks.delete(groundChunks.keys().next().value);
    return canvas;
   }

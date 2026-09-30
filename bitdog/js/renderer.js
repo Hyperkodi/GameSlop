@@ -7,6 +7,9 @@
     const environment = BitDogEnvironment.create(c,levelId);
     const introVideo = BitDogIntroVideo.create(c,levelId);
     let W = 1100, H = 600, camera = 0, cameraY = 0, time = 0, particles = [];
+    let baseWidth=1100;
+    const mobileView=matchMedia('(pointer:coarse), (max-width:700px), (max-height:520px)');
+    function viewScale(scale){W=baseWidth*scale;H=620*scale;}
     const gateOpenedAt=new Map();
     const springReleasedAt=new Map();
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -65,7 +68,7 @@
       // ResizeObserver and window resize can fire for the same rotation.
       // Reassigning an unchanged canvas size erases an already painted frame.
       if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;
-      H = 620; W = Math.max(540, H * box.width / box.height);
+      baseWidth=Math.max(540,620*box.width/box.height);viewScale(1);
     }
     function path(points, fill, stroke, width = 2) {
       c.beginPath(); points(c); if (fill) { c.fillStyle = fill; c.fill(); }
@@ -297,13 +300,15 @@
       }
     }
     function draw(s, dt, title = false) {
+      // 50% more world in view, with the same proportions and DOM control sizes.
+      const mobile=mobileView.matches;
+      viewScale(mobile&&!title?1.5:1);
       time += Math.min(dt, .05);
       const d = s.dog;
       const lookingLeft=Math.abs(d.vx)>40?d.vx<0:d.facing<0;
       const target = Math.max(0, Math.min(END - W + 100, d.x - W * (lookingLeft ? 2/3 : 1/3)));
       camera=Math.max(0,Math.min(END-W+100,camera+d.vx*dt));
       camera += (target - camera) * (1 - Math.exp(-dt * 8));
-      const mobile=matchMedia('(pointer:coarse), (max-width:700px), (max-height:520px)').matches;
       const verticalTarget=mobile?Math.max(-320,d.y-H*.66+Math.min(0,(d.vy||0)*.08)):levelId>1?Math.max(-320,Math.min(0,d.y-320+Math.min(0,(d.vy||0)*.08))):0;
       cameraY += (verticalTarget-cameraY)*(1-Math.exp(-dt*12));
       if (title) {camera = 0;cameraY=0;}
@@ -404,6 +409,7 @@
       }
     }
     function drawOpening(shot, s, paused = false) {
+      viewScale(1);
       time = shot.time;
       c.setTransform(canvas.width / W,0,0,canvas.height / H,0,0);
       if (introVideo.draw(shot,W,H,paused)) {
