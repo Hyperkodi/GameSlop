@@ -300,9 +300,9 @@
       }
     }
     function draw(s, dt, title = false) {
-      // 50% more world in view, with the same proportions and DOM control sizes.
+      // 25% more world in view, with the same proportions and DOM control sizes.
       const mobile=mobileView.matches;
-      viewScale(mobile&&!title?1.5:1);
+      viewScale(mobile&&!title?1.25:1);
       time += Math.min(dt, .05);
       const d = s.dog;
       const lookingLeft=Math.abs(d.vx)>40?d.vx<0:d.facing<0;
