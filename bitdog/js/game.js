@@ -18,6 +18,7 @@
   const opening = BitDogCinematic.createTimeline();
   const audio = BitDogAudio.create();
   const keys = new Set(), touch = { move: 0, jump: false, roll: false, sprint: false }, owners = new Map();
+  let jumpQueued=false;
   let paused = false, last = performance.now(), toastUntil = 0, muted = false, best = 0;
   const bestKey=()=>`gameslop:bitdog:best:level:${level.id}`;
   function loadBest(){best=0;try{best=Number(localStorage.getItem(bestKey()))||(level.id===1?Number(localStorage.getItem('gameslop:bitdog:best:v2')):0)||0;}catch{}$('best').textContent=best?best.toLocaleString():'—';}
@@ -27,6 +28,7 @@
   const running = () => !opening.active && ['outbound', 'return'].includes(engine.state.phase) && !paused;
   const joystick = GameslopJoystick.create($('joystick'), { axes: 'horizontal', enabled: running, onMove: p => { touch.move = p.x; } });
   function clearInput() {
+    jumpQueued=false;
     keys.clear(); joystick.reset(); touch.move = 0; touch.jump = false; touch.roll = false; touch.sprint = false;
     for (const [name, id] of owners) { const el = $(name); if (el.hasPointerCapture(id)) el.releasePointerCapture(id); el.classList.remove('active'); }
     owners.clear();
@@ -50,7 +52,7 @@
     audio.stopEffects();
     $('next-level').hidden=true;
     $('overlay').classList.remove('result-overlay'); $('finish-stats').hidden = true;
-    unlockAudio(); clearInput(); paused = false; engine.reset(); renderer.reset(); last = performance.now();
+    audio.setMode('opening'); unlockAudio(); clearInput(); paused = false; engine.reset(); renderer.reset(); last = performance.now();
     opening.start(); $('overlay').hidden = true; $('hud').hidden = true; $('scene-caption').hidden = true;
     $('toast').classList.remove('show'); $('cinematic-controls').hidden = false;
     $('cinematic-pause').textContent = 'Ⅱ'; $('cinematic-pause').setAttribute('aria-label', 'Pause opening');
@@ -108,7 +110,7 @@
   $('sound').addEventListener('click', () => { muted = !muted; unlockAudio(); paintSound(); try { localStorage.setItem('gameslop:muted', muted ? '1' : '0'); } catch (_) {} }); paintSound();
   for (const name of ['jump', 'roll', 'sprint']) {
     const el = $(name);
-    el.addEventListener('pointerdown', e => { if (!running() || owners.has(name) || e.button !== 0) return; e.preventDefault(); unlockAudio(); owners.set(name, e.pointerId); el.setPointerCapture(e.pointerId); touch[name] = true; el.classList.add('active'); });
+    el.addEventListener('pointerdown', e => { if (!running() || owners.has(name) || e.button !== 0) return; e.preventDefault(); owners.set(name, e.pointerId); el.setPointerCapture(e.pointerId); touch[name] = true; if(name==='jump')jumpQueued=true; el.classList.add('active'); unlockAudio(); });
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(type, e => { if (owners.get(name) !== e.pointerId) return; owners.delete(name); touch[name] = false; el.classList.remove('active'); if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId); });
     el.addEventListener('contextmenu', e => e.preventDefault());
   }
@@ -186,9 +188,10 @@
     if (running()) {
       const right = held('right'), left = held('left');
       engine.update(dt, { move: right || left ? Number(right) - Number(left) : touch.move,
-        jump: touch.jump || held('jump'),
+        jump: jumpQueued || touch.jump || held('jump'),
         sprint: touch.sprint || held('sprint'),
         roll: touch.roll || held('roll') });
+      jumpQueued=false;
       for (const e of engine.state.events) {
         sound(e.type);
         if (['coin', 'smash', 'fetch', 'win','spring','leaves','mushroom','snowbreak','snowshed'].includes(e.type)) renderer.burst(e);

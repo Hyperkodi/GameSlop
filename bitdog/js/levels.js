@@ -15,7 +15,7 @@
   if(!p.surface)return p.y;
   const points=p.surface;if(x<=points[0][0])return points[0][1];
   for(let i=1;i<points.length;i++)if(x<=points[i][0]){const a=points[i-1],b=points[i];return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);}
-  return points.at(-1)[1];
+  return points[points.length-1][1];
  }
  function groundFoot(ground,left,right){let y=-Infinity;for(let i=0;i<=32;i++)y=Math.max(y,ground(left+(right-left)*i/32));return y+16;}
  const harvestYards=[{x:2850,end:5140,y:480},{x:10050,end:12340,y:472},{x:16750,end:19040,y:492}];
@@ -34,7 +34,7 @@
   moonshelf:{size:[2170,725],foot:625,edge:[[225,285],[400,290],[800,345],[1150,365],[1510,330],[1870,265]]}
  };
  function rootedPlatform(p,asset,ground){
-  const source=campaignArt[asset],scale=(p.end-p.x)/(source.edge.at(-1)[0]-source.edge[0][0]);
+  const source=campaignArt[asset],scale=(p.end-p.x)/(source.edge[source.edge.length-1][0]-source.edge[0][0]);
   const ax=p.x-source.edge[0][0]*scale,aw=source.size[0]*scale;
   const foot=groundFoot(ground,ax,ax+aw);
   p.art={kind:asset,x:ax,y:foot-source.foot*scale,w:aw,h:source.size[1]*scale,foot};
@@ -43,7 +43,7 @@
    // The buried snowbank toes intersect the actual terrain, so both entrances
    // remain continuous even where the foreground snow gently slopes.
    const authored={surface:p.surface};p.surface=Array.from({length:81},(_,i)=>{const x=p.x+(p.end-p.x)*i/80;return[x,Math.min(ground(x),surfaceY(authored,x))];});
-   p.surface[0][1]=ground(p.x);p.surface.at(-1)[1]=ground(p.end);
+   p.surface[0][1]=ground(p.x);p.surface[p.surface.length-1][1]=ground(p.end);
   }
   p.y=surfaceY(p,(p.x+p.end)/2);return p;
  }
@@ -92,7 +92,7 @@
      const h=w*220/418;
      p.y=foot-h+8;p.art={kind:'hay',x:p.x,y:foot-h,w,h,foot};
     }else{
-     const source=equipment[kind],scale=w/(source.edge.at(-1)[0]-source.edge[0][0]);
+     const source=equipment[kind],scale=w/(source.edge[source.edge.length-1][0]-source.edge[0][0]);
      p.art={kind,x:p.x-source.edge[0][0]*scale,y:foot-source.foot*scale,w:source.size[0]*scale,h:source.size[1]*scale,foot};
      p.surface=source.edge.map(([x,y])=>[p.art.x+x*scale,p.art.y+y*scale]);
      p.y=surfaceY(p,(p.x+p.end)/2);p.walkIn=kind==='loading';
