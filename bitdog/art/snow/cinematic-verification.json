@@ -1,0 +1,36 @@
+{
+  "level": 5,
+  "theme": "snow",
+  "provider": "Replicate Kling V3 Pro",
+  "clips": [
+    {
+      "file": "throw-kling-v1.mp4",
+      "bytes": 2534326,
+      "sha256": "a0de838cc865c7ef500c9fc01b12b42d18b3e611acf5cf7d00d5879281544c47",
+      "width": 1876,
+      "height": 1104,
+      "r_frame_rate": "24/1",
+      "duration": "5.041667",
+      "nb_frames": "121"
+    },
+    {
+      "file": "sprint-kling-v1.mp4",
+      "bytes": 3683798,
+      "sha256": "0533f614908fb42cba3b54afef780090c8656f58c34a403919578c8735dc5501",
+      "width": 1876,
+      "height": 1104,
+      "r_frame_rate": "24/1",
+      "duration": "4.041667",
+      "nb_frames": "97"
+    }
+  ],
+  "throwWhistleCueSeconds": 3.08,
+  "starCueSeconds": 6.35,
+  "visualReview": {
+    "referenceRows": "Inspected before extraction; equal frames measured at actual boundaries",
+    "owner": "Head and neck remain outside frame; fluid hand/arm anticipation, throw and follow-through",
+    "dog": "All97decoded sprint frames inspected in muzzle-all-frames.jpg; complete black nose and muzzle throughout",
+    "opening": "Actual theme scenery and surface in all three shots; black collar/gold BIT tag retained"
+  },
+  "fallback": "Approved first decoded movie frame; full contain on narrow screens; reduced-motion/offline poster support preserved"
+}

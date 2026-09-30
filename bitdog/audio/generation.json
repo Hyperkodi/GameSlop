@@ -1,0 +1,254 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "format": "mp3_44100_128",
+  "effects": [
+    {
+      "name": "paw-grass",
+      "file": "paw-grass.mp3",
+      "request": {
+        "text": "One soft dog paw landing in short grass, warm padded impact and tiny leaf crunch, single isolated step. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "5",
+      "sha256": "a3e4f523d525d58e6cde11a7d30afb4e981d3e42666030d83bcd681e1cff55e5"
+    },
+    {
+      "name": "paw-wood",
+      "file": "paw-wood.mp3",
+      "request": {
+        "text": "One padded dog paw stepping onto a wooden boardwalk, soft woody tap, single isolated step. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "5",
+      "sha256": "709b9a59a824e5d315ee16069a66881b602162231828faf1e2a4f74bde50c19b"
+    },
+    {
+      "name": "land",
+      "file": "land.mp3",
+      "request": {
+        "text": "A golden retriever landing gently on all four paws on grass, soft solid footfall, delicate fur and grass rustle. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.2,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "7",
+      "sha256": "703df9ee7b22337cbfb86e4d7e6b9e0f200b9375406d71ecfe8d3a9c10c7422f"
+    },
+    {
+      "name": "jump",
+      "file": "jump.mp3",
+      "request": {
+        "text": "Single quick spring off grass, padded paw push and short airy swoosh, agile playful movement. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 0.8,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "4",
+      "sha256": "bcc7f588e9a19370f239d71432cee1bddf30132aaf29ce671f8e8cd44c4a3e1a"
+    },
+    {
+      "name": "roll",
+      "file": "roll.mp3",
+      "request": {
+        "text": "Continuous soft rushing fur and grass rustle of a fluffy dog tumbling over a lawn, smooth gentle texture, no impacts. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 3,
+        "loop": true,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "16",
+      "sha256": "1353b525124fe0db05490321addc1da144c951695f7e4b4aed769dc82227fe5a"
+    },
+    {
+      "name": "boost",
+      "file": "boost.mp3",
+      "request": {
+        "text": "Powerful accelerating rush of air with a quick grass scuff, lively canine sprint launch, warm cinematic whoosh. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.4,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "8",
+      "sha256": "df7897dac4351e5b97928349ad55f1e83058946ec0d3bee81a32d2c99eb0c139"
+    },
+    {
+      "name": "bump-a",
+      "file": "bump-a.mp3",
+      "request": {
+        "text": "Single gentle padded bump against a wooden fence, low rounded wooden knock and light leaf rustle, playful harmless stumble, no animal pain or yelp. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "5",
+      "sha256": "40a602c68bd78d88c7167aba1173f079fad448d5adb9a28759b986c58fe4e4c9"
+    },
+    {
+      "name": "bump-b",
+      "file": "bump-b.mp3",
+      "request": {
+        "text": "Single soft cushioned body bump against a hollow wooden plank, brief woody clack and fur rustle, friendly cartoon physical Foley, no pain or yelp. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "5",
+      "sha256": "0fdd4af4aaaf83c508a09117d62417baff78e3cabbe586f78d588f9c141eac65"
+    },
+    {
+      "name": "smash",
+      "file": "smash.mp3",
+      "request": {
+        "text": "A lightweight wooden garden crate bursting into small dry splinters, crisp satisfying crack followed by a short scattering of wood pieces. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.5,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "8",
+      "sha256": "f6915b1c2a5004f4f583d4955e4d6e05b6c94609e2d14e9e1834e7f3e66ef28c"
+    },
+    {
+      "name": "coin",
+      "file": "coin.mp3",
+      "request": {
+        "text": "One small gold coin delicately struck, bright expensive metallic ting with a short warm shimmering decay, single collectible pickup. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 0.7,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "4",
+      "sha256": "8ccb0f80fdbbc9c46c7e6ff3d0e6165036022e1cc3714ac9ad68b6947024744d"
+    },
+    {
+      "name": "fetch",
+      "file": "fetch.mp3",
+      "request": {
+        "text": "A large gold medallion caught gently, solid gold clink blooming into a rich bright magical metallic shimmer, triumphant discovery. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 2,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "11",
+      "sha256": "75a14183b8565a31b4621a588e9cc32c2478e5cd0687706fd0cfdfe2d2c4e21e"
+    },
+    {
+      "name": "splash",
+      "file": "splash.mp3",
+      "request": {
+        "text": "A dog paw splashing into a shallow pond, crisp water slap and scattered droplets, close natural water Foley. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.4,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "8",
+      "sha256": "597fb904bf2d13ac986d719ad8a930acb523ac84619c4d022857c265f008aeb6"
+    },
+    {
+      "name": "water",
+      "file": "water.mp3",
+      "request": {
+        "text": "Gentle continuous splashing and paddling of dog paws running through ankle deep pond water, clean natural water texture. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 3,
+        "loop": true,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "16",
+      "sha256": "e724d8af6d3b6c424367d9ec97e70b011d86d544d3531f63cca287ec76caecb9"
+    },
+    {
+      "name": "tag",
+      "file": "tag.mp3",
+      "request": {
+        "text": "One tiny brass dog collar tag jingling against its metal ring, two delicate close metallic clicks, subtle. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "5",
+      "sha256": "d9b4d0d2cb6890c47430012f3d5b1742f67531df4cab19f17a4d53fb97f146e5"
+    },
+    {
+      "name": "throw",
+      "file": "throw.mp3",
+      "request": {
+        "text": "A hand throws a heavy gold coin fast into the distance, short sleeve swish and smooth spinning metallic airy whirr fading away. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.3,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "7",
+      "sha256": "190f3242674156c6d6fe1d2e015f726b37f8757f5dbb0139b5c03dfa8b9ca543"
+    },
+    {
+      "name": "star",
+      "file": "star.mp3",
+      "request": {
+        "text": "A tiny distant magical star glints twice, delicate crystalline sparkle and shimmering air, elegant cinematic twinkle. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.8,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "10",
+      "sha256": "593e2e1ba9c08125a3e7ed0f34f22a35cd5ddf651773e16997ca49f1ad0d4790"
+    },
+    {
+      "name": "win",
+      "file": "win.mp3",
+      "request": {
+        "text": "A happy golden retriever gives two cheerful soft barks and pants briefly, friendly excited greeting, natural animal sound. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 2.5,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "14",
+      "sha256": "7857cb7f6cd46e429012319db3ae51b990983af1ff8fb62f48201efd04568c95"
+    },
+    {
+      "name": "timeout",
+      "file": "timeout.mp3",
+      "request": {
+        "text": "A golden retriever exhales a gentle disappointed huff, collar tag lightly jingles, endearing and calm, no pain, no whining. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 1.8,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "10",
+      "sha256": "857e7e0f94d3d7d18a5b142a7cb5f9fa5c4f98b7a9b533136c92e7c1e6ba4e1f"
+    },
+    {
+      "name": "ambient",
+      "file": "ambient.mp3",
+      "request": {
+        "text": "Quiet sunny park ambience, light wind through leaves and a few distant songbirds, peaceful open air, no people or dogs. Premium animated adventure game Foley, detailed natural materials, clean close recording, immediate onset, no speech, no music, no electronic beeps, no retro or 8-bit sounds.",
+        "duration_seconds": 8,
+        "loop": true,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "characterCost": "44",
+      "sha256": "5e85100d54ebaae164a4d3f6e483beb642a63a692deeff90b12395ee4c3420fc"
+    }
+  ]
+}

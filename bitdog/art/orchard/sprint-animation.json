@@ -1,0 +1,11 @@
+{
+  "provider": "Replicate",
+  "model": "kwaivgi/kling-v3-video",
+  "mode": "pro",
+  "duration": 4,
+  "prompt": "Animate this exact golden retriever in a smooth joyful gallop to the RIGHT for the entire 4-second shot. The camera tracks at the dog's speed, keeping his torso and head at the same screen position and size, with the apple orchard scenery moving steadily to the LEFT. True fluid quadruped gallop with coherent successive paw contacts, foreleg reach, compression, hind-leg push and airborne extension. Natural modest vertical motion only; NO hopping or large body bounces. Keep the black nose, muzzle, eyes and ears fully formed and visible in EVERY frame. Consistent head, torso and limb proportions, exactly four legs. Preserve the approved golden retriever identity, black leather collar and round gold tag reading BIT. Face remains sharply readable; mouth stays happily open. Ears and tail flow gently. Full body, nose, tail and paws stay within frame at all times, generous margins. Maintain the same warm painted game-art style, apple orchard path, sunny trees and color palette. One uninterrupted side-tracking shot, no camera shake, zoom or cuts. No owner or additional dog. No speed lines across the face, no afterimages, no ghost limbs, no morphing. Smooth professional character animation. No audio.",
+  "negative_prompt": "missing nose, disappearing face, deformed muzzle, ghosting, double exposure, extra limbs, extra dogs, facial morphing, anatomy changes, flickering, stop motion, stuttering, teleporting, camera shake, zoom, scene cuts, text overlays, watermark, owner face visible, collar missing",
+  "generate_audio": false,
+  "reference": "sprint-reference-v1.png",
+  "file": "sprint-kling-v1.mp4"
+}

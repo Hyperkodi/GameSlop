@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "master": "master-v1.png",
+  "width": 2172,
+  "height": 724,
+  "overlap": 96,
+  "tileWidth": 900,
+  "layout": "finite continuous panorama; original pixels; shared overlap at authored x positions",
+  "tiles": [
+    {
+      "file": "tile-0.png",
+      "x": 0,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 1448206,
+      "sha256": "c0d09563c7f25a99564eba939b98f07d3cdc408896d0f7569086a95e83450cce"
+    },
+    {
+      "file": "tile-1.png",
+      "x": 804,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 1237421,
+      "sha256": "2ab4fa28ed2015904dd92ade108066102633af6fdfc433ffdfade7c0af9e0869"
+    },
+    {
+      "file": "tile-2.png",
+      "x": 1608,
+      "y": 0,
+      "w": 564,
+      "h": 724,
+      "bytes": 836637,
+      "sha256": "cad4d5fe35d4b5f81595b9d40ca12007291629de2fbc02300e45e88078527553"
+    }
+  ]
+}

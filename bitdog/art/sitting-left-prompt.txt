@@ -1,0 +1,6 @@
+Use case: stylized-concept.
+Asset type: single transparent animation character cutout for BitDog: Zoomies.
+Reference image is the final character model sheet. Draw ONLY one full-body seated golden retriever on genuinely transparent alpha background, with wide clear margins. No text or labels outside the bandana, no ground, no cast shadow, no other objects.
+The retriever is sitting in a three-quarter view and looking up toward the UPPER LEFT of the image at his owner offscreen. His nose unmistakably points upper left. Tail rests behind him to the RIGHT. Keep the face, youthful proportions, honey-gold feathered fur, darker floppy ears, cream muzzle/chest, dark brown eyes, black nose and happy pink tongue consistent with reference.
+Orange triangular bandana on front chest. CRITICAL: the WHITE BITCOIN SYMBOL must be normally readable, NOT mirrored or backward, even though the dog faces left. Accurate white Bitcoin B with two short vertical bars.
+Match the same clean detailed 2D animation cel illustration quality. Friendly eager expression. One seated dog only.

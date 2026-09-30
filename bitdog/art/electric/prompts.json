@@ -1,0 +1,41 @@
+{
+  "generator": "Built-in ImageGen",
+  "assets": [
+    [
+      "master",
+      "Use case: stylized-concept. BitDog polished painterly 2D platform game, warm hand-painted animated-feature illustration with clear forms and natural construction. Reference is style only. No dog, no people, no text, no logos or interface. A single continuous very wide 3:1 panorama of a cheerful small-town neighborhood called Electric Avenue in late afternoon. Soft lavender-blue distant hills and sky, warm coral and pale blue houses with pitched tiled roofs, leafy street trees rooted in gardens, modest brick workshops, a few credible utility poles with insulators and wires attached between them. Street runs LEFT TO RIGHT as a side-scroller, never toward a vanishing point. Lower 30 percent is a QUIET grassy neighborhood verge and walkway; no large foreground trees, no roots in the air, no hero objects blocking gameplay. Upper middle 40 percent is mostly quiet pastel sky behind the future cable route so dark cables and a golden dog stay readable. Houses in middle distance, always firmly grounded. Rich charming detail at the sides and distant background. ONE coherent wide landscape, no panels or breaks, full bleed opaque image."
+    ],
+    [
+      "pole",
+      "Use case: stylized-concept. BitDog polished painterly 2D platform game, warm hand-painted animated-feature illustration with clear forms and natural construction. Reference is style only. No dog, no people, no text, no logos or interface. ONE isolated transparent PNG utility pole sprite, full object with generous margins, true alpha background. Tall stout weathered wooden utility pole set into a small stone/concrete footing, a single short horizontal wooden crossarm near its top with three blue-green ceramic insulators, metal brackets and bolts connecting them. No attached wires: game will attach cables precisely to these insulators. Side view with subtle visible depth. Practical believable utility construction, clear dark outline and pale lit edges; pole visible from top insulators to complete footing. Aspect ratio narrow object about one fifth as wide as tall. No scenery or grass patch."
+    ],
+    [
+      "shed",
+      "Use case: stylized-concept. BitDog polished painterly 2D platform game, warm hand-painted animated-feature illustration with clear forms and natural construction. Reference is style only. No dog, no people, no text, no logos or interface. ONE complete isolated transparent PNG small neighborhood brick utility workshop, full building visible, genuine alpha background. Side elevation with slight three-quarter depth. Low red-brick walls, closed sage-green door and modest window, proper shallow pitched slate-blue tiled roof with a broad ridge and clear eaves. Stone foundation extends below walls, all wall and foundation connected. NO flat roof, no chimney, no railing, no plants hiding foundations, no floating floor. Horizontal width about 2 times total height, roof about upper quarter. Warm sunlight, pale roof edge and dark shadow under eaves, readable natural brickwork. Generous transparent margin."
+    ],
+    [
+      "ground",
+      "Use case: stylized-concept. BitDog polished painterly 2D platform game, warm hand-painted animated-feature illustration with clear forms and natural construction. Reference is style only. No dog, no people, no text, no logos or interface. A wide opaque tile texture of a quiet residential paved footpath for a 2D side scroller: very top edge is a straight thin grassy verge about 8 percent height, below it a solid bed of warm gray cobblestone paving and compact earth visible in shallow side perspective. No sky, no objects, no horizon, no characters. Even lighting left to right, consistent scale, fine subtle texture, low contrast so golden dog and props pop. Top boundary perfectly level. Full bleed landscape 3:1, designed to repeat horizontally."
+    ]
+  ],
+  "opening": [
+    [
+      "pov",
+      "Use case: compositing. Painterly animated-feature art for BitDog. Electric Avenue panorama is the location reference: warm small town, pastel clapboard houses and red-brick workshops with pitched roofs, ceramic-insulator utility poles with attached cables, blue/lavender hills, late-afternoon sky and cobbled neighborhood paths. No orchard trees or treehouses. Landscape 16:9. Create the second shot of a fetch intro: forward POV down the neighborhood walkway toward a distant vanishing point and broad open sky. NO dog, owner, coin, star or motion trails; these are animated separately. Same town and palette as first reference. Buildings and poles have credible ground contact. Keep center sky open for coin flight."
+    ],
+    [
+      "throw-reference",
+      "Use case: compositing. Painterly animated-feature art for BitDog. Electric Avenue panorama is the location reference: warm small town, pastel clapboard houses and red-brick workshops with pitched roofs, ceramic-insulator utility poles with attached cables, blue/lavender hills, late-afternoon sky and cobbled neighborhood paths. No orchard trees or treehouses. Landscape 16:9. Use the SECOND reference as the exact character/composition reference. Preserve the golden retriever's face, complete black nose, warm fur, black leather collar and round gold tag reading BIT. Dog sitting attentively center-right looking up at owner and Bitcoin, all paws visible and touching path. Owner on left seen from back, sage shirt, slate trousers, cream shoes, coin held at hip; crop owner ABOVE SHOULDERS so no neck/head/face is visible. Keep dog primary focus. Replace orchard scenery with the first reference town and cobbled walkway. One clear continuous frame, no collage."
+    ],
+    [
+      "sprint-reference",
+      "Use case: compositing. Painterly animated-feature art for BitDog. Electric Avenue panorama is the location reference: warm small town, pastel clapboard houses and red-brick workshops with pitched roofs, ceramic-insulator utility poles with attached cables, blue/lavender hills, late-afternoon sky and cobbled neighborhood paths. No orchard trees or treehouses. Landscape 16:9. Use SECOND reference as exact dog identity and pose reference. Preserve full black nose, muzzle and ears, golden fur, black leather collar, round gold BIT tag. Full-body golden retriever galloping to the RIGHT in center of frame, all four limbs anatomically correct, tail and muzzle well inside edges. Low side-tracking camera at dog height, stable horizontal horizon, dog about half image width. Replace orchard scenery with FIRST reference town and cobbled walkway. No owner, no Bitcoin, no electrical glow, no trails painted over the face. This is the first frame for smooth continuous animation."
+    ]
+  ],
+  "references": [
+    "../orchard/master-v1.png (style)",
+    "../orchard/throw-reference-v1.png (characters)",
+    "../orchard/sprint-reference-v1.png (dog)",
+    "master-v1.png (opening location)"
+  ]
+}

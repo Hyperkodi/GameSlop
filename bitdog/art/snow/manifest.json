@@ -1,0 +1,226 @@
+{
+  "version": 1,
+  "master": "master-v1.png",
+  "width": 2172,
+  "height": 724,
+  "overlap": 96,
+  "tileWidth": 900,
+  "layout": "finite continuous panorama; original pixels; exact shared overlaps at authored x positions; never wrap last tile to first",
+  "tiles": [
+    {
+      "file": "tile-0.png",
+      "x": 0,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 983880,
+      "sha256": "ddb88cd310eb839f781cbbe5d8edc6c3b55da6471b1e6a946b6952b60c93b7cc"
+    },
+    {
+      "file": "tile-1.png",
+      "x": 804,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 921452,
+      "sha256": "d0fb43a5afc579bdd47519b6f2f09a4f4fd2dc800bc282b765539578378f2c61"
+    },
+    {
+      "file": "tile-2.png",
+      "x": 1608,
+      "y": 0,
+      "w": 564,
+      "h": 724,
+      "bytes": 605725,
+      "sha256": "4615d84cd5186ff59839a4c36c3d4c7e8f32cb72f41ebb607262f742e22522cf"
+    }
+  ],
+  "assets": {
+    "snowbank": {
+      "file": "snowbank-v1.png",
+      "foot": 585,
+      "size": [
+        2172,
+        724
+      ],
+      "alphaBounds": [
+        47,
+        157,
+        2131,
+        590
+      ],
+      "surface": [
+        [
+          48,
+          560
+        ],
+        [
+          110,
+          529
+        ],
+        [
+          180,
+          501
+        ],
+        [
+          260,
+          478
+        ],
+        [
+          340,
+          406
+        ],
+        [
+          420,
+          371
+        ],
+        [
+          500,
+          279
+        ],
+        [
+          565,
+          222
+        ],
+        [
+          610,
+          191
+        ],
+        [
+          710,
+          169
+        ],
+        [
+          810,
+          169
+        ],
+        [
+          910,
+          182
+        ],
+        [
+          1010,
+          189
+        ],
+        [
+          1110,
+          196
+        ],
+        [
+          1210,
+          198
+        ],
+        [
+          1310,
+          191
+        ],
+        [
+          1410,
+          189
+        ],
+        [
+          1510,
+          202
+        ],
+        [
+          1580,
+          226
+        ],
+        [
+          1650,
+          310
+        ],
+        [
+          1720,
+          333
+        ],
+        [
+          1820,
+          440
+        ],
+        [
+          1930,
+          496
+        ],
+        [
+          2030,
+          530
+        ],
+        [
+          2118,
+          554
+        ]
+      ]
+    },
+    "snow": {
+      "file": "snowbarrier-v2.png",
+      "foot": 953,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        32,
+        100,
+        1507,
+        957
+      ]
+    },
+    "snowbarrier": {
+      "file": "snowbarrier-v2.png",
+      "foot": 953,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        32,
+        100,
+        1507,
+        957
+      ]
+    },
+    "iceRock": {
+      "file": "ice-rock-v1.png",
+      "foot": 1107,
+      "size": [
+        1374,
+        1145
+      ],
+      "alphaBounds": [
+        61,
+        42,
+        1324,
+        1111
+      ]
+    },
+    "snowShell": {
+      "file": "snow-shell-v2.png",
+      "foot": 999,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        243,
+        21,
+        1312,
+        999
+      ]
+    },
+    "snow-shell": {
+      "file": "snow-shell-v2.png",
+      "foot": 999,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        243,
+        21,
+        1312,
+        999
+      ]
+    }
+  }
+}

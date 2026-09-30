@@ -1,0 +1,97 @@
+[
+  {
+    "file": "mushroom.mp3",
+    "seconds": 0.819,
+    "bytes": 21360
+  },
+  {
+    "file": "snowgrow.mp3",
+    "seconds": 1.075,
+    "bytes": 27629
+  },
+  {
+    "file": "snowshed.mp3",
+    "seconds": 0.675,
+    "bytes": 17598
+  },
+  {
+    "file": "snowbreak.mp3",
+    "seconds": 0.835,
+    "bytes": 21360
+  },
+  {
+    "file": "umbrella.mp3",
+    "seconds": 0.835,
+    "bytes": 21360
+  },
+  {
+    "file": "gust.mp3",
+    "seconds": 0.981,
+    "bytes": 25121
+  },
+  {
+    "file": "gravity.mp3",
+    "seconds": 0.995,
+    "bytes": 25748
+  },
+  {
+    "file": "paw-snow.mp3",
+    "seconds": 0.595,
+    "bytes": 15717
+  },
+  {
+    "file": "paw-moon.mp3",
+    "seconds": 0.582,
+    "bytes": 15717
+  },
+  {
+    "file": "intro-gallop-snow.mp3",
+    "seconds": 3.275,
+    "bytes": 80292
+  },
+  {
+    "file": "intro-gallop-wood.mp3",
+    "seconds": 3.275,
+    "bytes": 80292
+  },
+  {
+    "file": "intro-gallop-moon.mp3",
+    "seconds": 3.129,
+    "bytes": 76530
+  },
+  {
+    "file": "snow-roll.mp3",
+    "seconds": 2.25,
+    "bytes": 55841
+  },
+  {
+    "file": "umbrella-wind.mp3",
+    "seconds": 2.25,
+    "bytes": 55841
+  },
+  {
+    "file": "flutey-funk.mp3",
+    "seconds": 214.727,
+    "bytes": 5392733
+  },
+  {
+    "file": "cold-funk.mp3",
+    "seconds": 288.287,
+    "bytes": 7158145
+  },
+  {
+    "file": "acid-trumpet.mp3",
+    "seconds": 208.196,
+    "bytes": 5210758
+  },
+  {
+    "file": "space-jazz.mp3",
+    "seconds": 369.502,
+    "bytes": 8869801
+  },
+  {
+    "file": "funkorama.mp3",
+    "seconds": 201.456,
+    "bytes": 5074247
+  }
+]

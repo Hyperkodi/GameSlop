@@ -1,0 +1,5 @@
+Use case: stylized-concept.
+Asset type: side-on ground surface texture strip for the BitDog: Zoomies platformer.
+Reference image is the approved Satoshi Park scenery; match its painted animation textures and warm spring palette.
+Create a wide 3:1 full-bleed opaque image, ideally 1536x512, of a CONTINUOUS CROSS-SECTION of park ground. Absolutely flat horizontal surface line at the TOP EDGE. Top 15%: dense short spring grass and fine roots, olive green and sunlit honey green, tiny irregular grass tufts but no sky. Below: warm ochre earth with small stones and gently mottled soil, soft darkening toward bottom. Soil fills entire remaining image. No large rocks, no objects, no flowers, no scenery, no horizon, no text.
+This image will be deformed gently along rolling terrain and joined as a repeatable surface. Keep the top grass thickness and brown soil bands at exactly the SAME heights across both left and right edges. Even lighting across width; no directional shadows, no vignette, no distinct central focal object. Subtle fine-scale texture; readable as a polished side-scroller ground asset rather than a photograph or overhead lawn. No visible panel boundaries.

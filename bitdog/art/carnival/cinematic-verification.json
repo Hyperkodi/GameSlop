@@ -1,0 +1,36 @@
+{
+  "level": 6,
+  "theme": "carnival",
+  "provider": "Replicate Kling V3 Pro",
+  "clips": [
+    {
+      "file": "throw-kling-v1.mp4",
+      "bytes": 2254063,
+      "sha256": "8fe7d2048e3c3c21ff85872f5c267f85f9d47200b93d48b0b41fea7b88e0e743",
+      "width": 1924,
+      "height": 1076,
+      "r_frame_rate": "24/1",
+      "duration": "5.041667",
+      "nb_frames": "121"
+    },
+    {
+      "file": "sprint-kling-v1.mp4",
+      "bytes": 4153879,
+      "sha256": "fa5e888e1274d6b29161436458f8c2daeede1ee8deaf5d9b81a2bac7e8e78326",
+      "width": 1924,
+      "height": 1076,
+      "r_frame_rate": "24/1",
+      "duration": "4.041667",
+      "nb_frames": "97"
+    }
+  ],
+  "throwWhistleCueSeconds": 2.9,
+  "starCueSeconds": 6.35,
+  "visualReview": {
+    "referenceRows": "Inspected before extraction; equal frames measured at actual boundaries",
+    "owner": "Head and neck remain outside frame; fluid hand/arm anticipation, throw and follow-through",
+    "dog": "All97decoded sprint frames inspected in muzzle-all-frames.jpg; complete black nose and muzzle throughout",
+    "opening": "Actual theme scenery and surface in all three shots; black collar/gold BIT tag retained"
+  },
+  "fallback": "Approved first decoded movie frame; full contain on narrow screens; reduced-motion/offline poster support preserved"
+}

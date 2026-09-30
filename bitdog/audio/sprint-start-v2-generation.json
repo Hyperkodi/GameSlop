@@ -1,0 +1,11 @@
+{
+  "provider": "ElevenLabs",
+  "request": {
+    "text": "A fluffy golden retriever starts running across short grass: two soft padded paw pushes with crisp grass scuffs, a tiny brass collar jingle, then a gentle short brush of air. Close natural Foley for a premium playful animated film. Light, tactile and friendly. No booming impact, engine, electronic sweep, synthetic power-up, barking, speech or music.",
+    "duration_seconds": 1.6,
+    "loop": false,
+    "prompt_influence": 0.6,
+    "model_id": "eleven_text_to_sound_v2"
+  },
+  "file": "sprint-start-v2.mp3"
+}

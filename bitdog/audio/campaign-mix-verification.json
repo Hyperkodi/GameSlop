@@ -1,0 +1,27 @@
+[
+  {
+    "file": "flutey-funk.mp3",
+    "integratedLUFS": "-18.11",
+    "truePeakDBTP": "-2.92"
+  },
+  {
+    "file": "cold-funk.mp3",
+    "integratedLUFS": "-17.88",
+    "truePeakDBTP": "-2.56"
+  },
+  {
+    "file": "acid-trumpet.mp3",
+    "integratedLUFS": "-18.32",
+    "truePeakDBTP": "-3.96"
+  },
+  {
+    "file": "space-jazz.mp3",
+    "integratedLUFS": "-18.30",
+    "truePeakDBTP": "-5.48"
+  },
+  {
+    "file": "funkorama.mp3",
+    "integratedLUFS": "-18.00",
+    "truePeakDBTP": "-1.99"
+  }
+]

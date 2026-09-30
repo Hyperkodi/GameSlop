@@ -1,0 +1,23 @@
+{
+  "masterSha256": "5264e6974ffbdd72c34c8dc0f550a6c8b472f2b4120fed3385d3e02b47e4f9ce",
+  "masterPixels": 1572528,
+  "reconstructionIdentical": true,
+  "joins": [
+    {
+      "left": "satoshi-park-tile-0.png",
+      "right": "satoshi-park-tile-1.png",
+      "worldX": 804,
+      "overlap": 96,
+      "pixelsCompared": 69504,
+      "identical": true
+    },
+    {
+      "left": "satoshi-park-tile-1.png",
+      "right": "satoshi-park-tile-2.png",
+      "worldX": 1608,
+      "overlap": 96,
+      "pixelsCompared": 69504,
+      "identical": true
+    }
+  ]
+}

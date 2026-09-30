@@ -1,0 +1,20 @@
+{
+  "generator": "Built-in ImageGen",
+  "assets": [
+    {
+      "key": "backyard",
+      "prompt": "Use case: stylized-concept. Production game background for BitDog, polished warm hand-painted animated-feature illustration, rich appealing detail, coherent light and materials. SINGLE VERY WIDE 3:1 continuous side-scrolling panorama, no panels. Scene viewed side-on with horizon horizontal; route runs left to right, never a path toward vanishing point. No dog, no people, no readable text, no logos, no UI. All distant buildings and trees firmly rooted. Lower 30 percent quiet low-contrast continuous ground, no obstacles at playable foreground scale. Keep rich scenic detail above and beyond the gameplay plane. Full bleed opaque image. The Impossible Backyard, the familiar welcoming suburban garden transformed into a spectacular twilight lantern festival. Cozy distant house with pitched roof, white picket fence, apple trees rooted behind the fence, strings of warm paper lanterns fixed to garden posts, a few distant giant mushrooms and a supported garden cable as playful callbacks. Deep teal blue-violet twilight behind gameplay. Quiet grassy lawn in lower third, warm light around the distant porch."
+    },
+    {
+      "key": "backyard",
+      "kind": "lantern",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog, polished warm painterly animated-feature illustration. TRANSPARENT background with actual alpha; no checkerboard, no colored or white matte, no ground plane outside the object, no cast shadow reaching far. No dog, people, text, UI. Full object framed with 5 percent transparentmargin. Believable construction, clean crisp silhouette that reads at mobile scale, natural materials, warm upper-left light and deliberate dark/light edge. A single garden festival lantern mounted on a short dark wood stout post with solid buried stone footing and one rounded hanging warm cream-yellow paperlantern, elegant recognizable silhouette. The lantern is firmly attached to a small crossbar. Full complete object isolated."
+    },
+    {
+      "key": "lantern",
+      "file": "backyard/lantern",
+      "prompt": "Use case: background-extraction. EDIT TARGET existing isolated game prop. Preserve the exact object's shape, materials, colors, perspective, positioning and detail. Remove ALL the diffuse colored aura, halo, bloom, ambientlight haze and shadowcloud outside the solid object, also in any holes. ONLY the solid painted object remains opaque. Outside it is perfectly transparent alpha zero, including center hole if present. Crisp antialiased edges. No new background, no checkerboard, no black fill or matte. Preserve all object detail. This is a production transparent PNG game sprite."
+    }
+  ],
+  "preparation": "Lossless authored-pixel crop for tiles/ground only; original PNG alpha preserved"
+}
