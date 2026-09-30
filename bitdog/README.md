@@ -30,7 +30,7 @@ Open **Controls Setup** on the title or pause screen to remap every keyboard act
 - Hold Shift while moving: sprint.
 - Hold S or Down: roll and coast. Rolling ignores directional input and boost pads. It coasts to a stop on flat ground, gains speed downhill and slows faster uphill. Release Roll to run again.
 - Separate mobile Sprint, Jump and Roll buttons support simultaneous fingers. Roll overrides Sprint while both are held.
-- Escape/P: pause/resume. Enter: start/retry and skip intro. Levels play in order from 1 to 8; the level strip shows progress.
+- Escape/P: pause/resume. Enter: start/retry and skip intro. Levels play in order from 1 to 8. The public page shows only the current level name.
 
 Five hearts shared across all eight levels; collisions grant 1.6 seconds of protection. Outbound exploration is untimed. The return countdown starts only when BitDog grabs the large Bitcoin. Score = coins × 100 + whole seconds remaining × 50 + 1,000 delivery points + 1,000 per broken obstacle. A level completed without losing a heart earns Perfect Fetch. Hearts and points carry forward; failure or completion offers a fresh run from level 1. Reloading starts a fresh run. Coins are game points; there is no on-chain integration.
 

@@ -104,7 +104,6 @@
   $('pause').addEventListener('click', pause);
   $('skip-intro').addEventListener('click', beginLevel);
   $('cinematic-pause').addEventListener('click', pause);
-  $('replay-opening').addEventListener('click', () => { if(engine.state.phase!=='ready'||opening.active)return;start(); $('game').scrollIntoView({ block: 'center' }); });
   function paintSound() { audio.setMuted(muted); $('sound').innerHTML = (muted ? 'SOUND OFF' : 'SOUND ON') + ' <span>♫</span>'; $('sound').setAttribute('aria-pressed', String(muted)); }
   $('sound').addEventListener('click', () => { muted = !muted; unlockAudio(); paintSound(); try { localStorage.setItem('gameslop:muted', muted ? '1' : '0'); } catch (_) {} }); paintSound();
   for (const name of ['jump', 'roll', 'sprint']) {
@@ -129,43 +128,40 @@
   function resized() { clearInput(); renderer.resize(); }
   addEventListener('resize', resized); addEventListener('orientationchange', resized);
   const initialPlayLabel = $('play').innerHTML;
-  $('play').disabled = true; $('replay-opening').disabled = true; $('play').textContent = 'GETTING READY...';
+  $('play').disabled = true; $('play').textContent = 'GETTING READY...';
   let introLoaded = false;
   function paintLevel(){
     loadBest();audio.setTrack(level.music);
     $('level-heading').innerHTML=`<i></i> ${level.name.toUpperCase()} <b>0${level.id}</b>`;
     $('overlay-note').textContent=`0${level.id} · ${level.name.toUpperCase()} · A FETCH & RETURN ADVENTURE`;
     const credit=document.querySelector('.audio-credit a');credit.textContent=level.track+' — Kevin MacLeod';credit.href='https://incompetech.com/music/royalty-free/index.html?isrc='+level.isrc;
-    document.querySelector('.production-links a[href*="-review.html"]').href=level.id===3?'art/electric-review.html':level.id===2?'art/orchard-review.html':'art/environment-review.html';
     document.querySelector('.field-notes>div>span').textContent=`0${level.id} / THE MISSION`;
     document.querySelector('.field-notes>p').textContent=level.hint+' Coins × 100 + seconds left × 50 + 1,000 for delivery + obstacle bonuses.';
-    for(const b of $('level-select').children){b.setAttribute('aria-current',Number(b.dataset.level)===level.id?'step':'false');b.classList.toggle('completed',Number(b.dataset.level)<level.id);}
     document.body.dataset.level=level.id;
     controls.paint();
-    if(level.id>=4)document.querySelector('.production-links a[href*="-review.html"]').href='art/campaign-review.html?level='+level.id;
   }
   function selectLevel(id){
     if(opening.active||running()||id!==campaign.level)return;
     clearInput();audio.stopEffects();renderer.reset();paused=false;opening.skip();
     level=BitDogLevels.get(id);engine=BitDog.createEngine(level.id,{hearts:campaign.hearts});renderer=BitDog.createRenderer($('game'),level.id);
-    audio.setMode('ready');introLoaded=false;$('play').disabled=true;$('replay-opening').disabled=true;
+    audio.setMode('ready');introLoaded=false;$('play').disabled=true;
     overlay(level.id===3?'Electric<br><em>zoomies.</em>':level.id===2?'Harvest<br><em>hustle.</em>':'Maximum<br><em>zoomies.</em>',level.hint,'GETTING READY...','THE ADVENTURES OF BITDOG','');
     $('hud').hidden=true;$('cinematic-controls').hidden=true;$('toast').classList.remove('show');
     document.body.classList.remove('opening-active');delete document.body.dataset.openingShot;
-    const url=new URL(location.href);url.searchParams.set('level',level.id);history.replaceState(null,'',url);paintLevel();last=performance.now();
+    paintLevel();last=performance.now();
     $('overlay-title').innerHTML=view().title;
   }
-  for(const item of BitDogLevels.catalog.filter(l=>l.available)){
-    const b=document.createElement('span');b.dataset.level=item.id;b.textContent=`0${item.id} / ${item.name}`;$('level-select').append(b);
+  // Old testing links may still carry ?level=; the public run always starts at 1.
+  if(new URL(location.href).searchParams.has('level')){
+    const url=new URL(location.href);url.searchParams.delete('level');history.replaceState(null,'',url);
   }
   paintLevel();
   if(level.id>1){$('overlay-title').innerHTML=level.id===3?'Electric<br><em>zoomies.</em>':'Harvest<br><em>hustle.</em>';$('overlay-copy').textContent=level.hint;}
   $('overlay-title').innerHTML=view().title;
   function frame(now) {
     document.body.classList.toggle('playing-active',opening.active||running());
-    $('replay-opening').disabled=engine.state.phase!=='ready'||opening.active;
     if (!introLoaded && renderer.artReady) {
-      introLoaded = true; $('play').disabled = false; $('replay-opening').disabled = false; $('play').innerHTML = level.id===1?initialPlayLabel:'START LEVEL '+level.id;
+      introLoaded = true; $('play').disabled = false; $('play').innerHTML = level.id===1?initialPlayLabel:'START LEVEL '+level.id;
       if(pendingStart){pendingStart=false;start();}
     }
     const dt = Math.min((now - last) / 1000, .05); last = now;
