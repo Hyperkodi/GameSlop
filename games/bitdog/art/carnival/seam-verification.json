@@ -1,0 +1,28 @@
+{
+  "sourceSize": [
+    2172,
+    724
+  ],
+  "joins": [
+    {
+      "left": "tile-0.png",
+      "right": "tile-1.png",
+      "overlapPixels": 96,
+      "maximumChannelDifference": 0
+    },
+    {
+      "left": "tile-1.png",
+      "right": "tile-2.png",
+      "overlapPixels": 96,
+      "maximumChannelDifference": 0
+    }
+  ],
+  "reconstructionExact": true,
+  "groundCrop": [
+    450,
+    562,
+    1770,
+    710
+  ],
+  "groundRepeat": "runtime mirrored sampling of the same source edge"
+}

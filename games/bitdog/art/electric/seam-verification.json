@@ -1,0 +1,23 @@
+{
+  "masterSha256": "af67f2effdb837597e33e33162b96e7a9f46d192d96f5288b76045a8e99157d9",
+  "masterPixels": 1572528,
+  "reconstructionIdentical": true,
+  "joins": [
+    {
+      "left": "tile-0.png",
+      "right": "tile-1.png",
+      "worldX": 804,
+      "overlap": 96,
+      "pixelsCompared": 69504,
+      "identical": true
+    },
+    {
+      "left": "tile-1.png",
+      "right": "tile-2.png",
+      "worldX": 1608,
+      "overlap": 96,
+      "pixelsCompared": 69504,
+      "identical": true
+    }
+  ]
+}

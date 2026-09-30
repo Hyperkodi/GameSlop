@@ -1,0 +1,42 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "effects": [
+    {
+      "name": "electric",
+      "file": "electric.mp3",
+      "request": {
+        "text": "A friendly magical electrical charge powering up a running dog: soft warm rising electrical fizz and airy energized shimmer, immediate onset, one short premium animated film sound effect. Detailed smooth analog texture, playful and rounded, no harsh crackle, no music, voice, beeps, chiptune or ticking.",
+        "duration_seconds": 0.9,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "aac0c0e2c9d841bd8da30685276eca1456cd30610897c4b4d4df3b1fa243e287"
+    },
+    {
+      "name": "wire-hum",
+      "file": "wire-hum.mp3",
+      "request": {
+        "text": "Seamlessly looping soft electrical energy rushing through an insulated cable: smooth airy magnetic hum with delicate warm fizz and flowing energy. Quiet premium cinematic sound design, no footsteps, no pulses or beat, no sharp crackles, no retro game tones, no voice, no music.",
+        "duration_seconds": 2.0,
+        "loop": true,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "78ff6767787b19595d1b927b0bcc37ba9eee1028761529290f42625d5567ef34"
+    },
+    {
+      "name": "zap",
+      "file": "zap.mp3",
+      "request": {
+        "text": "One brief playful electrical mishap: soft fuzzy electrical snap followed by a rounded deflating energy puff. Premium animated film Foley, gentle comedic surprise, no scream, no pain, no harsh sharp clicks, no music, no speech, no retro arcade bleeps.",
+        "duration_seconds": 0.55,
+        "loop": false,
+        "prompt_influence": 0.55,
+        "model_id": "eleven_text_to_sound_v2"
+      },
+      "sha256": "aa5ee58bdaa32dbff2837a9eae1cf8c6b353c9d8ba8efd1a636d37b10ee5f645"
+    }
+  ]
+}

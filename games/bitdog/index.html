@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf4e6">
+  <meta name="description" content="Eight impossible fetches. One very good dog. Run, bounce, glide and bring the Bitcoin home in BitDog: Zoomies.">
+  <title>BitDog: Zoomies — GameSlop</title>
+  <link rel="preload" as="image" href="art/sprites/bitdog-poses-left-v2.png" fetchpriority="high">
+  <link rel="icon" href="icon.svg?v=bitcoin-dog" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/joystick.css">
+  <link rel="stylesheet" href="style.css?v=gravity-cues-12">
+</head>
+<body>
+  <div class="app">
+    <header class="masthead">
+      <a class="brand" href="./" aria-label="Bitcoin Dog home"><img src="icon.svg?v=bitcoin-dog" width="30" height="30" alt=""><span>Bitcoin Dog</span></a>
+      <div class="edition">A GAMESLOP ORIGINAL</div>
+      <a class="back-link" href="../">THE ARCADE <span>↗</span></a>
+    </header>
+    <main>
+      <div class="game-toolbar"><span>BITDOG: ZOOMIES</span><button id="fullscreen" type="button">FULL SCREEN</button></div>
+      <div class="above-game"><span id="level-heading"><i></i> SATOSHI PARK <b>01</b></span><span class="small-motto">BIG ZOOMIES. GOOD BOY ENERGY.</span></div>
+      <nav id="level-select" class="level-select" aria-label="Campaign progress"></nav>
+      <section class="game-frame" aria-label="BitDog Zoomies game">
+        <canvas id="game" aria-label="Side-scrolling park. Use A and D or arrow keys to run, Shift to sprint, Space to jump, and S or Down to roll."></canvas>
+        <div id="cinematic-controls" class="cinematic-controls" hidden>
+          <span id="cinematic-label">THE FIRST FETCH</span>
+          <div><button id="cinematic-pause" aria-label="Pause opening">Ⅱ</button><button id="skip-intro" aria-keyshortcuts="Enter">Enter to skip intro</button></div>
+        </div>
+        <div id="hud" class="hud" hidden>
+          <div class="hud-score"><span class="coin-symbol">₿</span><div><small>COLLECTED</small><strong id="coins">00</strong><span id="hearts" class="hearts" aria-label="5 of 5 hearts remaining for this run">&#9829;&#9829;&#9829;&#9829;&#9829;</span></div></div>
+          <div class="objective"><small id="phase">THE FETCH</small><strong id="objective">Find the big Bitcoin →</strong><div class="route"><span id="route-fill"></span></div></div>
+          <div class="hud-right"><div class="timer"><small id="timer-label">TIME</small><strong id="timer">0:00</strong></div><button id="pause" class="icon-button" aria-label="Pause game">Ⅱ</button></div>
+        </div>
+        <div id="gravity-status" class="gravity-status" role="status" hidden></div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <div id="overlay" class="overlay">
+          <div class="intro-content">
+            <div id="eyebrow" class="eyebrow"><span>THE ADVENTURES OF BITDOG</span></div>
+            <h1 id="overlay-title">Maximum<br><em>zoomies.</em></h1>
+            <p id="overlay-copy">Eight levels in order. Five hearts for the whole run.<br>Fetch each Bitcoin and bring it home.</p>
+            <dl id="finish-stats" class="finish-stats" hidden></dl>
+            <button id="play" class="play-button">LET’S FETCH <span>↗</span></button>
+            <a class="how-to-play-link" href="how-to-play.html" aria-label="How to Play (opens in a new tab)" target="_blank" rel="noopener">HOW TO PLAY <span aria-hidden="true">?</span></a>
+            <button id="controls-setup" class="controls-setup">CONTROLS SETUP</button>
+            <button id="next-level" class="next-level" hidden>NEXT FETCH ↗</button>
+            <div id="overlay-note" class="intro-note"><span>01</span> SATOSHI PARK <i>•</i> A FETCH & RETURN ADVENTURE</div>
+          </div>
+          <div class="scene-label" id="scene-label"><span>100% GOOD BOY</span><svg viewBox="0 0 80 65" aria-hidden="true"><path d="M8 5 Q72 7 53 49 M53 49 L40 37 M53 49 L67 39"/></svg></div>
+        </div>
+        <div class="scene-caption" id="scene-caption"><span class="live-dot"></span> NO THOUGHTS. JUST FETCH.</div>
+      </section>
+      <nav class="touch-controls" aria-label="Touch game controls">
+        <div class="stick-wrap"><div id="joystick" aria-label="Movement thumb joystick"></div><span>RUN</span></div>
+        <div class="touch-hint">CHASE IT.<br><b>BRING IT HOME.</b></div>
+        <div class="action-buttons"><button id="sprint" class="touch-action sprint" aria-label="Hold to sprint">&#9889;<small>SPRINT</small></button><button id="roll" class="touch-action roll">↻<small>ROLL</small></button><button id="jump" class="touch-action jump">⤒<small>JUMP</small></button></div>
+      </nav>
+      <div class="below-game"><span><b>HOW TO BE A GOOD BOY</b><span class="desktop-instructions"><kbd>A</kbd><kbd>D</kbd> run <kbd>SPACE</kbd> jump <kbd>SHIFT</kbd> sprint <kbd>S</kbd> roll</span><span class="mobile-instructions">Stick to run. Hold Sprint for speed; Roll to coast.</span></span><button id="sound" aria-pressed="false">SOUND ON <span>♫</span></button></div>
+      <div class="field-notes"><div><span>01 / THE MISSION</span><p>Go fetch a little <em>fortune.</em></p></div><p>Five hearts. Eight levels. One very good boy.<br>Coins &times; 100 + seconds left &times; 50 + 1,000 for delivery + obstacle bonuses.</p><div class="best"><span>PERSONAL BEST</span><strong id="best">—</strong></div></div>
+      <div class="audio-credit">Music: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500054" target="_blank" rel="noopener">Funky Chunk &mdash; Kevin MacLeod</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> &middot; <a href="audio/review.html">Audio preview &amp; credits</a></div>
+      <div class="production-links"><a href="art/characters/bitdog-model-v3.png" target="_blank">BITDOG CHARACTER SHEET ↗</a><a href="art/characters/owner-model-v2.png" target="_blank">OWNER CHARACTER SHEET ↗</a><a href="art/environment-review.html" target="_blank">BACKGROUND SEAM PREVIEW &#8599;</a><button id="replay-opening">REPLAY OPENING ↻</button></div>
+    </main>
+    <footer><span>SIT. STAY. <b>STACK BITCOIN.</b></span><span>BITDOG: ZOOMIES <i>✦</i> GAMESLOP</span></footer>
+  </div>
+  <dialog id="controls-dialog" aria-labelledby="controls-title">
+    <h2 id="controls-title">Make yourself at home.</h2>
+    <p>Choose a key, then press its replacement. Existing assignments swap automatically.</p>
+    <div id="controls-bindings"></div>
+    <p id="controls-status" role="status">Keyboard settings save automatically on this device.</p>
+    <div class="controls-footer"><button id="controls-reset">Restore defaults</button><button id="controls-done">Done</button></div>
+  </dialog>
+  <script src="js/controls.js?v=roll-s-9"></script>
+  <script src="vendor/joystick.js"></script>
+  <script src="js/levels.js?v=gravity-cues-12"></script>
+  <script src="js/display.js?v=arcade-15"></script>
+  <script src="js/campaign.js?v=campaign-14"></script>
+  <script src="js/engine.js?v=campaign-14"></script>
+  <script src="js/cinematic.js?v=20260929-roll-hills-3"></script>
+  <script src="art/environment/manifest.js"></script>
+  <script src="art/orchard/manifest.js"></script>
+  <script src="art/electric/manifest.js"></script>
+  <script src="art/moonwood/manifest.js"></script>
+  <script src="art/snow/manifest.js"></script>
+  <script src="art/carnival/manifest.js"></script>
+  <script src="art/moon/manifest.js"></script>
+  <script src="art/backyard/manifest.js"></script>
+  <script src="js/environment.js?v=arcade-15"></script>
+  <script src="js/intro-video.js?v=20260929-roll-hills-3"></script>
+  <script src="js/renderer.js?v=arcade-15"></script>
+  <script src="js/audio.js?v=20260929-roll-hills-3"></script>
+  <script src="js/game.js?v=gravity-cues-12"></script>
+</body>
+</html>

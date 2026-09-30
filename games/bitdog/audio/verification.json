@@ -1,0 +1,97 @@
+[
+  {
+    "file": "paw-grass.mp3",
+    "seconds": 0.995011,
+    "bytes": 21465
+  },
+  {
+    "file": "paw-wood.mp3",
+    "seconds": 0.947256,
+    "bytes": 20420
+  },
+  {
+    "file": "land.mp3",
+    "seconds": 1.194762,
+    "bytes": 25122
+  },
+  {
+    "file": "jump.mp3",
+    "seconds": 0.795011,
+    "bytes": 17285
+  },
+  {
+    "file": "roll.mp3",
+    "seconds": 3.0,
+    "bytes": 61171
+  },
+  {
+    "file": "boost.mp3",
+    "seconds": 1.355011,
+    "bytes": 28257
+  },
+  {
+    "file": "bump-a.mp3",
+    "seconds": 0.899184,
+    "bytes": 19375
+  },
+  {
+    "file": "bump-b.mp3",
+    "seconds": 0.993719,
+    "bytes": 21465
+  },
+  {
+    "file": "smash.mp3",
+    "seconds": 1.469252,
+    "bytes": 30869
+  },
+  {
+    "file": "coin.mp3",
+    "seconds": 0.675261,
+    "bytes": 14673
+  },
+  {
+    "file": "fetch.mp3",
+    "seconds": 1.995011,
+    "bytes": 41318
+  },
+  {
+    "file": "splash.mp3",
+    "seconds": 1.355011,
+    "bytes": 28257
+  },
+  {
+    "file": "water.mp3",
+    "seconds": 3.0,
+    "bytes": 61171
+  },
+  {
+    "file": "tag.mp3",
+    "seconds": 0.981905,
+    "bytes": 20943
+  },
+  {
+    "file": "throw.mp3",
+    "seconds": 1.274966,
+    "bytes": 26689
+  },
+  {
+    "file": "star.mp3",
+    "seconds": 1.755011,
+    "bytes": 36616
+  },
+  {
+    "file": "win.mp3",
+    "seconds": 2.475011,
+    "bytes": 50722
+  },
+  {
+    "file": "timeout.mp3",
+    "seconds": 1.755011,
+    "bytes": 36616
+  },
+  {
+    "file": "ambient.mp3",
+    "seconds": 8.0,
+    "bytes": 161481
+  }
+]

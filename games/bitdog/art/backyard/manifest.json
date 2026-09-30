@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "master": "master-v1.png",
+  "width": 2172,
+  "height": 724,
+  "overlap": 96,
+  "tileWidth": 900,
+  "layout": "finite continuous panorama; original pixels; exact shared overlaps at authored x positions; never wrap last tile to first",
+  "tiles": [
+    {
+      "file": "tile-0.png",
+      "x": 0,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 1079634,
+      "sha256": "9722eaa7c49bcf0f7180441aceb99f7ed56100d2bd2165c68aa0fd84c80264c2"
+    },
+    {
+      "file": "tile-1.png",
+      "x": 804,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 1005915,
+      "sha256": "2072b736bad4408a5a34a38787c452aedf6c219e7e7ae7d71b61d4310da5909d"
+    },
+    {
+      "file": "tile-2.png",
+      "x": 1608,
+      "y": 0,
+      "w": 564,
+      "h": 724,
+      "bytes": 663508,
+      "sha256": "f42bacfd3ba0c7677cc12034818af2f25c86d9e845cc8bcff3b7c79705f9cbf6"
+    }
+  ],
+  "assets": {
+    "lantern": {
+      "file": "lantern-v2.png",
+      "foot": 1465,
+      "size": [
+        1024,
+        1536
+      ],
+      "alphaBounds": [
+        137,
+        29,
+        929,
+        1472
+      ]
+    },
+    "mushroom": {
+      "file": "../moonwood/mushroom-v1.png",
+      "foot": 1235,
+      "surface": [
+        [
+          35,
+          345
+        ],
+        [
+          250,
+          380
+        ],
+        [
+          600,
+          450
+        ],
+        [
+          900,
+          450
+        ],
+        [
+          1185,
+          435
+        ]
+      ],
+      "size": [
+        1223,
+        1286
+      ],
+      "alphaBounds": [
+        25,
+        85,
+        1208,
+        1243
+      ]
+    }
+  }
+}

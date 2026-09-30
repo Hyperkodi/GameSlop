@@ -1,0 +1,114 @@
+window.BitDogCarnivalManifest = {
+  "version": 1,
+  "master": "master-v1.png",
+  "width": 2172,
+  "height": 724,
+  "overlap": 96,
+  "tileWidth": 900,
+  "layout": "finite continuous panorama; original pixels; exact shared overlaps at authored x positions; never wrap last tile to first",
+  "tiles": [
+    {
+      "file": "tile-0.png",
+      "x": 0,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 975896,
+      "sha256": "9ddd30a2980079e315e05506470a6779fc0d3835c44150a4e68cce481638c75c"
+    },
+    {
+      "file": "tile-1.png",
+      "x": 804,
+      "y": 0,
+      "w": 900,
+      "h": 724,
+      "bytes": 995146,
+      "sha256": "38d8f365f6ca35923feda0ab9eefbacddec2810e3fd493c63cac49aaa49b6158"
+    },
+    {
+      "file": "tile-2.png",
+      "x": 1608,
+      "y": 0,
+      "w": 564,
+      "h": 724,
+      "bytes": 623223,
+      "sha256": "db44f046d1d4074c73322cdad3b0e21e9e7898f7e691ca6a59d499ee106835e4"
+    }
+  ],
+  "assets": {
+    "boardwalk": {
+      "file": "boardwalk-v2.png",
+      "foot": 661,
+      "size": [
+        2079,
+        756
+      ],
+      "alphaBounds": [
+        49,
+        182,
+        2030,
+        660
+      ],
+      "surface": [
+        [
+          95,
+          241
+        ],
+        [
+          195,
+          251
+        ],
+        [
+          1878,
+          251
+        ],
+        [
+          1978,
+          241
+        ]
+      ]
+    },
+    "umbrella": {
+      "file": "umbrella-v1.png",
+      "foot": 1195,
+      "size": [
+        1295,
+        1214
+      ],
+      "alphaBounds": [
+        8,
+        17,
+        1287,
+        1197
+      ]
+    },
+    "luggage": {
+      "file": "luggage-v2.png",
+      "foot": 960,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        40,
+        65,
+        1497,
+        964
+      ]
+    },
+    "sandbag": {
+      "file": "sandbag-v1.png",
+      "foot": 973,
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaBounds": [
+        63,
+        51,
+        1476,
+        977
+      ]
+    }
+  }
+};

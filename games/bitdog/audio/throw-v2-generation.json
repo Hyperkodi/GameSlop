@@ -1,0 +1,14 @@
+{
+  "provider": "ElevenLabs",
+  "request": {
+    "text": "One clean pure sine-wave whistle sliding smoothly DOWN from a very high 2400 Hz to a low 350 Hz over 3.2 seconds. A thrown coin recedes into the distance. One continuous descending portamento, immediate gentle attack, gradually quieter, smooth fade out. No rising pitch, vibrato, impact, explosion, chime, sparkle, metal rattle, wind, music, speech, noise or distortion. Polished clean tone.",
+    "duration_seconds": 3.2,
+    "loop": false,
+    "prompt_influence": 0.85,
+    "model_id": "eleven_text_to_sound_v2"
+  },
+  "sourceSha256": "9db04711861851569283e1da68dcbaaced39cfcf602310b66d2d404b9597e238",
+  "file": "throw-v2.mp3",
+  "replaces": "throw.mp3",
+  "star": "unchanged"
+}

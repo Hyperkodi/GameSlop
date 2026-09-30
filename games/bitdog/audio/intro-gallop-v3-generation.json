@@ -1,0 +1,11 @@
+{
+  "provider": "ElevenLabs",
+  "request": {
+    "text": "Large golden retriever galloping quickly across short grass throughout. Close natural Foley: soft weighty padded thumps in grouped four-paw rhythms, irregular paired impacts, grass crunch and brushing scuffs, subtle fur swish and quiet happy panting. Warm organic running animal recording. No ticking, clicking, nails on hard floor, collar jingle, metronome, hooves, human steps, electronic sounds, voices or music.",
+    "duration_seconds": 3.3,
+    "loop": false,
+    "prompt_influence": 0.65,
+    "model_id": "eleven_text_to_sound_v2"
+  },
+  "file": "intro-gallop-v3.mp3"
+}

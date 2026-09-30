@@ -1,0 +1,30 @@
+{
+  "generator": "Built-in ImageGen",
+  "assets": [
+    {
+      "key": "moon",
+      "prompt": "Use case: stylized-concept. Production game background for BitDog, polished warm hand-painted animated-feature illustration, rich appealing detail, coherent light and materials. SINGLE VERY WIDE 3:1 continuous side-scrolling panorama, no panels. Scene viewed side-on with horizon horizontal; route runs left to right, never a path toward vanishing point. No dog, no people, no readable text, no logos, no UI. All distant buildings and trees firmly rooted. Lower 30 percent quiet low-contrast continuous ground, no obstacles at playable foreground scale. Keep rich scenic detail above and beyond the gameplay plane. Full bleed opaque image. Moon Cheese Chase, a friendly fantastical lunar landscape, indigo starry sky, distant huge softly glowing blue planet, silvery lavender crater ridges and distant rounded rock spires. Warm subtle golden dust in craters. Quiet blue-gray lunar regolith in lower third. Deep navy sky behind jumps. No astronauts, no vehicles, no foreground boulders."
+    },
+    {
+      "key": "moon",
+      "kind": "moonshelf",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog, polished warm painterly animated-feature illustration. TRANSPARENT background with actual alpha; no checkerboard, no colored or white matte, no ground plane outside the object, no cast shadow reaching far. No dog, people, text, UI. Full object framed with 5 percent transparentmargin. Believable construction, clean crisp silhouette that reads at mobile scale, natural materials, warm upper-left light and deliberate dark/light edge. A single broad low lunar basalt rock shelf platform with warm silverblue rim and indigo shadow side. Wide natural flat-ish eroded top with rounded shoulders and both ends sloping to ground, integral broad rock base, believable strata. Solid connected geology, notfloating. No starbackground. Width threetimesheight."
+    },
+    {
+      "key": "moonrock",
+      "file": "moon/moonrock",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One squat angular lunar basalt boulder obstacle, deepblue-purple rock with warm silverlight rim and little softly glowing cyan crystalveins. Three-quarter sideview, broad stablebase, strong irregularsilhouette, realisticgeology with stylizedcharm. Nofloatingpebbles."
+    },
+    {
+      "key": "moonCrate",
+      "file": "moon/moon-crate",
+      "prompt": "Use case: stylized-concept. ONE isolated production sprite for BitDog polished painterly animated-feature game. Actual TRANSPARENT PNG alpha background; no checkerboard, no white or colored matte. Full object with 6 percentmargin, no crop. Deliberate light/dark edgecontrast for mobilegame scale, believablematerials and naturalconstruction, rich warmupperleftlight. No people, no dog, no text, no UI. One compact silver-and-violet lunar exploration supplycase, solid closedbox with rounded reinforcedcorners, yellowstripedlid edge and visibletop, tinybolts, stoutfeet, recognizablydifferentfrombackgroundrock. No text or symbols or logos, singlecrate ontransparentbackground."
+    },
+    {
+      "key": "moonCrate",
+      "file": "moon/moon-crate",
+      "prompt": "Use case: background-extraction. EDIT TARGET existing lunar supplycrate PNG. Preserve exact solid crate and perspective. Remove ALL diffuse aura, glow, haze, colored background and shadowcloud outside solid crate. Only solid crate remains opaque with crisp antialiased edges, actual transparent alpha zero everywhere outside. No extra background, matte or checkerboard. Same crate, same position, same dimensions."
+    }
+  ],
+  "preparation": "Lossless authored-pixel crop for tiles/ground only; original PNG alpha preserved"
+}
