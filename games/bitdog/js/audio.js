@@ -16,9 +16,14 @@
    if(!context)return;master.gain.setTargetAtTime(muted?0:1,context.currentTime,.03);
    musicGain.gain.setTargetAtTime(mode==='return'?.23:mode==='opening'?.10:mode==='won'||mode==='lost'?.08:.16,context.currentTime,.35);
    if(paused||muted||mode==='ready')music.pause();else if(music.paused)music.play().catch(()=>{});
-   if(paused){context.suspend().catch(()=>{});}else if(context.state==='suspended')context.resume().catch(()=>{});
+   if(paused){context.suspend().catch(()=>{});}else if(context.state==='suspended'||context.state==='interrupted')context.resume().catch(()=>{});
   }
-  function unlock(){init();if(context?.state==='suspended')context.resume().catch(()=>{});sync();return loading;}
+  let unavailable=false;
+  function unlock(){
+   if(unavailable)return;
+   try{init();if(context?.state==='suspended'||context?.state==='interrupted')context.resume().catch(()=>{});sync();return loading;}
+   catch{unavailable=true;music.pause();context?.close().catch(()=>{});context=null;}
+  }
   function play(type,volume=1){
    if(!context||muted||paused||context.state!=='running')return;
    let name=type==='bump'?(Math.random()<.5?'bump-a':'bump-b'):type==='start'?'tag':type==='exhausted'?'timeout':type==='umbrellaFold'?'umbrella':type;

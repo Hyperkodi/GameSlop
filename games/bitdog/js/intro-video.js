@@ -6,6 +6,7 @@
     const clips=Object.fromEntries(['throw','sprint'].map(id=>{
       const video=document.createElement('video'),poster=BitDogEnvironment.loadImage(`art/${theme}/${id}-poster.jpg`);
       video.muted=true;video.playsInline=true;video.preload='auto';
+      video.defaultMuted=true;video.setAttribute('muted','');video.setAttribute('playsinline','');
       video.src=levelId>1?`art/${theme}/${id}-kling-v1.mp4`:`art/cinematics/${id}-kling-${id==='throw'?'v3':'v1'}.mp4`;
       return [id,{video,poster,failed:false}];
     }));
@@ -16,8 +17,15 @@
       const clip=clips[shot.id];
       if(!clip){stop();return false;}
       const {video,poster}=clip,duration=shot.id==='throw'?4:3.3;
-      const playable=!reduced&&!clip.failed&&video.readyState>=2;
-      if(active!==shot.id){stop();active=shot.id;lastRateUpdate=-1;if(playable&&video.currentTime>.01)video.currentTime=0;}
+      const enabled=!reduced&&!clip.failed;
+      const playable=enabled&&video.readyState>=2&&Number.isFinite(video.duration)&&video.duration>0;
+      if(active!==shot.id){stop();active=shot.id;lastRateUpdate=-1;if(video.readyState>=1&&video.currentTime>.01)video.currentTime=0;}
+      // Safari can defer decoded frames until play(), even with preload=auto.
+      // Request playback before testing frame readiness; retain the poster while loading.
+      if(enabled){
+        if(paused){video.pause();playing=false;}
+        else if(!playing&&!video.ended){playing=true;video.play().catch(error=>{if(active===shot.id)playing=false;if(error.name!=='AbortError')clip.failed=true;});}
+      }
       if(playable){
         const rate=video.duration/duration,target=Math.min(video.duration-.04,Math.max(0,shot.local*rate));
         // Follow the timeline with small rate corrections, never in-play seeks.
@@ -26,8 +34,6 @@
           video.playbackRate=rate*Math.max(.8,Math.min(1.15,1-(video.currentTime-target)*.6));
           lastRateUpdate=shot.local;
         }
-        if(paused){video.pause();playing=false;}
-        else if(!playing&&!video.ended){playing=true;video.play().catch(()=>{playing=false;clip.failed=true;});}
       }
       // A replay can briefly seek back from its last frame. Keep the approved
       // first frame visible until that seek completes, avoiding a flash of the end.
@@ -50,7 +56,7 @@
       if(Math.abs(video.currentTime-target)<.001)return;
       await new Promise(resolve=>{video.addEventListener('seeked',resolve,{once:true});video.currentTime=target;});
     }
-    return {draw,stop,seek,pause(){for(const {video}of Object.values(clips))video.pause();playing=false;},get ready(){return Object.values(clips).every(({video,poster,failed})=>poster.complete&&poster.naturalWidth&&(reduced||failed||video.readyState>=2));},
+    return {draw,stop,seek,pause(){for(const {video}of Object.values(clips))video.pause();playing=false;},get ready(){return Object.values(clips).every(({poster})=>poster.complete&&poster.naturalWidth);},
       get status(){return Object.fromEntries(Object.entries(clips).map(([id,{video,failed}])=>[id,{time:video.currentTime,ready:video.readyState,paused:video.paused,failed,frames:video.getVideoPlaybackQuality?.().totalVideoFrames,dropped:video.getVideoPlaybackQuality?.().droppedVideoFrames}]));}};
   }};
 })(window);

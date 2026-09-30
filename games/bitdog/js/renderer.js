@@ -60,12 +60,20 @@
       // Keep high-density displays sharp without making the large painted
       // canvas expensive enough to miss animation frames.
       const box = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 1.5);
-      canvas.width = Math.round(box.width * dpr); canvas.height = Math.round(box.height * dpr);
+      if(box.width<=0||box.height<=0)return;
+      const width=Math.round(box.width*dpr),height=Math.round(box.height*dpr);
+      // ResizeObserver and window resize can fire for the same rotation.
+      // Reassigning an unchanged canvas size erases an already painted frame.
+      if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;
       H = 620; W = Math.max(540, H * box.width / box.height);
     }
     function path(points, fill, stroke, width = 2) {
       c.beginPath(); points(c); if (fill) { c.fillStyle = fill; c.fill(); }
       if (stroke) { c.strokeStyle = stroke; c.lineWidth = width; c.stroke(); }
+    }
+    function roundedRect(x,y,w,h,r){
+      c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);
+      c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();
     }
     function ellipse(x, y, rx, ry, fill, angle = 0) {
       c.beginPath(); c.ellipse(x, y, rx, ry, angle, 0, Math.PI * 2); c.fillStyle = fill; c.fill();
@@ -216,7 +224,7 @@
       const y = ground(x);
       if(environment.prop('sign',x,y,166,164)){text(label,x-8,y-108,label.length>7?15:20,'#352813');return;}
       line(x, y - 2, x, y - 100, '#a99463', 6);
-      c.fillStyle = '#f6edcd'; c.beginPath(); c.roundRect(x - 58, y - 121, 116, 34, 5); c.fill();
+      c.fillStyle = '#f6edcd'; c.beginPath(); roundedRect(x - 58, y - 121, 116, 34, 5); c.fill();
       text(label + (direction > 0 ? ' →' : ' ←'), x, y - 100, 18, '#35452a');
     }
     function burst(e) {
@@ -278,7 +286,7 @@
             const x=z.x+24+i*(z.end-z.x-48)/12,fall=(time*105+i*29)%195,py=ground(x)-220+fall;
             line(x,py,x,py+5,'#d7f4ff88',1.5);
           }
-          c.fillStyle='#192c45e8';c.beginPath();c.roundRect(cx-89,y+24,178,27,7);c.fill();
+          c.fillStyle='#192c45e8';c.beginPath();roundedRect(cx-89,y+24,178,27,7);c.fill();
           text('NORMAL GRAVITY',cx,y+43,12,'#e1f5ff');
           c.restore();
         }

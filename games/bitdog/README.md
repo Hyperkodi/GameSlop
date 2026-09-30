@@ -1,8 +1,8 @@
 # BitDog: Zoomies
 
-A Sonic-inspired fetch-and-return game starring the approved golden retriever, black leather collar and gold BIT tag. Eight levels are selectable, with a different setting, movement feature and song for each fetch. See [LEVEL-PLAN.md](LEVEL-PLAN.md) for the campaign and standing art direction.
+A Sonic-inspired fetch-and-return game starring the approved golden retriever, black leather collar and gold BIT tag. Eight levels play in sequence, with a different setting, movement feature and song for each fetch. See [LEVEL-PLAN.md](LEVEL-PLAN.md) for the campaign and standing art direction.
 
-Serve `games/` and visit `/bitdog/`. `/bitdog/?level=2` opens Harvest Hustle directly. No build or runtime package dependencies; include the shared `../_kit/joystick.js` and CSS when copying the game. Audio fetching requires HTTP. Nothing is deployed by this folder.
+Serve `games/` and visit `/bitdog/`. Old `?level=` testing links still start at level 1. No build or runtime package dependencies; joystick JavaScript and CSS are bundled in `vendor/`. Audio fetching requires HTTP. Nothing is deployed by this folder.
 
 ## Playable levels
 
@@ -17,7 +17,7 @@ Serve `games/` and visit `/bitdog/`. `/bitdog/?level=2` opens Harvest Hustle dir
 - **Moon Cheese Chase:** low gravity, broad crater shelves and visible gravity pockets that restore normal weight. Return countdown: 90 seconds.
 - **The Impossible Backyard:** a lantern-lit finale combining the harvest route, a supported electric cable and rooted mushroom springs. Return countdown: 90 seconds.
 
-All eight are available without unlocking. Delivery offers Next Fetch through level seven; the final delivery has its own homecoming message. Best scores are saved per level; Park reads the previous v2 record when no newer per-level record exists.
+Levels advance only after delivery. Five hearts are shared across the run. Delivery offers Next Level through level seven; the final delivery has its own homecoming message. Best scores are saved per level; Park reads the previous v2 record when no newer per-level record exists.
 
 Player guide: [How to Play](how-to-play.html), linked from the title and pause screens.
 
@@ -96,3 +96,10 @@ Embedded mode also activates automatically inside an iframe. It hides the surrou
 Mobile controls use a 100-112px horizontal joystick and separate action buttons on a shelf below the scene. The mobile camera raises the ground to two-thirds of the scene height. Horizontal camera velocity compensation holds the running dog near the rear third in either direction, except at map edges. No directional buttons are used.
 
 Release packaging excludes raw generation source media and includes runtime media, source code, tests and credits. No environment files or API keys are needed at runtime.
+
+## Mobile compatibility audit (2026-09-30)
+
+Start requires the approved artwork and posters, never decoded video frames. Safari may defer video loading; playback is requested independently and a denied video retains its approved poster. Audio starts from the player's gesture, resumes after interruption, and cannot prevent gameplay if initialization fails. Quick Jump taps are queued until the next simulation frame. Older Safari does not require `structuredClone`, `Array.at`, canvas `roundRect`, or native dialog support. Viewport units have `vh` fallbacks, safe-area padding protects the controls, and small-phone HUDs keep Pause on screen.
+
+Regression checks: 65 Node tests including deferred/denied video behavior; Playwright WebKit and Chrome with iPhone-sized portrait and landscape viewports, normal media and simulated deferred media/older APIs/unavailable audio; title/settings/sound/fullscreen/intro/jump/roll/sprint/pause/rotation; Chrome two-finger joystick + sprint; eight-level campaign transitions in WebKit. Browser emulation does not certify every iPhone/iOS version or measure physical-device performance. A physical iPhone retest remains necessary for the reported device.
+The repeatable mobile browser check is `node games/bitdog/tests/mobile-browser.mjs` with Playwright (`@playwright/test`, WebKit and Chromium) available. `BITDOG_URL` selects a local or deployed game; `BITDOG_PLAYWRIGHT_MODULE` can point to an existing Playwright module URL, and `CHROME_PATH` can select an installed Chrome executable. Screenshots go to `artifacts/bitdog/`.
